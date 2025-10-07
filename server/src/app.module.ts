@@ -1,27 +1,25 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { User } from './typeorm/entities/User';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    AuthModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT!) || 3306,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-      autoLoadEntities: true,
+      host: 'localhost',
+      port: 3306,
+      username: '',
+      password: '',
+      database: 'settle-with-friends2',
+      entities: [User],
       synchronize: true,
-      entities: [__dirname + '/typeorm/entities/*.{js,ts}'],
     }),
-    AuthModule,
+    PassportModule.register({ session: true }),
   ],
   controllers: [AppController],
   providers: [AppService],
