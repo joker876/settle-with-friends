@@ -5,8 +5,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 
-console.log(__dirname + '/typeorm/entities/*.ts');
-
 @Module({
   imports: [
     ConfigModule.forRoot({

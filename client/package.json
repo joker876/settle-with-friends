@@ -20,6 +20,7 @@
     "@angular/platform-browser-dynamic": "^19.1.7",
     "@angular/router": "^19.1.7",
     "@ardium-ui/devkit": "^6.0.0",
+    "@ardium-ui/ui": "5.0.0-alpha.7",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
