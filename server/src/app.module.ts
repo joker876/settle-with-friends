@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { User } from './typeorm/entities/User';
+import { SessionAuthGuard } from './auth/session-auth.guard';
+import { SessionEntity } from './typeorm/entities/Session';
+import { entities } from './typeorm/entities/index';
 
 @Module({
   imports: [
@@ -20,12 +23,19 @@ import { User } from './typeorm/entities/User';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [User],
+      entities,
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([SessionEntity]),
     PassportModule.register({ session: true }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: SessionAuthGuard,
+    },
+  ],
 })
 export class AppModule {}

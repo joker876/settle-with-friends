@@ -1,29 +1,48 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
-import { GoogleAuthGuard } from './utils/google-auth-guard';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
+import { Public } from './public.decorator';
+import { GoogleAuthGuard } from './utils/google-auth.guard';
 
 @Controller('auth')
 export class AuthController {
   @Get('google/login')
+  @Public()
   @UseGuards(GoogleAuthGuard)
   handleLogin() {
-    return { msg: 'Google Authentication' };
+    return { success: true };
   }
 
   // api/auth/google/redirect
   @Get('google/callback')
+  @Public()
   @UseGuards(GoogleAuthGuard)
-  handleRedirect() {
-    return { msg: 'OK' };
+  handleRedirect(@Res() res: Response) {
+    const appUrl = process.env.CLIENT_URL;
+    if (!appUrl) {
+      throw new HttpException(
+        'CLIENT_URL is not set',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return res.redirect(new URL(appUrl).toString());
   }
 
   @Get('status')
+  @Public()
   user(@Req() request: Request) {
-    console.log(request.user);
     if (request.user) {
-      return { msg: 'Authenticated' };
+      return { loggedIn: true, user: request.user };
     } else {
-      return { msg: 'Not Authenticated' };
+      return { loggedIn: false, user: null };
     }
   }
 }

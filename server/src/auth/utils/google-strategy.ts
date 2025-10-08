@@ -5,9 +5,7 @@ import { AuthService } from '../auth.service';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    @Inject('AUTH_SERVICE') private readonly authService: AuthService,
-  ) {
+  constructor(@Inject(AuthService) private readonly authService: AuthService) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -17,16 +15,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(accessToken: string, refreshToken: string, profile: Profile) {
-    console.log(accessToken);
-    console.log(refreshToken);
-    console.log(profile);
     const user = await this.authService.validateUser({
       email: profile.emails[0].value,
       displayName: profile.displayName,
       photo: profile.photos[0]?.value,
     });
-    console.log('validate');
-    console.log(user);
     return user || null;
   }
 }

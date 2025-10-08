@@ -12,10 +12,7 @@ import { SessionSerializer } from './utils/serializer';
   providers: [
     GoogleStrategy,
     SessionSerializer,
-    {
-      provide: 'AUTH_SERVICE',
-      useClass: AuthService,
-    },
+    AuthService,
   ],
 })
 export class AuthModule {}

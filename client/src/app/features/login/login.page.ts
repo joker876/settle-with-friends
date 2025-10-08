@@ -12,6 +12,6 @@ export class LoginPage {
   private readonly _loginService = inject(LoginService);
 
   login() {
-    this._loginService.login();
+    this._loginService.login('/login');
   }
 }

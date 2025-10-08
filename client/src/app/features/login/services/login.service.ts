@@ -8,8 +8,11 @@ import { HttpService } from 'src/app/common/services/http.service';
 export class LoginService {
   private readonly _http = inject(HttpService);
 
-  login() {
-    window.location.href = this._http.apiUrl + 'auth/google/login';
+  login(redirectUrl?: string) {
+    window.location.href =
+      this._http.apiUrl +
+      'auth/google/login' +
+      (redirectUrl ? `?redirect=${redirectUrl}` : '');
   }
 
   private readonly _loginStatus = rxResource({
@@ -18,5 +21,5 @@ export class LoginService {
 
   dfjkidf = effect(() => {
     console.log(this._loginStatus.value());
-  })
+  });
 }
