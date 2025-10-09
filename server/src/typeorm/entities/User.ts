@@ -1,10 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { IUser } from '@shared/entities/user';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
-export class User {
+export class User implements IUser {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Index()
   @Column()
   email: string;
 

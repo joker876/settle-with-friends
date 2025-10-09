@@ -25,6 +25,7 @@ import { SessionEntity } from './typeorm/entities/Session';
       secret: process.env.SESSION_SECRET,
       saveUninitialized: false,
       resave: false,
+      name: process.env.SESSION_COOKIE_NAME || 'connect.sid',
       cookie: {
         maxAge: parseInt(process.env.SESSION_MAX_AGE) || 86400000,
       },

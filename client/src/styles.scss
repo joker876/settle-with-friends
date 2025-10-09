@@ -1,7 +1,44 @@
+@use '../node_modules/@ardium-ui/ui/themes/default/core.scss';
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
 :root {
-  --example-variable: 'example value';
-  // define css variables here
-  // remove the above variable after pasting the TEMPLATE
+  --header-height: 4rem;
+  --bg-main: #F3F5FA;
+
+  --ard-primary-50: 241, 243, 255;
+  --ard-primary-100: 164, 177, 255;
+  --ard-primary-300: 64, 90, 255;
+  --ard-primary-500: 1, 33, 255;
+  --ard-primary-700: 0, 23, 170;
+  --ard-primary-900: 5, 13, 68;
+
+  --ard-secondary-50: 240, 252, 255;
+  --ard-secondary-100: 174, 238, 255;
+  --ard-secondary-300: 73, 216, 255;
+  --ard-secondary-500: 1, 184, 236;
+  --ard-secondary-700: 0, 129, 165;
+  --ard-secondary-900: 0, 72, 92;
+
+  --ard-danger-50: 255, 241, 244;
+  --ard-danger-100: 255, 166, 188;
+  --ard-danger-300: 243, 98, 134;
+  --ard-danger-500: 216, 57, 97;
+  --ard-danger-700: 168, 30, 65;
+  --ard-danger-900: 87, 15, 33;
+
+  --ard-success-50: 231, 255, 245;
+  --ard-success-100: 105, 248, 186;
+  --ard-success-300: 36, 211, 135;
+  --ard-success-500: 1, 162, 92;
+  --ard-success-700: 0, 114, 65;
+  --ard-success-900: 0, 66, 38;
+
+  --red: rgb(var(var(--ard-danger-500)));
+  --red-dark: rgb(var(var(--ard-danger-700)));
+
+  --green: rgb(var(var(--ard-success-500)));
+  --green-dark: rgb(var(var(--ard-success-700)));
 }
 
 *,
@@ -17,9 +54,11 @@ html {
   scroll-behavior: smooth;
 }
 body {
+  background-color: var(--bg-main);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   position: relative;
+  font-family: 'Rubik', 'Lato', 'Roboto', sans-serif;
 }
 img,
 picture,
