@@ -1,27 +1,29 @@
 import { computed, effect, inject, Injectable, RendererFactory2, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { AuthStatusResponseDto } from '@shared/contracts/auth/status';
-import { IUser } from '@shared/entities/user';
-import { LogoutReason } from '@shared/enums/logout-reason';
-import { HttpService } from './http.service';
+import { HttpService } from '@common/services/http-service';
+import { AuthStatusResponseDto } from './../../../../../server/shared/contracts/auth/status';
 
-@Injectable({
-  providedIn: 'root',
-})
+export const LogoutReason = {
+  LoggedOut: 'LOGGED_OUT',
+  SessionExpired: 'SESSION_EXPIRED',
+} as const;
+export type LogoutReason = (typeof LogoutReason)[keyof typeof LogoutReason];
+
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly _http = inject(HttpService);
+  private readonly _secureHttp = inject(HttpService);
   private readonly _router = inject(Router);
   private readonly rendererFactory = inject(RendererFactory2);
 
   private readonly _authStatus = rxResource({
-    loader: () => this._http.get<AuthStatusResponseDto>('/auth/status'),
+    loader: () => this._secureHttp.get<AuthStatusResponseDto>('/auth/status'),
   });
 
   public readonly isSafeToRedirect = computed<boolean>(() => !!this._authStatus.value());
   public readonly isLoggedIn = computed<boolean>(() => !!this._authStatus.value()?.loggedIn);
 
-  public readonly userData = computed<IUser | null>(() => this._authStatus.value()?.user ?? null);
+  public readonly userData = computed(() => this._authStatus.value()?.user ?? null);
 
   public readonly sessionExpiryDate = computed(() => {
     const timestamp = this._authStatus.value()?.expiresAt;
@@ -29,8 +31,8 @@ export class AuthService {
     return new Date(timestamp);
   });
 
-  private readonly _logoutReason = signal<LogoutReason | null>(null);
-  public readonly logoutReason = this._logoutReason.asReadonly();
+  private readonly _LogoutReason = signal<LogoutReason | null>(null);
+  public readonly LogoutReason = this._LogoutReason.asReadonly();
 
   private _redirectToLoginTimeout: any = null;
   private unlistenWindowFocus?: () => void;
@@ -79,29 +81,29 @@ export class AuthService {
   //! navigation
   navigateToLoginOnSessionExpired() {
     this._authStatus.set(undefined);
-    this._logoutReason.set(LogoutReason.SessionExpired);
+    this._LogoutReason.set(LogoutReason.SessionExpired);
     this.navigateToLogin();
   }
   navigateToLogin() {
-    this._router.navigateByUrl('_admin/login');
+    this._router.navigateByUrl('/login');
   }
 
   //! login
   private readonly _isLoginLoading = signal<boolean>(false);
   public readonly isLoginLoading = this._isLoginLoading.asReadonly();
 
-  login(redirectUrl?: string): void {
+  login(): void {
     this._isLoginLoading.set(true);
 
-    window.location.href = this._http.apiUrl + 'auth/google/login' + (redirectUrl ? `?redirect=${redirectUrl}` : '');
+    window.location.href = this._secureHttp.apiUrl + `auth/google/login`;
   }
 
   //! logout
   logout(): void {
-    this._http.post('/auth/logout', null).subscribe({
+    this._secureHttp.post('/auth/logout', null).subscribe({
       next: () => {
         this._authStatus.set(undefined);
-        this._logoutReason.set(LogoutReason.LoggedOut);
+        this._LogoutReason.set(LogoutReason.LoggedOut);
         this.navigateToLogin();
       },
       error: error => {

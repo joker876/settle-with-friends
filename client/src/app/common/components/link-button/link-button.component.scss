@@ -1,0 +1,14 @@
+a {
+  color: rgb(var(--ard-primary-300));
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
+  &:focus-visible {
+    outline: 1px solid black;
+    outline-offset: 3px;
+    border-radius: 0.25rem;
+  }
+}

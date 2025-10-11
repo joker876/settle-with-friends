@@ -1,11 +1,36 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { HeaderComponent } from '@common/components/header/header.component';
+import { TitleService } from '@common/services/title.service';
+import { filter, map, mergeMap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, HeaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {}
+export class AppComponent {
+  private readonly _titleService = inject(TitleService);
+  private readonly _router = inject(Router);
+  private readonly _activatedRoute = inject(ActivatedRoute);
+
+  ngOnInit(): void {
+    this._router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        map(() => this._activatedRoute),
+        map(route => {
+          while (route.firstChild) {
+            route = route.firstChild;
+          }
+          return route;
+        }),
+        mergeMap(route => route.data)
+      )
+      .subscribe(data => {
+        this._titleService.currentBaseTitle.set(data['title'] ?? null);
+      });
+  }
+}

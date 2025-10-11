@@ -25,7 +25,7 @@
       "@env": ["./src/environemnts/environment"],
       "@common/*": ["./src/app/common/*"],
       "@features/*": ["./src/app/features/*"],
-      "@shared/*": ["../server/shared/*"]
+      "@shared/*": ["./shared-dist/*"]
     }
   },
   "angularCompilerOptions": {

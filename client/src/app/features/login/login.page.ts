@@ -1,18 +1,26 @@
-import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { AuthService } from '@common/services/auth.service';
+import { Component, effect, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService, LogoutReason } from '@common/services/auth.service';
+import { LoginGoogleComponent } from './components/login-google/login-google.component';
 
 @Component({
   selector: 'app-login',
-  imports: [RouterOutlet],
+  imports: [LoginGoogleComponent],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
-  providers: [AuthService],
 })
 export class LoginPage {
   private readonly _authService = inject(AuthService);
+  private readonly _router = inject(Router);
 
-  login() {
-    this._authService.login('/login');
+  readonly logoutReason = this._authService.LogoutReason;
+  readonly LogoutReason = LogoutReason;
+
+  constructor() {
+    effect(() => {
+      if (this._authService.isSafeToRedirect() && this._authService.isLoggedIn()) {
+        this._router.navigateByUrl('/');
+      }
+    });
   }
 }

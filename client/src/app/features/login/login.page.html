@@ -1,1 +1,13 @@
-<router-outlet />
+@switch (logoutReason()) { @case (null) { &nbsp; } @case (LogoutReason.LoggedOut) {
+<p>
+  <strong class="green" i18n="@@login.logged-out">Wylogowano poprawnie.</strong>
+  <span i18n="@@login.log-in-to-access-app">Zaloguj się, aby zacząć się rozliczać.</span>
+</p>
+} @case (LogoutReason.SessionExpired) {
+<p>
+  <strong class="red" i18n="@@login.session-expired">Sesja logowania wygasła.</strong>
+  <span i18n="@@login.log-in-to-access-app">Zaloguj się, aby zacząć się rozliczać.</span>
+</p>
+} }
+
+<app-google-login />
