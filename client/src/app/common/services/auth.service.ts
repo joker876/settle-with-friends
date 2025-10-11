@@ -31,8 +31,8 @@ export class AuthService {
     return new Date(timestamp);
   });
 
-  private readonly _LogoutReason = signal<LogoutReason | null>(null);
-  public readonly LogoutReason = this._LogoutReason.asReadonly();
+  private readonly _logoutReason = signal<LogoutReason | null>(null);
+  public readonly logoutReason = this._logoutReason.asReadonly();
 
   private _redirectToLoginTimeout: any = null;
   private unlistenWindowFocus?: () => void;
@@ -81,7 +81,7 @@ export class AuthService {
   //! navigation
   navigateToLoginOnSessionExpired() {
     this._authStatus.set(undefined);
-    this._LogoutReason.set(LogoutReason.SessionExpired);
+    this._logoutReason.set(LogoutReason.SessionExpired);
     this.navigateToLogin();
   }
   navigateToLogin() {
@@ -103,7 +103,7 @@ export class AuthService {
     this._secureHttp.post('/auth/logout', null).subscribe({
       next: () => {
         this._authStatus.set(undefined);
-        this._LogoutReason.set(LogoutReason.LoggedOut);
+        this._logoutReason.set(LogoutReason.LoggedOut);
         this.navigateToLogin();
       },
       error: error => {
