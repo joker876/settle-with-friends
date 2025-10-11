@@ -2,7 +2,7 @@ import { computed, effect, inject, Injectable, RendererFactory2, signal } from '
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { HttpService } from '@common/services/http-service';
-import { AuthStatusResponseDto } from './../../../../../server/shared/contracts/auth/status';
+import { AuthStatusResponseDto } from '@shared/contracts/auth/status';
 
 export const LogoutReason = {
   LoggedOut: 'LOGGED_OUT',
