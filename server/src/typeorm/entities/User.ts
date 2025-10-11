@@ -15,4 +15,7 @@ export class User implements IUser {
 
   @Column({ nullable: true })
   photo?: string;
+
+  @Column({ default: false })
+  registered: boolean;
 }

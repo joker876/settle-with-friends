@@ -3,12 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../typeorm/entities/User';
 import { UserDetails } from '../utils/types';
+import { AuthRegisterRequestDto } from './dtos/register';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
-  ) {}
+  constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
 
   async validateUser(details: UserDetails) {
     const user = await this.userRepository.findOneBy({ email: details.email });
@@ -20,5 +19,16 @@ export class AuthService {
   async findUser(id: number) {
     const user = await this.userRepository.findOneBy({ id });
     return user;
+  }
+
+  async existsUser(id: number, otherData?: Partial<Omit<User, 'id'>>): Promise<boolean> {
+    return await this.userRepository.existsBy({ id, ...(otherData ?? {}) });
+  }
+
+  async registerUserData(id: number, userData: AuthRegisterRequestDto): Promise<void> {
+    if (userData.acceptsPhoto) {
+      await this.userRepository.update({ id }, { registered: true, displayName: userData.displayName });
+    }
+    await this.userRepository.update({ id }, { registered: true, displayName: userData.displayName, photo: undefined });
   }
 }

@@ -1,10 +1,15 @@
-import { Controller, Get, HttpException, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Inject, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { IAuthStatusResponseDto } from '@shared/contracts/auth/status';
 import { Request, Response } from 'express';
+import { AuthService } from './auth.service';
+import { AuthRegisterRequestDto } from './dtos/register';
 import { Public } from './public.decorator';
 import { GoogleAuthGuard } from './utils/google-auth.guard';
 
 @Controller('auth')
 export class AuthController {
+  constructor(@Inject(AuthService) private readonly _authService: AuthService) {}
+
   @Get('google/login')
   @Public()
   @UseGuards(GoogleAuthGuard)
@@ -27,7 +32,7 @@ export class AuthController {
 
   @Get('status')
   @Public()
-  user(@Req() req: Request) {
+  user(@Req() req: Request): IAuthStatusResponseDto {
     return { loggedIn: !!req.user, user: req.user ?? null, expiresAt: req.session.cookie.expires };
   }
 
@@ -40,5 +45,20 @@ export class AuthController {
     res.clearCookie(process.env.SESSION_COOKIE_NAME || 'connect.sid');
 
     return res.status(200).json({ success: true });
+  }
+
+  @Post('register')
+  async register(@Body() registerData: AuthRegisterRequestDto, @Req() req: Request) {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+
+    const userIsRegistered = await this._authService.existsUser(userId, { registered: true });
+    if (userIsRegistered) {
+      throw new HttpException('User is already registered', HttpStatus.CONFLICT);
+    }
+
+    await this._authService.registerUserData(userId, registerData);
   }
 }

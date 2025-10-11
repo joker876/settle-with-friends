@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { getDataSourceToken } from '@nestjs/typeorm';
 import { TypeormStore } from 'connect-typeorm';
@@ -16,6 +17,7 @@ import { SessionEntity } from './typeorm/entities/Session';
     origin: process.env.CORS_ORIGIN?.split(',') ?? 'http://localhost:4200',
     credentials: true,
   });
+  app.useGlobalPipes(new ValidationPipe());
 
   const dataSource = app.get<DataSource>(getDataSourceToken());
   const sessionRepo = dataSource.getRepository(SessionEntity);
@@ -34,7 +36,7 @@ import { SessionEntity } from './typeorm/entities/Session';
         ttl: parseInt(process.env.SESSION_COOKIE_DURATION ?? '86400000') / 1000,
         limitSubquery: false,
       }).connect(sessionRepo),
-    }),
+    })
   );
   app.use(passport.initialize());
   app.use(passport.session());

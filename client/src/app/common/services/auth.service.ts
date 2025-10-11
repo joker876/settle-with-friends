@@ -2,7 +2,7 @@ import { computed, effect, inject, Injectable, RendererFactory2, signal } from '
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { HttpService } from '@common/services/http-service';
-import { AuthStatusResponseDto } from '@shared/contracts/auth/status';
+import { IAuthStatusResponseDto } from '@shared/contracts/auth/status';
 
 export const LogoutReason = {
   LoggedOut: 'LOGGED_OUT',
@@ -17,7 +17,7 @@ export class AuthService {
   private readonly rendererFactory = inject(RendererFactory2);
 
   private readonly _authStatus = rxResource({
-    loader: () => this._secureHttp.get<AuthStatusResponseDto>('/auth/status'),
+    loader: () => this._secureHttp.get<IAuthStatusResponseDto>('/auth/status'),
   });
 
   public readonly isSafeToRedirect = computed<boolean>(() => !!this._authStatus.value());
