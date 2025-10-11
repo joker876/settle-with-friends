@@ -4,4 +4,5 @@ export interface IAuthStatusResponseDto {
   loggedIn: boolean;
   user?: IUser;
   expiresAt?: Date;
+  isRegistered?: boolean;
 }

@@ -24,12 +24,12 @@ import { SessionEntity } from './typeorm/entities/Session';
 
   app.use(
     session({
-      secret: process.env.SESSION_SECRET,
+      secret: process.env.SESSION_SECRET ?? '',
       saveUninitialized: false,
       resave: false,
       name: process.env.SESSION_COOKIE_NAME || 'connect.sid',
       cookie: {
-        maxAge: parseInt(process.env.SESSION_MAX_AGE) || 86400000,
+        maxAge: parseInt(process.env.SESSION_MAX_AGE ?? '86400000'),
       },
       store: new TypeormStore({
         cleanupLimit: 2,

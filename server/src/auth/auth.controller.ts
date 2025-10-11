@@ -32,8 +32,18 @@ export class AuthController {
 
   @Get('status')
   @Public()
-  user(@Req() req: Request): IAuthStatusResponseDto {
-    return { loggedIn: !!req.user, user: req.user ?? null, expiresAt: req.session.cookie.expires };
+  async user(@Req() req: Request): Promise<IAuthStatusResponseDto> {
+    if (!req.user) {
+      return { loggedIn: false };
+    }
+
+    const userIsRegistered = await this._authService.isUserRegistered(req.user.id);
+    return {
+      loggedIn: true,
+      user: req.user,
+      expiresAt: req.session.cookie.expires ?? undefined,
+      isRegistered: userIsRegistered,
+    };
   }
 
   @Post('logout')
@@ -54,7 +64,7 @@ export class AuthController {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
-    const userIsRegistered = await this._authService.existsUser(userId, { registered: true });
+    const userIsRegistered = await this._authService.isUserRegistered(userId);
     if (userIsRegistered) {
       throw new HttpException('User is already registered', HttpStatus.CONFLICT);
     }

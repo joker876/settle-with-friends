@@ -21,6 +21,10 @@ export class AuthService {
     return user;
   }
 
+  async isUserRegistered(id: number): Promise<boolean> {
+    return this.userRepository.existsBy({ id, registered: true });
+  }
+
   async existsUser(id: number, otherData?: Partial<Omit<User, 'id'>>): Promise<boolean> {
     return await this.userRepository.existsBy({ id, ...(otherData ?? {}) });
   }
