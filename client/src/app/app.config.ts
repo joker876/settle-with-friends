@@ -2,8 +2,13 @@ import { DATE_PIPE_DEFAULT_OPTIONS } from '@angular/common';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { ApplicationConfig, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { ButtonAppearance, provideButtonDefaults } from '@ardium-ui/ui';
 import { AuthInterceptor } from '@common/interceptors/auth.interceptor';
-import { convertStringToDate, isIsoDateString, provideMappingInterceptor } from '@common/interceptors/date-mapping.interceptor';
+import {
+  convertStringToDate,
+  isIsoDateString,
+  provideMappingInterceptor,
+} from '@common/interceptors/date-mapping.interceptor';
 import { AuthService } from '@common/services/auth.service';
 import { routes } from './app.routes';
 
@@ -12,6 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(withInterceptorsFromDi()),
+    provideButtonDefaults({ appearance: ButtonAppearance.RaisedStrong }),
     // provideDateInputDefaults({
     //   placeholder: '',
     //   UTC: true,

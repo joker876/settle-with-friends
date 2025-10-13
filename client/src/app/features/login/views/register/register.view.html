@@ -1,0 +1,25 @@
+<h1 class="heading" i18n="@@register.welcome">Witaj w aplikacji!</h1>
+
+<p class="subheading" i18n="@@register.configure-account">Dokończ konfigurację konta, aby zacząć rozliczać.</p>
+
+<ard-form-field>
+  <ard-label i18n="@@register.display-name.label">Pseudonim</ard-label>
+  <p i18n="@@register.display-name.description">Inne osoby zobaczą tą nazwę obok twojego profilu.</p>
+  <ard-input
+    [formControl]="form.controls.displayName"
+    (focus)="onDisplayNameFocus()"
+    (blur)="onDisplayNameBlur()"
+    maxLength="40"
+  />
+</ard-form-field>
+
+<!-- TODO implement in the future -->
+<!-- <ard-form-field>
+  <ard-label i18n="@@register.accepts-photo.label">Czy chcesz zachować zdjęcie profilowe?</ard-label>
+  <p i18n="@@register.accepts-photo.description">
+    Inne osoby zobaczą tą nazwę obok twojego profilu.
+  </p>
+  <ard-input [formControl]="form.controls.displayName" maxLength="40" />
+</ard-form-field> -->
+
+<ard-button (click)="onAcceptClick()" i18n="@@common.accept">Akceptuj</ard-button>

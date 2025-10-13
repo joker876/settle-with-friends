@@ -1,27 +1,26 @@
 @use '../node_modules/@ardium-ui/ui/themes/default/core.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/buttons/button.scss';
-@use '../node_modules/@ardium-ui/ui/themes/default/radio.scss';
-@use '../node_modules/@ardium-ui/ui/themes/default/checkbox-list.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/checkbox.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/snackbar.scss';
+@use '../node_modules/@ardium-ui/ui/themes/default/inputs/input.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/inputs/number-input.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/progress-circle.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/spinner.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/select.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/dropdown-panel.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/form-field.scss';
-@use '@angular/material' as mat;
+@use '../node_modules/@ardium-ui/ui/themes/default/form-field-frame.scss';
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 :root {
   --header-height: 4rem;
-  --bg-main: #F3F5FA;
+  --bg-main: #f3f5fa;
 
   --ard-primary-50: 241, 243, 255;
   --ard-primary-100: 164, 177, 255;
   --ard-primary-300: 64, 90, 255;
-  --ard-primary-500: 1, 33, 255;
+  --ard-primary-500: 0, 35, 252;
   --ard-primary-700: 0, 23, 170;
   --ard-primary-900: 5, 13, 68;
 
@@ -179,6 +178,9 @@ scrollbar-thumb:hover {
 }
 
 //! Ardium UI styles
+.ard-button.ard-color-primary {
+  --ard-cmpcl--bg: rgb(var(--ard-primary-700));
+}
 ard-radio-group {
   display: flex;
   flex-direction: column;
@@ -229,11 +231,7 @@ ard-simple-snackbar {
   padding-top: 0.5rem;
 
   ard-icon > span {
-    font-variation-settings:
-      'FILL' 0,
-      'wght' 400,
-      'GRAD' 0,
-      'opsz' 40 !important;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 40 !important;
   }
 }
 .ard-modal-panel {

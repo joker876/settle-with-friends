@@ -1,18 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { AuthService } from '@common/services/auth.service';
 
 @Component({
   selector: 'app-login',
   imports: [RouterOutlet],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
-  providers: [AuthService],
+  providers: [],
 })
-export class LoginPage {
-  private readonly _authService = inject(AuthService);
-
-  login() {
-    this._authService.login();
-  }
-}
+export class LoginPage {}

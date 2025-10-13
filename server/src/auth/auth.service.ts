@@ -30,6 +30,9 @@ export class AuthService {
   }
 
   async registerUserData(id: number, userData: AuthRegisterRequestDto): Promise<void> {
+    if (!userData.displayName) {
+      userData.displayName = (await this.findUser(id))!.displayName;
+    }
     if (userData.acceptsPhoto) {
       await this.userRepository.update({ id }, { registered: true, displayName: userData.displayName });
     }

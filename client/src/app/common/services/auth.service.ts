@@ -1,8 +1,11 @@
-import { computed, effect, inject, Injectable, RendererFactory2, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, RendererFactory2, ResourceStatus, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { HttpService } from '@common/services/http-service';
+import { setResourceStatusAfterLoaded } from '@common/utils/rxjs';
+import { IAuthRegisterRequestDto } from '@shared/contracts/auth/register';
 import { IAuthStatusResponseDto } from '@shared/contracts/auth/status';
+import { SnackbarController } from './snackbar-controller.service';
 
 export const LogoutReason = {
   LoggedOut: 'LOGGED_OUT',
@@ -12,16 +15,18 @@ export type LogoutReason = (typeof LogoutReason)[keyof typeof LogoutReason];
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly _secureHttp = inject(HttpService);
+  private readonly _http = inject(HttpService);
   private readonly _router = inject(Router);
   private readonly rendererFactory = inject(RendererFactory2);
+  private readonly _snackbarController = inject(SnackbarController);
 
   private readonly _authStatus = rxResource({
-    loader: () => this._secureHttp.get<IAuthStatusResponseDto>('/auth/status'),
+    loader: () => this._http.get<IAuthStatusResponseDto>('/auth/status'),
   });
 
   public readonly isSafeToRedirect = computed<boolean>(() => !!this._authStatus.value());
   public readonly isLoggedIn = computed<boolean>(() => !!this._authStatus.value()?.loggedIn);
+  public readonly isRegistered = computed<boolean>(() => !!this._authStatus.value()?.isRegistered);
 
   public readonly userData = computed(() => this._authStatus.value()?.user ?? null);
 
@@ -49,6 +54,16 @@ export class AuthService {
       this._redirectToLoginTimeout = setTimeout(() => {
         this.navigateToLoginOnSessionExpired();
       }, sessExpiryDate.valueOf() - Date.now());
+    });
+    effect(() => {
+      if (this.isSafeToRedirect() && !this.isLoggedIn()) {
+        this.navigateToLogin();
+      }
+    });
+    effect(() => {
+      if (this.isLoggedIn() && !this.isRegistered()) {
+        this.navigateToRegister();
+      }
     });
   }
 
@@ -87,6 +102,12 @@ export class AuthService {
   navigateToLogin() {
     this._router.navigateByUrl('/login');
   }
+  navigateToRegister() {
+    this._router.navigateByUrl('/login/register');
+  }
+  navigateToMainPage() {
+    this._router.navigateByUrl('/');
+  }
 
   //! login
   private readonly _isLoginLoading = signal<boolean>(false);
@@ -95,12 +116,12 @@ export class AuthService {
   login(): void {
     this._isLoginLoading.set(true);
 
-    window.location.href = this._secureHttp.apiUrl + `auth/google/login`;
+    window.location.href = this._http.apiUrl + `auth/google/login`;
   }
 
   //! logout
   logout(): void {
-    this._secureHttp.post('/auth/logout', null).subscribe({
+    this._http.post('/auth/logout', null).subscribe({
       next: () => {
         this._authStatus.set(undefined);
         this._logoutReason.set(LogoutReason.LoggedOut);
@@ -110,5 +131,31 @@ export class AuthService {
         console.error('Logout failed:', error);
       },
     });
+  }
+
+  //! register
+  private readonly _registerStatus = signal<ResourceStatus>(ResourceStatus.Idle);
+  public readonly registerStatus = this._registerStatus.asReadonly();
+
+  public register(registerData: IAuthRegisterRequestDto) {
+    if (this._registerStatus() === ResourceStatus.Loading) return;
+
+    this._registerStatus.set(ResourceStatus.Loading);
+
+    this._http
+      .post<IAuthRegisterRequestDto>('/auth/register', registerData)
+      .pipe(setResourceStatusAfterLoaded(this._registerStatus))
+      .subscribe({
+        next: () => {
+          this._authStatus.update(v => ({ ...v!, user: { ...v!.user!, ...registerData }, isRegistered: true }));
+
+          this._snackbarController.openSuccess($localize`:@@register.snackbar.success:Zapisano!`);
+        },
+        error: () => {
+          this._snackbarController.openError(
+            $localize`:@@register.snackbar.error:Nie udało się zapisać danych. Spróbuj ponownie za chwilę.`
+          );
+        },
+      });
   }
 }
