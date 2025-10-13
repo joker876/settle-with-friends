@@ -21,13 +21,18 @@ export class AuthController {
   @Get('google/callback')
   @Public()
   @UseGuards(GoogleAuthGuard)
-  handleRedirect(@Res() res: Response) {
+  handleRedirect(@Req() req: Request, @Res() res: Response) {
     const appUrl = process.env.CLIENT_URL;
     if (!appUrl) {
       throw new HttpException('CLIENT_URL is not set', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    // registration is unavailable at this moment
+    if (req.user?.id === -1) {
+      res.redirect(new URL(appUrl + '/login/register-impossible').toString());
+      return;
+    }
 
-    return res.redirect(new URL(appUrl).toString());
+    res.redirect(new URL(appUrl).toString());
   }
 
   @Get('status')

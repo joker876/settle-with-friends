@@ -9,6 +9,7 @@ import { SnackbarController } from './snackbar-controller.service';
 
 export const LogoutReason = {
   LoggedOut: 'LOGGED_OUT',
+  RegistrationUnavailable: 'REGISTRATION_UNAVAILABLE',
   SessionExpired: 'SESSION_EXPIRED',
 } as const;
 export type LogoutReason = (typeof LogoutReason)[keyof typeof LogoutReason];
@@ -56,7 +57,7 @@ export class AuthService {
       }, sessExpiryDate.valueOf() - Date.now());
     });
     effect(() => {
-      if (this.isSafeToRedirect() && !this.isLoggedIn()) {
+      if (this.isSafeToRedirect() && !this.isLoggedIn() && !window.location.href.includes('register-impossible')) {
         this.navigateToLogin();
       }
     });
@@ -131,6 +132,11 @@ export class AuthService {
         console.error('Logout failed:', error);
       },
     });
+  }
+  logoutBecauseRegistrationUnavailable(): void {
+    this._authStatus.set(undefined);
+    this._logoutReason.set(LogoutReason.RegistrationUnavailable);
+    this.navigateToLogin();
   }
 
   //! register

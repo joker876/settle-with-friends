@@ -45,8 +45,11 @@
   --ard-success-700: 0, 114, 65;
   --ard-success-900: 0, 66, 38;
 
-  --red: rgb(var(var(--ard-danger-500)));
-  --red-dark: rgb(var(var(--ard-danger-700)));
+  --red: rgb(var(--ard-danger-500));
+  --red-dark: rgb(var(--ard-danger-700));
+
+  --green: rgb(var(--ard-success-500));
+  --green-dark: rgb(var(--ard-success-700));
 
   --ard-darken-overlay-strong: rgba(0, 0, 0, 40%);
 }

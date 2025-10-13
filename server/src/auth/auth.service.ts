@@ -12,6 +12,10 @@ export class AuthService {
   async validateUser(details: UserDetails) {
     const user = await this.userRepository.findOneBy({ email: details.email });
     if (user) return user;
+
+    if (process.env.CAN_CREATE_NEW_ACCOUNTS !== '1') {
+      return { id: -1 };
+    }
     const newUser = this.userRepository.create(details);
     return this.userRepository.save(newUser);
   }
