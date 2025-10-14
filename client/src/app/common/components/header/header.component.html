@@ -2,4 +2,29 @@
   <div class="logo-container">
     <img src="swf-logo.png" alt="Logo Settle with Friends" i18n-alt="@@header.logo-alt" />
   </div>
+  <div class="avatar-container">
+    @if (authService.isLoggedIn()) {
+    <div class="menu-container">
+      <ard-button appearance="outlined" variant="pill" color="none" [matMenuTriggerFor]="menu">
+        <app-avatar [photo]="authService.userData()?.photo" [name]="authService.userData()?.displayName ?? ''" withStatus />
+        <ard-icon-chevron-down-2 class="icon" [class.rotated]="false" />
+      </ard-button>
+    </div>
+    }
+  </div>
 </header>
+
+<mat-menu #menu="matMenu">
+  <div class="menu-person-container">
+    <app-avatar [photo]="authService.userData()?.photo" [name]="authService.userData()?.displayName ?? ''" showName withStatus />
+  </div>
+  <mat-divider />
+  <app-menu-item>
+    <ard-icon-settings ngProjectAs="icon" />
+    <span i18n="@@header.user-menu.account-settings">Ustawienia konta</span>
+  </app-menu-item>
+  <app-menu-item (click)="logout()">
+    <ard-icon-logout ngProjectAs="icon" />
+    <span i18n="@@header.user-menu.logout">Wyloguj się</span>
+  </app-menu-item>
+</mat-menu>

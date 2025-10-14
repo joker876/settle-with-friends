@@ -1,0 +1,12 @@
+.item-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+
+  ::ng-deep [ngprojectas="icon"] {
+    color: var(--mat-menu-item-icon-color);
+    display: block;
+    height: 1.625rem;
+  }
+} 

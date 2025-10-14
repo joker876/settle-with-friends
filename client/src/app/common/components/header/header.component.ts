@@ -1,54 +1,35 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatMenuModule } from '@angular/material/menu';
+import { ArdiumButtonModule } from '@ardium-ui/ui';
+import { ArdIconChevronDown_2 } from '@common/icons/chevron-down-2.icon';
+import { ArdIconLogout } from "@common/icons/logout.icon";
+import { ArdIconSettings } from "@common/icons/settings.icon";
 import { AuthService } from '@common/services/auth.service';
+import { AvatarComponent } from '../avatar/avatar.component';
+import { MenuItemComponent } from "../menu-item/menu-item.component";
 
 @Component({
   selector: 'app-header',
-  imports: [FormsModule],
+  imports: [FormsModule, AvatarComponent, ArdiumButtonModule, ArdIconChevronDown_2, MatMenuModule, MatDividerModule, MenuItemComponent, ArdIconSettings, ArdIconLogout],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
   readonly authService = inject(AuthService);
+
   readonly isMenuOpen = signal<boolean>(false);
-
-  // current language for the language selector ("pl" or "en")
-  readonly currentLang = signal<string>(this.detectCurrentLang());
-
-  private detectCurrentLang(): string {
-    const path = window.location?.pathname ?? '/';
-    const m = path.match(/^\/(pl|en|de|uk)(?:\/|$)/i);
-    const lang = (m?.[1] ?? 'pl').toLowerCase();
-    return lang;
-  }
-
-  onLanguageChange(lang: string) {
-    if (!lang || lang === this.currentLang()) return;
-
-    const path = window.location.pathname;
-    const search = window.location.search ?? '';
-    const hash = window.location.hash ?? '';
-
-    const newPath = path.replace(/^\/(pl|en|de|uk)(?=\/|$)/i, '/' + lang);
-
-    window.location.href = newPath + search + hash;
-  }
 
   toggleMenu() {
     this.isMenuOpen.set(!this.isMenuOpen());
   }
-
   closeMenu() {
     this.isMenuOpen.set(false);
   }
 
   logout() {
     this.authService.logout();
-    this.closeMenu();
-  }
-
-  login() {
-    this.authService.login();
     this.closeMenu();
   }
 }

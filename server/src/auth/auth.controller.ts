@@ -1,6 +1,7 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Inject, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { IAuthStatusResponseDto } from '@shared/contracts/auth/status';
 import { Request, Response } from 'express';
+import { fileUrlToFileBase64 } from '../utils/file-url-to-file-base64';
 import { AuthService } from './auth.service';
 import { AuthRegisterRequestDto } from './dtos/register';
 import { Public } from './public.decorator';
@@ -45,7 +46,10 @@ export class AuthController {
     const userIsRegistered = await this._authService.isUserRegistered(req.user.id);
     return {
       loggedIn: true,
-      user: req.user,
+      user: {
+        ...req.user,
+        photo: req.user.photo && (await fileUrlToFileBase64(req.user.photo)),
+      },
       expiresAt: req.session.cookie.expires ?? undefined,
       isRegistered: userIsRegistered,
     };

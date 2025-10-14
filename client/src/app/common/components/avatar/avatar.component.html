@@ -1,0 +1,14 @@
+<div class="img-wrapper" [title]="name()">
+  <img [src]="photo() ?? 'avatar-placeholder.jpg'" [alt]="name()" />
+  @if (withStatus()) {
+  <div class="status-indicator"></div>
+  }
+</div>
+@if (showName()) { @if (withStatus()) {
+<div class="name-wrapper">
+  <span class="name">{{ name() }}</span>
+  <div class="status-text" i18n="@@avatar.status-text.online">Online</div>
+</div>
+} @else {
+<span class="name">{{ name() }}</span>
+} }

@@ -1,0 +1,41 @@
+:host {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2rem;
+}
+.img-wrapper {
+  height: 100%;
+  position: relative;
+}
+img {
+  height: 100%;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+}
+.status-indicator {
+  position: absolute;
+  top: 85.35533905932737%;
+  left: 85.35533905932737%;
+  transform: translate(-50%, -50%);
+  width: 0.5rem;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  background-color: var(--green);
+  border: 1px solid var(--ard-bg);
+}
+
+.name {
+  font-weight: 500;
+  font-size: 0.875em;
+  color: var(--ard-text);
+}
+.name-wrapper {
+  display: flex;
+  flex-direction: column;
+
+  .status-text {
+    color: var(--ard-text3);
+    font-size: 0.75rem;
+  }
+}

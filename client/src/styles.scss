@@ -10,11 +10,12 @@
 @use '../node_modules/@ardium-ui/ui/themes/default/dropdown-panel.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/form-field.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/form-field-frame.scss';
+@use '@angular/material' as mat;
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 :root {
-  --header-height: 4rem;
+  --header-height: 4.5rem;
   --bg-main: #f3f5fa;
 
   --ard-primary-50: 241, 243, 255;
@@ -45,6 +46,8 @@
   --ard-success-700: 0, 114, 65;
   --ard-success-900: 0, 66, 38;
 
+  --ard-text3: rgba(0, 0, 0, 0.67);
+
   --red: rgb(var(--ard-danger-500));
   --red-dark: rgb(var(--ard-danger-700));
 
@@ -52,6 +55,17 @@
   --green-dark: rgb(var(--ard-success-700));
 
   --ard-darken-overlay-strong: rgba(0, 0, 0, 40%);
+  --ard-border-light: rgba(0, 0, 0, 20%);
+
+  //! Angular Material variables
+  @include mat.menu-overrides(
+    (
+      container-shape: 0.5rem,
+      divider-color: var(--ard-detail-ultralight),
+      item-label-text-color: var(--ard-text),
+      item-icon-color: var(--ard-text2),
+    )
+  );
 }
 
 //! CSS Reset
@@ -153,6 +167,36 @@ scrollbar-thumb {
 
 scrollbar-thumb:hover {
   background-color: #555;
+}
+
+//! Angular Material styling
+@include mat.core();
+
+$ard-mat-theme: mat.m2-define-light-theme(
+  (
+    color: (
+      primary: mat.m2-define-palette(mat.$m2-indigo-palette),
+      accent: mat.m2-define-palette(mat.$m2-pink-palette),
+      warn: mat.m2-define-palette(mat.$m2-red-palette),
+    ),
+    density: 0,
+  )
+);
+
+@include mat.tooltip-theme($ard-mat-theme);
+@include mat.menu-theme($ard-mat-theme);
+
+.mat-mdc-menu-panel.mat-mdc-menu-panel {
+  border: 1px solid var(--ard-border-light);
+  box-shadow: none !important;
+  max-width: unset;
+
+  &.mat-menu-below {
+    margin-top: 0.375rem;
+  }
+  .mat-mdc-menu-content {
+    padding: 0;
+  }
 }
 
 //! icon styles
