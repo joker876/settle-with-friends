@@ -1,5 +1,4 @@
 **/node_modules
 .vscode
 
-client-OLD
-server-OLD
+*.gitignored.*

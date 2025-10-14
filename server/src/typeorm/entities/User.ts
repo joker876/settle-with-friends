@@ -1,5 +1,6 @@
 import { IUser } from '@shared/entities/user';
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ReckoningUser } from './ReckoningUser'; // Import the new join entity
 
 @Entity({ name: 'users' })
 export class User implements IUser {
@@ -18,4 +19,7 @@ export class User implements IUser {
 
   @Column({ default: false })
   registered: boolean;
+
+  @OneToMany(() => ReckoningUser, reckoningUser => reckoningUser.user)
+  reckoningUsers: ReckoningUser[];
 }

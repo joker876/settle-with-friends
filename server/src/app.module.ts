@@ -7,12 +7,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { SessionAuthGuard } from './auth/session-auth.guard';
+import { ReckoningsModule } from './reckonings/reckonings.module';
 import { SessionEntity } from './typeorm/entities/Session';
 import { entities } from './typeorm/entities/index';
 
 @Module({
   imports: [
-    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -28,6 +28,8 @@ import { entities } from './typeorm/entities/index';
     }),
     TypeOrmModule.forFeature([SessionEntity]),
     PassportModule.register({ session: true }),
+    AuthModule,
+    ReckoningsModule,
   ],
   controllers: [AppController],
   providers: [
