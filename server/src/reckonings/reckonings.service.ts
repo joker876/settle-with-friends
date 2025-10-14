@@ -10,7 +10,11 @@ export class ReckoningsService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
-  async getAllForUser(id: number): Promise<Reckoning[]> {
-    return (await this.userRepository.findOneBy({ id }).then(v => v?.reckoningUsers.map(v => v.reckoning))) ?? [];
+  async getAllForUser(id: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: { reckoningUsers: { reckoning: true } },
+    });
+    return user?.reckoningUsers.map(v => v.reckoning);
   }
 }
