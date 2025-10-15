@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Reckoning, User } from '../typeorm/entities';
+import { Reckoning, ReckoningUser, User } from '../typeorm/entities';
 import { ReckoningsController } from './reckonings.controller';
 import { ReckoningsService } from './reckonings.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Reckoning])],
+  imports: [TypeOrmModule.forFeature([User, Reckoning, ReckoningUser])],
   controllers: [ReckoningsController],
   providers: [ReckoningsService],
 })

@@ -1,5 +1,6 @@
-import { Controller, Get, Inject, Req } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Req } from '@nestjs/common';
 import { Request } from 'express';
+import { CreateReckoningRequestDto } from './dtos/create';
 import { ReckoningsService } from './reckonings.service';
 
 @Controller('reckonings')
@@ -11,5 +12,12 @@ export class ReckoningsController {
     const userId = req.user!.id;
 
     return this.reckoningsService.getAllForUser(userId);
+  }
+
+  @Post()
+  create(@Req() req: Request, @Body() body: CreateReckoningRequestDto) {
+    const userId = req.user!.id;
+
+    return this.reckoningsService.create(body, userId);
   }
 }
