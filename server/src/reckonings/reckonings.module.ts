@@ -5,7 +5,7 @@ import { ReckoningsController } from './reckonings.controller';
 import { ReckoningsService } from './reckonings.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Reckoning, User])],
+  imports: [TypeOrmModule.forFeature([User, Reckoning])],
   controllers: [ReckoningsController],
   providers: [ReckoningsService],
 })

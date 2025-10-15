@@ -8,9 +8,15 @@ export class ReckoningUser {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  reckoningId: number;
+
   @ManyToOne(() => Reckoning, reckoning => reckoning.reckoningUsers)
   @JoinColumn({ name: 'reckoningId' })
   reckoning: Reckoning;
+
+  @Column()
+  userId: number;
 
   @ManyToOne(() => User, user => user.reckoningUsers)
   @JoinColumn({ name: 'userId' })

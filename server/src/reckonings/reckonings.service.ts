@@ -1,20 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { GetAllReckoningsResponseDto } from '@shared/contracts/reckonings/get-all';
+import { In, Repository } from 'typeorm';
 import { Reckoning, User } from '../typeorm/entities';
 
 @Injectable()
 export class ReckoningsService {
   constructor(
-    @InjectRepository(Reckoning) private readonly reckoningRepository: Repository<Reckoning>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Reckoning) private readonly reckoningRepository: Repository<Reckoning>,
   ) {}
 
-  async getAllForUser(id: number): Promise<any> {
+  async getAllForUser(id: number): Promise<GetAllReckoningsResponseDto> {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: { reckoningUsers: { reckoning: true } },
+      relations: { reckoningUsers: true },
     });
-    return user?.reckoningUsers.map(v => v.reckoning);
+    if (!user) return [];
+
+    const reckoningIds = Array.from(new Set(user.reckoningUsers.map(v => v.reckoningId)));
+
+    const reckonings = await this.reckoningRepository.find({
+      where: { id: In(reckoningIds) },
+      relations: { reckoningUsers: true },
+      select: {
+        id: true,
+        name: true,
+        isArchived: true,
+        createdDate: true,
+        updatedDate: true,
+        reckoningUsers: { userId: true, role: true },
+      },
+    });
+
+    return reckonings?.map(r => ({
+      ...r,
+      numberOfUsers: r.reckoningUsers.length,
+      currentBalance: 0,
+      numberOfTransactions: 0,
+    }));
   }
 }
