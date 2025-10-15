@@ -1,6 +1,6 @@
 import { IUser } from '@shared/entities/user';
 import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ReckoningUser } from './ReckoningUser'; // Import the new join entity
+import { ReckoningUser } from './ReckoningUser';
 
 @Entity({ name: 'users' })
 export class User implements IUser {

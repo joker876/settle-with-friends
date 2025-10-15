@@ -1,6 +1,6 @@
 import { IReckoning } from '@shared/entities/reckoning';
-import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ReckoningUser } from './ReckoningUser'; // Import the new join entity
+import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { ReckoningUser } from './ReckoningUser';
 
 @Entity({ name: 'reckonings' })
 export class Reckoning implements IReckoning {
@@ -13,6 +13,12 @@ export class Reckoning implements IReckoning {
 
   @Column({ default: false })
   isArchived: boolean;
+
+  @CreateDateColumn()
+  createdDate: Date;
+
+  @UpdateDateColumn()
+  updatedDate: Date;
 
   @OneToMany(() => ReckoningUser, reckoningUser => reckoningUser.reckoning)
   reckoningUsers: ReckoningUser[];
