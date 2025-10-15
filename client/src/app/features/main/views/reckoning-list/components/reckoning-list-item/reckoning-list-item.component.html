@@ -1,0 +1,7 @@
+<td class="name">{{ data().name }}</td>
+<td>
+  <div class="icon-row"><ard-icon-user-2 class="icon" /> {{ data().numberOfUsers }}</div>
+</td>
+<td>{{ data().updatedDate | timeago }}</td>
+<td><app-balance [balance]="data().currentBalance" /></td>
+<td>menu</td>

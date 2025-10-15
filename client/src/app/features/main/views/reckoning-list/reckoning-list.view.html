@@ -1,1 +1,28 @@
-<p>reckoning-list works!</p>
+<div class="page-wrapper-g">
+  <h1 i18n="@@main-page.reckoning-list.hello-user">Witaj, {{ authService.userData()?.displayName ?? '...' }}!</h1>
+
+  <app-section-card heading="Aktywne rozliczenia">
+    <ng-container ngProjectAs="actions">
+      <ard-button>
+        <ard-icon-plus class="icon" />
+        <span i18n="@@common.create">Utwórz</span>
+      </ard-button>
+    </ng-container>
+    <app-table withMenu>
+      <thead>
+        <tr>
+          <th>Rozliczenie</th>
+          <th>Osoby</th>
+          <th>Zaktualizowano</th>
+          <th>Bilans</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of reckoningsService.reckonings.value(); track item.id) {
+        <tr app-reckoning-list-item [data]="item"></tr>
+        }
+      </tbody>
+    </app-table>
+  </app-section-card>
+</div>

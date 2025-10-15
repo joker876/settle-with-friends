@@ -1,0 +1,48 @@
+app-table {
+  > table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      background-color: transparent;
+
+      tr {
+        height: 2.5rem;
+        border-top: 1px solid var(--ard-detail-ultralight);
+        border-bottom: 1px solid var(--ard-detail-ultralight);
+
+        th {
+          text-transform: uppercase;
+          color: var(--ard-text3);
+          font-weight: 400;
+          font-size: 0.9375rem;
+          padding: 0 1rem;
+          text-align: start;
+        }
+      }
+    }
+    tbody {
+      tr {
+        height: 4rem;
+        border-bottom: 1px solid var(--ard-detail-ultralight);
+
+        td {
+          color: var(--ard-text);
+          font-weight: 400;
+          padding: 0 1rem;
+        }
+      }
+    }
+    &.with-menu {
+      tbody {
+        tr {
+          td:last-of-type {
+            color: var(--ard-text3);
+            padding: 0 0.75rem;
+            width: max-content;
+          }
+        }
+      }
+    }
+  }
+}

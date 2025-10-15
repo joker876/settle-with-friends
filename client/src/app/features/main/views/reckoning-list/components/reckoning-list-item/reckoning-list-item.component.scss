@@ -1,0 +1,13 @@
+.name {
+  font-weight: 500;
+}
+.icon-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.icon {
+  height: 1.25rem;
+  display: inline-block;
+  color: var(--ard-text3);
+}
