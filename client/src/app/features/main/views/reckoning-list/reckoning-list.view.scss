@@ -7,3 +7,11 @@
     padding-left: 1.5rem;
   }
 }
+.columns {
+  display: grid;
+  grid-template-columns: 1fr;
+
+  @media (width > 32rem) {
+    grid-template-columns: 7fr 3fr;
+  }
+}

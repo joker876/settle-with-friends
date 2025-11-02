@@ -3,7 +3,7 @@ import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@a
 import localePl from '@angular/common/locales/pl';
 import { ApplicationConfig, importProvidersFrom, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { ButtonAppearance, ComponentColor, provideButtonDefaults } from '@ardium-ui/ui';
+import { ButtonAppearance, ComponentColor, provideButtonDefaults, provideDialogDefaults } from '@ardium-ui/ui';
 import { AuthInterceptor } from '@common/interceptors/auth.interceptor';
 import {
   convertStringToDate,
@@ -38,6 +38,11 @@ export const appConfig: ApplicationConfig = {
     provideMappingInterceptor(isIsoDateString, convertStringToDate),
     AuthService,
     provideButtonDefaults({ appearance: ButtonAppearance.Outlined, color: ComponentColor.None }),
+    provideDialogDefaults({
+      rejectButtonAppearance: ButtonAppearance.Transparent,
+      rejectButtonText: $localize`:@@common.cancel:Anuluj`,
+      confirmButtonAppearance: ButtonAppearance.RaisedStrong,
+    }),
     // provideDateInputDefaults({
     //   placeholder: '',
     //   UTC: true,

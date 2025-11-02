@@ -1,0 +1,1 @@
+export const cascade = { onDelete: 'CASCADE', onUpdate: 'CASCADE' } as const;

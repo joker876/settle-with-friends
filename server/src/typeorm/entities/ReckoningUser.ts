@@ -2,6 +2,7 @@ import { UserRole } from '@shared/enums/user-role';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Reckoning } from './Reckoning';
 import { User } from './User';
+import { cascade } from './utils';
 
 @Entity({ name: 'reckonings_users' })
 export class ReckoningUser {
@@ -11,14 +12,14 @@ export class ReckoningUser {
   @Column()
   reckoningId: number;
 
-  @ManyToOne(() => Reckoning, reckoning => reckoning.reckoningUsers)
+  @ManyToOne(() => Reckoning, reckoning => reckoning.reckoningUsers, cascade)
   @JoinColumn({ name: 'reckoningId' })
   reckoning: Reckoning;
 
   @Column()
   userId: number;
 
-  @ManyToOne(() => User, user => user.reckoningUsers)
+  @ManyToOne(() => User, user => user.reckoningUsers, cascade)
   @JoinColumn({ name: 'userId' })
   user: User;
 

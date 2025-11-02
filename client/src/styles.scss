@@ -1,5 +1,6 @@
 @use '../node_modules/@ardium-ui/ui/themes/default/core.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/buttons/button.scss';
+@use '../node_modules/@ardium-ui/ui/themes/default/buttons/icon-button.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/checkbox.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/snackbar.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/inputs/input.scss';
@@ -10,6 +11,8 @@
 @use '../node_modules/@ardium-ui/ui/themes/default/dropdown-panel.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/form-field.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/form-field-frame.scss';
+@use '../node_modules/@ardium-ui/ui/themes/default/modal.scss';
+@use '../node_modules/@ardium-ui/ui/themes/default/dialog.scss';
 @use '@angular/material' as mat;
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');

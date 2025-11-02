@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { ValidationErrors } from '@angular/forms';
-import { ErrorCode } from '@shared/types/Error';
+import { ErrorCode } from '@shared/enums/error-code';
 import { PluralizePLPipe } from 'ngx-polish-number-to-words';
 
 const pluralize = new PluralizePLPipe().transform;
@@ -9,7 +9,12 @@ const ERROR_MAP: Record<string, string | ((errorValue: any) => string)> = {
   //! form errors
   required: $localize`:@@errors.required:To pole jest wymagane`,
   minlength: (errorData: { requiredLength: number }) =>
-    $localize`:@@errors.min-length:Wpisz co najmniej ${errorData.requiredLength} ${pluralize(errorData.requiredLength, 'znak', 'znaki', 'znaków')}`,
+    $localize`:@@errors.min-length:Wpisz co najmniej ${errorData.requiredLength} ${pluralize(
+      errorData.requiredLength,
+      'znak',
+      'znaki',
+      'znaków',
+    )}`,
   maxlength: (errorData: { requiredLength: number; actualLength: number }) =>
     $localize`:@@errors.max-length:Przekroczono limit znaków (${errorData.actualLength}/${errorData.requiredLength})`,
   email: $localize`:@@errors.invalid-email:Wpisz poprawny adres email`,

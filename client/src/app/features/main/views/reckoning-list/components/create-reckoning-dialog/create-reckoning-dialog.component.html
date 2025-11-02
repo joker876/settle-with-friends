@@ -1,0 +1,19 @@
+<ard-dialog
+  heading="Tworzenie rozliczenia"
+  i18n-heading="@@create-reckoning.heading"
+  [(open)]="open"
+  confirmButtonText="Utwórz"
+  i18n-confirmButtonText="@@common.create"
+  (confirm)="onConfirm()"
+  [canConfirm]="form.valid"
+>
+  <form [formGroup]="form">
+    <ard-form-field>
+      <ard-label i18n="@@create-reckoning.field.name">Nazwa rozliczenia</ard-label>
+      <ard-input [formControl]="form.controls.name" />
+      @if (form.controls.name.touched && form.controls.name.errors) {
+      <ard-error>{{ form.controls.name.errors | mapError }}</ard-error>
+      }
+    </ard-form-field>
+  </form>
+</ard-dialog>
