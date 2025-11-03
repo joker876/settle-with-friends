@@ -1,7 +1,20 @@
-<td class="name">{{ data().name }}</td>
-<td>
-  <div class="icon-row"><ard-icon-user-2 class="icon" /> {{ data().numberOfUsers }}</div>
-</td>
-<td>{{ data().updatedDate | timeago }}</td>
-<td><app-balance [balance]="data().currentBalance" /></td>
-<td>menu</td>
+<button>
+  <app-card>
+    <div class="left-side">
+      <div class="name">{{ data().name }}</div>
+      <div class="additional-info">
+        <div class="section-with-icon">
+          <ard-icon-user-2 class="icon" /> {{ data().numberOfUsers | pluralizePL : PEOPLE1 : PEOPLE2 : PEOPLE5 : true }}
+        </div>
+        <div class="section-with-icon" [title]="getLastUpdatedString(data().updatedDate | date : 'medium')">
+          <span class="icon"></span>
+          {{ data().updatedDate | timeago }}
+        </div>
+      </div>
+    </div>
+    <div class="right-side">
+      <app-balance [balance]="data().currentBalance" />
+      <ard-icon-button (click)="$event.stopPropagation()">⋮</ard-icon-button>
+    </div>
+  </app-card>
+</button>

@@ -1,13 +1,15 @@
 <section>
-  <div class="heading-container">
-    <h2>{{ heading() }}</h2>
+  <app-card>
+    <div class="heading-container">
+      <h2>{{ heading() }}</h2>
 
-    <div class="actions">
-      <ng-content select="actions" />
+      <div class="actions">
+        <ng-content select="actions" />
+      </div>
     </div>
-  </div>
 
-  <div class="content">
-    <ng-content />
-  </div>
+    <div class="content">
+      <ng-content />
+    </div>
+  </app-card>
 </section>
