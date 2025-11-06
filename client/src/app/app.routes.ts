@@ -11,4 +11,9 @@ export const routes: Routes = [
     loadComponent: () => import('./features/main/main.page').then(c => c.MainPage),
     loadChildren: () => import('./features/main/main.routes').then(r => r.mainRoutes),
   },
+  {
+    path: 'r/:reckoningId',
+    loadComponent: () => import('./features/reckoning/reckoning.page').then(c => c.ReckoningPage),
+    loadChildren: () => import('./features/reckoning/reckoning.routes').then(r => r.reckoningRoutes),
+  },
 ];

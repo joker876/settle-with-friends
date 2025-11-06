@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { SessionAuthGuard } from './auth/session-auth.guard';
 import { ReckoningsModule } from './reckonings/reckonings.module';
+import { TransactionsModule } from './reckonings/transactions/transactions.module';
 import { SessionEntity } from './typeorm/entities/Session';
 import { entities } from './typeorm/entities/index';
 
@@ -30,6 +31,7 @@ import { entities } from './typeorm/entities/index';
     PassportModule.register({ session: true }),
     AuthModule,
     ReckoningsModule,
+    TransactionsModule,
   ],
   controllers: [AppController],
   providers: [

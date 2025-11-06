@@ -9,13 +9,13 @@ import { Reckoning, ReckoningUser, User } from '../typeorm/entities';
 @Injectable()
 export class ReckoningsService {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @InjectRepository(Reckoning) private readonly reckoningRepository: Repository<Reckoning>,
-    @InjectRepository(ReckoningUser) private readonly reckoningUserRepository: Repository<ReckoningUser>,
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
+    @InjectRepository(Reckoning) private readonly reckoningRepo: Repository<Reckoning>,
+    @InjectRepository(ReckoningUser) private readonly reckoningUserRepo: Repository<ReckoningUser>,
   ) {}
 
   async getAllForUser(id: number): Promise<GetAllReckoningsResponseDto> {
-    const user = await this.userRepository.findOne({
+    const user = await this.userRepo.findOne({
       where: { id },
       relations: { reckoningUsers: true },
     });
@@ -23,7 +23,7 @@ export class ReckoningsService {
 
     const reckoningIds = Array.from(new Set(user.reckoningUsers.map(v => v.reckoningId)));
 
-    const reckonings = await this.reckoningRepository.find({
+    const reckonings = await this.reckoningRepo.find({
       where: { id: In(reckoningIds) },
       relations: { reckoningUsers: true },
       select: {
@@ -45,30 +45,38 @@ export class ReckoningsService {
   }
 
   async create(data: ICreateReckoningRequestDto, userId: number): Promise<IReckoningTableData> {
-    const reckoning = this.reckoningRepository.create(data);
-    await this.reckoningRepository.save(reckoning);
+    const reckoning = this.reckoningRepo.create(data);
+    await this.reckoningRepo.save(reckoning);
 
     await this.addUser(reckoning.id, userId, UserRole.Owner);
     return { ...reckoning, numberOfUsers: 1, currentBalance: 0, numberOfTransactions: 0 };
   }
 
   async addUser(reckoningId: number, userId: number, role: UserRole) {
-    const reckoning = await this.reckoningRepository.findOneBy({ id: reckoningId });
+    const reckoning = await this.reckoningRepo.findOneBy({ id: reckoningId });
     if (!reckoning) {
       throw new Error('Reckoning not found');
     }
 
-    const user = await this.userRepository.findOneBy({ id: userId });
+    const user = await this.userRepo.findOneBy({ id: userId });
     if (!user) {
       throw new Error('User not found');
     }
 
-    const reckoningUser = this.reckoningUserRepository.create({
+    const reckoningUser = this.reckoningUserRepo.create({
       reckoning,
       user,
       role,
     });
 
-    return this.reckoningUserRepository.save(reckoningUser);
+    return this.reckoningUserRepo.save(reckoningUser);
+  }
+
+  async getAllUsersInReckoning(reckoningId: number): Promise<User[]> {
+    const reckoningUsers = await this.reckoningUserRepo.find({
+      where: { reckoningId },
+      relations: { user: true },
+    });
+    return reckoningUsers.map(ru => ru.user);
   }
 }

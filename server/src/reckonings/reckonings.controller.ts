@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Inject, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, ParseIntPipe, Post, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { CreateReckoningRequestDto } from './dtos/create';
+import { ReckoningAccess } from './reckoning-access.guard';
 import { ReckoningsService } from './reckonings.service';
 
 @Controller('reckonings')
@@ -19,5 +20,11 @@ export class ReckoningsController {
     const userId = req.user!.id;
 
     return this.reckoningsService.create(body, userId);
+  }
+
+  @Get(':reckoningId/users')
+  @ReckoningAccess()
+  getAllUsersInReckoning(@Param('reckoningId', ParseIntPipe) reckoningId: number) {
+    return this.reckoningsService.getAllUsersInReckoning(reckoningId);
   }
 }
