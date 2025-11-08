@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { ArdiumButtonModule } from '@ardium-ui/ui';
 import { SectionHeadingComponent } from "@common/components/section-heading/section-heading.component";
 import { ArdIconPlus } from '@common/icons/plus.icon';
@@ -24,9 +25,10 @@ import { ReckoningListItemComponent } from './components/reckoning-list-item/rec
 export class ReckoningListView {
   readonly authService = inject(AuthService);
   readonly reckoningsService = inject(ReckoningsService);
+  private readonly _router = inject(Router);
 
   onReckoningClick(reckoning: IReckoning) {
-    console.log('clicked', reckoning);
+    this._router.navigate(['r', reckoning.id]);
   }
 
   //! creating

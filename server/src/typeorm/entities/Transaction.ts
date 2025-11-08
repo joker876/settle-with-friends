@@ -8,12 +8,12 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Reckoning } from './Reckoning';
 import { User } from './User';
+import { cascade } from './utils';
 
 @Entity({ name: 'transactions' })
 export class Transaction implements ITransaction {
@@ -24,13 +24,13 @@ export class Transaction implements ITransaction {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ type: 'decimal', precision: 15, scale: 2 })
   amount: number;
 
   @Column()
   currencyCode: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'decimal', precision: 15, scale: 4, nullable: true })
   currencyRate?: number;
 
   @Column({ nullable: true })
@@ -48,18 +48,19 @@ export class Transaction implements ITransaction {
   @Column()
   createdByUserId: number;
 
-  @OneToOne(() => User, user => user.id)
+  @ManyToOne(() => User, user => user.id, cascade)
   @JoinColumn({ name: 'createdByUserId' })
   createdBy: IUser;
 
   @Column()
   updatedByUserId: number;
 
-  @OneToOne(() => User, user => user.id)
+  @ManyToOne(() => User, user => user.id, cascade)
   @JoinColumn({ name: 'updatedByUserId' })
   updatedBy: IUser;
 
-  @ManyToOne(() => Reckoning, reckoning => reckoning.transactions)
+  @ManyToOne(() => Reckoning, reckoning => reckoning.transactions, { nullable: false, ...cascade })
+  @JoinColumn({ name: 'reckoningId' })
   reckoning: IReckoning;
 
   payers: ITransactionUser[];

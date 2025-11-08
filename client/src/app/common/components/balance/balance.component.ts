@@ -9,4 +9,6 @@ import { Component, input } from '@angular/core';
 })
 export class BalanceComponent {
   readonly balance = input.required<number>();
+
+  readonly currency = input.required<string>();
 }

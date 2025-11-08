@@ -32,15 +32,37 @@ export class ReckoningsService {
         isArchived: true,
         createdDate: true,
         updatedDate: true,
+        mainCurrency: true,
+        helperCurrency: true,
         reckoningUsers: { userId: true, role: true },
       },
     });
 
-    return reckonings?.map(r => ({
+    const transactionData: Pick<GetAllReckoningsResponseDto[number], 'currentBalance' | 'numberOfTransactions'>[] =
+      await Promise.all(
+        reckonings.map(async r => {
+          const transactionData = await this.reckoningRepo
+            .createQueryBuilder('reckoning')
+            .leftJoin('reckoning.transactions', 'transaction')
+            .where('reckoning.id = :id', { id: r.id })
+            .select('COUNT(transaction.id)', 'count')
+            .addSelect(
+              // multiply every amount by rate; if rate is null -> 1; if sum is null -> 0
+              'COALESCE(SUM(transaction.amount * COALESCE(transaction.currencyRate, 1)), 0)',
+              'sum',
+            )
+            .getRawOne<{ count: string; sum: string }>();
+
+          const numberOfTransactions = parseInt(transactionData!.count, 10) || 0;
+          const currentBalance = parseFloat(transactionData!.sum) || 0;
+          return { numberOfTransactions, currentBalance };
+        }),
+      );
+
+    return reckonings?.map((r, i) => ({
       ...r,
       numberOfUsers: r.reckoningUsers.length,
-      currentBalance: 0,
-      numberOfTransactions: 0,
+      ...transactionData[i],
     }));
   }
 
@@ -49,7 +71,12 @@ export class ReckoningsService {
     await this.reckoningRepo.save(reckoning);
 
     await this.addUser(reckoning.id, userId, UserRole.Owner);
-    return { ...reckoning, numberOfUsers: 1, currentBalance: 0, numberOfTransactions: 0 };
+    return {
+      ...reckoning,
+      numberOfUsers: 1,
+      currentBalance: 0,
+      numberOfTransactions: 0,
+    };
   }
 
   async addUser(reckoningId: number, userId: number, role: UserRole) {

@@ -8,8 +8,10 @@ export interface ITransaction {
   currencyRate?: number;
   isCurrencyRateFromApi?: boolean;
   transactionDate: Date;
+  createdByUserId: number;
   createdBy: IUser;
   createdDate: Date;
+  updatedByUserId: number;
   updatedBy: IUser;
   updatedDate: Date;
   payers: ITransactionUser[];
@@ -17,6 +19,7 @@ export interface ITransaction {
 }
 
 export interface ITransactionUser {
+  userId: number;
   user: IUser;
   amount: number;
 }

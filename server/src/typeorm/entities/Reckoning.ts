@@ -16,6 +16,12 @@ export class Reckoning implements IReckoning {
   @Column({ default: false })
   isArchived: boolean;
 
+  @Column()
+  mainCurrency: string;
+
+  @Column({ nullable: true })
+  helperCurrency: string;
+
   @CreateDateColumn()
   createdDate: Date;
 
