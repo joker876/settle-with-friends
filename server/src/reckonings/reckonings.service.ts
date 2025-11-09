@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ICreateReckoningRequestDto } from '@shared/contracts/reckonings/create';
 import { GetAllReckoningsResponseDto, IReckoningTableData } from '@shared/contracts/reckonings/get-all';
+import { IReckoning } from '@shared/entities/reckoning';
+import { IUserWithRole } from '@shared/entities/user';
 import { UserRole } from '@shared/enums/user-role';
+import { roundToPrecision } from 'more-rounding';
 import { In, Repository } from 'typeorm';
 import { Reckoning, ReckoningUser, User } from '../typeorm/entities';
 
@@ -54,7 +57,7 @@ export class ReckoningsService {
             .getRawOne<{ count: string; sum: string }>();
 
           const numberOfTransactions = parseInt(transactionData!.count, 10) || 0;
-          const currentBalance = parseFloat(transactionData!.sum) || 0;
+          const currentBalance = roundToPrecision(parseFloat(transactionData!.sum) || 0, 2);
           return { numberOfTransactions, currentBalance };
         }),
       );
@@ -64,6 +67,23 @@ export class ReckoningsService {
       numberOfUsers: r.reckoningUsers.length,
       ...transactionData[i],
     }));
+  }
+
+  async getById(id: number): Promise<IReckoning | null> {
+    return this.reckoningRepo.findOne({
+      where: { id },
+      relations: { reckoningUsers: true },
+      select: {
+        id: true,
+        name: true,
+        isArchived: true,
+        createdDate: true,
+        updatedDate: true,
+        mainCurrency: true,
+        helperCurrency: true,
+        reckoningUsers: { userId: true, role: true },
+      },
+    });
   }
 
   async create(data: ICreateReckoningRequestDto, userId: number): Promise<IReckoningTableData> {
@@ -99,11 +119,20 @@ export class ReckoningsService {
     return this.reckoningUserRepo.save(reckoningUser);
   }
 
-  async getAllUsersInReckoning(reckoningId: number): Promise<User[]> {
+  async getAllUsersInReckoning(reckoningId: number): Promise<IUserWithRole[]> {
     const reckoningUsers = await this.reckoningUserRepo.find({
       where: { reckoningId },
       relations: { user: true },
+      select: {
+        role: true,
+        user: {
+          id: true,
+          email: true,
+          displayName: true,
+          photo: true,
+        },
+      }
     });
-    return reckoningUsers.map(ru => ru.user);
+    return reckoningUsers.map(ru => ({ ...ru.user, role: ru.role }) );
   }
 }

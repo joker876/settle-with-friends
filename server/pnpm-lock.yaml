@@ -38,6 +38,9 @@ importers:
       express-session:
         specifier: ^1.18.2
         version: 1.18.2
+      more-rounding:
+        specifier: ^4.2.2
+        version: 4.2.2
       mysql2:
         specifier: ^3.15.1
         version: 3.15.1
@@ -2479,6 +2482,9 @@ packages:
   mkdirp@0.5.6:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
     hasBin: true
+
+  more-rounding@4.2.2:
+    resolution: {integrity: sha512-WOlsaHnvRobB4QmMuVqy+pQOFnUezdDLYsR5QsvCEFeiCcjA7WSwKoUy+vdmTM9d8AZye2DdYG0X/jZBLgjtUg==}
 
   ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
@@ -6129,6 +6135,8 @@ snapshots:
   mkdirp@0.5.6:
     dependencies:
       minimist: 1.2.8
+
+  more-rounding@4.2.2: {}
 
   ms@2.0.0: {}
 

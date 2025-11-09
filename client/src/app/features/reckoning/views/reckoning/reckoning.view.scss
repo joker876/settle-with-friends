@@ -1,0 +1,29 @@
+.summary-section {
+  padding-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+  justify-content: center;
+  justify-items: center;
+  margin: 0 auto;
+  width: 100%;
+
+  @media (width > 45rem) {
+    max-width: calc(25rem * 2 + 1rem);
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (width > 90rem) {
+    max-width: calc(25rem * 4 + 1rem * 3);
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  > * {
+    width: 100%;
+    max-width: 25rem;
+  }
+}

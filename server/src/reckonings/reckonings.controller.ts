@@ -22,6 +22,12 @@ export class ReckoningsController {
     return this.reckoningsService.create(body, userId);
   }
 
+  @Get(':reckoningId')
+  @ReckoningAccess()
+  getReckoning(@Param('reckoningId', ParseIntPipe) reckoningId: number) {
+    return this.reckoningsService.getById(reckoningId);
+  }
+  
   @Get(':reckoningId/users')
   @ReckoningAccess()
   getAllUsersInReckoning(@Param('reckoningId', ParseIntPipe) reckoningId: number) {

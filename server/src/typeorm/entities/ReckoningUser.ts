@@ -24,5 +24,5 @@ export class ReckoningUser {
   user: User;
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.Member })
-  role: string;
+  role: UserRole;
 }

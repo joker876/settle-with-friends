@@ -17,4 +17,6 @@ export class UsersService {
     loader: ({ request }) =>
       request.reckoningId ? this._http.get<IUser>(['reckonings', request.reckoningId, 'users']) : of(undefined),
   });
+
+  public readonly users = this._users.asReadonly();
 }

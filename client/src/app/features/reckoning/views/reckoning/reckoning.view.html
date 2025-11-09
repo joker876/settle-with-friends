@@ -1,1 +1,49 @@
-<p>reckoning works!</p>
+<div class="page-wrapper-g">
+  <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
+  <section class="summary-section">
+    <div class="summary-row">
+      <app-summary-card
+        heading="Transakcje"
+        i18n-heading="@@reckoning-page.summary-card.transactions"
+        leftText="Liczba transakcji"
+        i18n-leftText="@@reckoning-page.summary-card.transactions.number-text"
+        rightText="Suma transakcji"
+        i18n-rightText="@@reckoning-page.summary-card.transactions.sum-text"
+      >
+        <span>14</span>
+        <app-balance [balance]="0" [currency]="'PLN'" />
+        <ard-icon-save class="icon" ngProjectAs="icon" />
+      </app-summary-card>
+      <app-summary-card
+        heading="Wpłaty"
+        i18n-heading="@@reckoning-page.summary-card.payments"
+        leftText="Liczba wpłat"
+        i18n-leftText="@@reckoning-page.summary-card.payments.number-text"
+        rightText="Suma wpłat"
+        i18n-rightText="@@reckoning-page.summary-card.payments.sum-text"
+      >
+        <span>3</span>
+        <app-balance [balance]="0" [currency]="'PLN'" />
+        <ard-icon-save class="icon" ngProjectAs="icon" />
+      </app-summary-card>
+      <app-summary-card
+        heading="Saldo"
+        i18n-heading="@@reckoning-page.summary-card.balance"
+        leftText="Łączne saldo"
+        i18n-leftText="@@reckoning-page.summary-card.balance.total-balance-text"
+      >
+        <app-balance [balance]="0" [currency]="'PLN'" />
+        <ard-icon-save class="icon" ngProjectAs="icon" />
+      </app-summary-card>
+      <app-summary-card
+        heading="Liczba osób"
+        i18n-heading="@@reckoning-page.summary-card.number-of-users"
+        leftText="Liczba członków"
+        i18n-leftText="@@reckoning-page.summary-card.number-of-users.users-text"
+      >
+        <app-balance [balance]="0" [currency]="'PLN'" />
+        <ard-icon-save class="icon" ngProjectAs="icon" />
+      </app-summary-card>
+    </div>
+  </section>
+</div>

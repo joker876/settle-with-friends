@@ -30,6 +30,7 @@
     "class-validator": "^0.14.2",
     "connect-typeorm": "^2.0.0",
     "express-session": "^1.18.2",
+    "more-rounding": "^4.2.2",
     "mysql2": "^3.15.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",

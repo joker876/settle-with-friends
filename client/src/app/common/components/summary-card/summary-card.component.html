@@ -1,0 +1,17 @@
+<app-card>
+  <div class="heading-row">
+    <h2>{{ heading() }}</h2>
+    <div class="icon">
+      <ng-content select="icon" />
+    </div>
+  </div>
+  <div class="data-row">
+    <div class="value-row">
+      <ng-content />
+    </div>
+    <div class="text-row">
+      <span>{{ leftText() }}</span>
+      <span>{{ rightText() }}</span>
+    </div>
+  </div>
+</app-card>

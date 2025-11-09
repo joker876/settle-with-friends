@@ -12,6 +12,7 @@ import { UsersService } from './services/users.service';
   providers: [ReckoningService, TransactionsService, UsersService],
 })
 export class ReckoningPage {
+  readonly reckoningService = inject(ReckoningService);
   readonly transactionsService = inject(TransactionsService);
   readonly usersService = inject(UsersService);
 }
