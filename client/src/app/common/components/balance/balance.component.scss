@@ -1,0 +1,8 @@
+:host {
+  &.color-positive {
+    color: var(--green);
+  }
+  &.color-negative {
+    color: var(--red);
+  }
+}

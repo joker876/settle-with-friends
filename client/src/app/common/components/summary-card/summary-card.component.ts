@@ -1,4 +1,5 @@
 import { Component, input } from '@angular/core';
+import { coerceBooleanProperty } from '@ardium-ui/devkit';
 import { CardComponent } from "../card/card.component";
 
 @Component({
@@ -9,6 +10,7 @@ import { CardComponent } from "../card/card.component";
 })
 export class SummaryCardComponent {
   readonly heading = input.required<string>();
+  readonly altColoring = input<boolean, any>(false, { transform: v => coerceBooleanProperty(v) });
 
   readonly leftText = input.required<string>();
   readonly rightText = input<string>();

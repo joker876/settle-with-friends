@@ -1,6 +1,6 @@
-<app-card>
+<app-card [class.alt-coloring]="altColoring()">
   <div class="heading-row">
-    <h2>{{ heading() }}</h2>
+    <h3>{{ heading() }}</h3>
     <div class="icon">
       <ng-content select="icon" />
     </div>
