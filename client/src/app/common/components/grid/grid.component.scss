@@ -1,0 +1,25 @@
+:host {
+  display: grid;
+  border: 1px solid var(--ard-detail-ultralight);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.heading-cell,
+.data-cell {
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+}
+.heading-cell {
+  background-color: #f5f7fb;
+  height: 2.5rem;
+  color: #5E657C;
+}
+.data-cell {
+  height: 3.5rem;
+
+  &:not(.last-row) {
+    border-bottom: 1px solid var(--ard-detail-ultralight);
+  }
+}

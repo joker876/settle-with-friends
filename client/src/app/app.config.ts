@@ -4,7 +4,13 @@ import localePl from '@angular/common/locales/pl';
 import { ApplicationConfig, importProvidersFrom, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
 import { EVENT_MANAGER_PLUGINS } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
-import { ButtonAppearance, ComponentColor, provideButtonDefaults, provideDialogDefaults } from '@ardium-ui/ui';
+import {
+  ButtonAppearance,
+  ComponentColor,
+  provideButtonDefaults,
+  provideDialogDefaults,
+  provideIconButtonDefaults,
+} from '@ardium-ui/ui';
 import { AuthInterceptor } from '@common/interceptors/auth.interceptor';
 import {
   convertStringToDate,
@@ -41,6 +47,7 @@ export const appConfig: ApplicationConfig = {
     provideMappingInterceptor(isIsoDateString, convertStringToDate),
     AuthService,
     provideButtonDefaults({ appearance: ButtonAppearance.Outlined, color: ComponentColor.None }),
+    provideIconButtonDefaults({ color: ComponentColor.None }),
     provideDialogDefaults({
       rejectButtonAppearance: ButtonAppearance.Transparent,
       rejectButtonText: $localize`:@@common.cancel:Anuluj`,

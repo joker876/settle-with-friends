@@ -16,7 +16,9 @@ export class TransactionsService {
     request: () => ({ reckoningId: this._reckoningService.reckoningId() }),
     loader: ({ request }) =>
       request.reckoningId
-        ? this._http.get<ITransaction>(['reckonings', request.reckoningId, 'transactions'])
+        ? this._http.get<ITransaction[]>(['reckonings', request.reckoningId, 'transactions'])
         : of(undefined),
   });
+
+  public readonly transactions = this._transactions.asReadonly();
 }

@@ -5,10 +5,11 @@ import { ArdIconSave } from "@common/icons/save.icon";
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
 import { TransactionsService } from '@features/reckoning/services/transactions.service';
 import { UsersService } from '@features/reckoning/services/users.service';
+import { TransactionsSectionComponent } from "./sections/transactions-section/transactions-section.component";
 
 @Component({
   selector: 'app-reckoning',
-  imports: [SummaryCardComponent, ArdIconSave, BalanceComponent],
+  imports: [SummaryCardComponent, ArdIconSave, BalanceComponent, TransactionsSectionComponent],
   templateUrl: './reckoning.view.html',
   styleUrl: './reckoning.view.scss'
 })

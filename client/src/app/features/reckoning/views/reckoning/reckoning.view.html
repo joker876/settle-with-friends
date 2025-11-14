@@ -1,6 +1,6 @@
 <div class="page-wrapper-g">
   <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
-  <section class="summary-section">
+  <!-- <section class="summary-section">
     <h2 i18n="@@reckoning-page.summary-section.heading-totals">Podsumowanie całościowe</h2>
     <div class="summary-row">
       <app-summary-card
@@ -97,5 +97,12 @@
         <ard-icon-save class="icon" ngProjectAs="icon" />
       </app-summary-card>
     </div>
+  </section> -->
+
+  <section>
+    <app-transactions-section
+      [transactions]="transactionsService.transactions.value() ?? []"
+      [mainCurrency]="reckoningService.reckoning.value()?.mainCurrency ?? ''"
+    />
   </section>
 </div>
