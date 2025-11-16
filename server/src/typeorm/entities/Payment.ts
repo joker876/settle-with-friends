@@ -46,21 +46,21 @@ export class Payment implements IPayment {
   @Column()
   paidByUserId: number;
 
-  @ManyToOne(() => User, user => user.id, cascade)
+  @ManyToOne(() => User, cascade)
   @JoinColumn({ name: 'paidByUserId' })
   paidBy: IUser;
 
   @Column()
   createdByUserId: number;
 
-  @ManyToOne(() => User, user => user.id, cascade)
+  @ManyToOne(() => User, cascade)
   @JoinColumn({ name: 'createdByUserId' })
   createdBy: IUser;
 
   @Column()
   updatedByUserId: number;
 
-  @ManyToOne(() => User, user => user.id, cascade)
+  @ManyToOne(() => User, cascade)
   @JoinColumn({ name: 'updatedByUserId' })
   updatedBy: IUser;
 

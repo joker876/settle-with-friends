@@ -1,5 +1,7 @@
 import { IReckoning } from '@shared/entities/reckoning';
-import { ITransaction, ITransactionUser } from '@shared/entities/transaction';
+import { ITransaction } from '@shared/entities/transaction';
+import { ITransactionIncludee } from '@shared/entities/transaction-includee';
+import { ITransactionPayer } from '@shared/entities/transaction-payer';
 import { IUser } from '@shared/entities/user';
 import {
   Column,
@@ -8,10 +10,13 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Reckoning } from './Reckoning';
+import { TransactionIncludee } from './TransactionIncludee';
+import { TransactionPayer } from './TransactionPayer';
 import { User } from './User';
 import { cascade } from './utils';
 
@@ -48,14 +53,14 @@ export class Transaction implements ITransaction {
   @Column()
   createdByUserId: number;
 
-  @ManyToOne(() => User, user => user.id, cascade)
+  @ManyToOne(() => User, cascade)
   @JoinColumn({ name: 'createdByUserId' })
   createdBy: IUser;
 
   @Column()
   updatedByUserId: number;
 
-  @ManyToOne(() => User, user => user.id, cascade)
+  @ManyToOne(() => User, cascade)
   @JoinColumn({ name: 'updatedByUserId' })
   updatedBy: IUser;
 
@@ -63,12 +68,9 @@ export class Transaction implements ITransaction {
   @JoinColumn({ name: 'reckoningId' })
   reckoning: IReckoning;
 
-  payers: ITransactionUser[];
+  @OneToMany(() => TransactionPayer, payer => payer.transaction, cascade)
+  payers: ITransactionPayer[];
 
-  includees: ITransactionUser[];
-
-  // @OneToMany(() => )
-  // payers: ITransactionUser[];
-
-  // includees: ITransactionUser[];
+  @OneToMany(() => TransactionIncludee, includee => includee.transaction, cascade)
+  includees: ITransactionIncludee[];
 }

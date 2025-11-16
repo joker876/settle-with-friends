@@ -13,10 +13,8 @@ export class TransactionsService {
   async getAllForReckoning(id: number): Promise<Transaction[]> {
     return this.transactionRepo.find({
       relations: {
-        // createdBy: true,
-        // updatedBy: true,
-        // payers: true,
-        // includees: true,
+        payers: {},
+        includees: {},
       },
       where: {
         reckoning: { id },
