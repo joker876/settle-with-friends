@@ -14,7 +14,7 @@ export class User implements IUser {
   @Column()
   displayName: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'text' })
   photo?: string;
 
   @Column({ default: false })

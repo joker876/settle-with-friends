@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../typeorm/entities/User';
+import { fileUrlToFileBase64 } from '../utils/file-url-to-file-base64';
 import { UserDetails } from '../utils/types';
 import { AuthRegisterRequestDto } from './dtos/register';
 
@@ -16,6 +17,7 @@ export class AuthService {
     if (process.env.CAN_CREATE_NEW_ACCOUNTS !== '1') {
       return { id: -1 };
     }
+    details.photo &&= await fileUrlToFileBase64(details.photo);
     const newUser = this.userRepository.create(details);
     return this.userRepository.save(newUser);
   }

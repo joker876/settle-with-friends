@@ -1,1 +1,5 @@
-<p>avatar-list works!</p>
+@for (user of usersWithinLimit(); track user.id) {
+<app-avatar [name]="user.displayName" [photo]="user.photo" />
+} @if (usersAboveLimit() > 0) {
+<app-avatar name="" empty [emptyNumber]="usersAboveLimit()" />
+}

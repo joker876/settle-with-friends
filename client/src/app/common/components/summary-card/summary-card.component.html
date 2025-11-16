@@ -1,17 +1,8 @@
-<app-card [class.alt-coloring]="altColoring()">
+<app-card>
   <div class="heading-row">
     <h3>{{ heading() }}</h3>
-    <div class="icon">
-      <ng-content select="icon" />
-    </div>
   </div>
-  <div class="data-row">
-    <div class="value-row">
-      <ng-content />
-    </div>
-    <div class="text-row">
-      <span>{{ leftText() }}</span>
-      <span>{{ rightText() }}</span>
-    </div>
+  <div class="value-row">
+    <ng-content />
   </div>
 </app-card>

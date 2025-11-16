@@ -9,11 +9,13 @@ import { IColumnDef } from './grid.types';
   templateUrl: './grid.component.html',
   styleUrl: './grid.component.scss',
   host: {
-    '[style.--_grid-column-count]': 'columns().length'
-  }
+    '[style.--_grid-column-count]': 'columns().length',
+  },
 })
 export class GridComponent {
-  readonly columns = input.required<IColumnDef[]>();
+  readonly columns = input.required<IColumnDef[], IColumnDef[]>({
+    transform: cols => cols.filter(col => !col.isHidden),
+  });
 
   readonly data = input.required<Record<string, any>[]>();
 

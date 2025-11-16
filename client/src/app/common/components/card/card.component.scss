@@ -2,6 +2,10 @@
   display: block;
   border: 1px solid var(--ard-detail-ultralight);
   border-radius: 1.375rem;
-  padding: 1.5rem;
+  padding: 1rem;
   background-color: var(--ard-bg);
+
+  @media (width > 40rem) {
+    padding: 1.5rem;
+  }
 }

@@ -3,15 +3,20 @@
   align-items: center;
   gap: 0.5rem;
   height: 2rem;
+  border-radius: 9999px;
 }
 .img-wrapper {
   height: 100%;
   position: relative;
 }
-img {
+img,
+.empty-container {
   height: 100%;
   aspect-ratio: 1;
   border-radius: 9999px;
+}
+img {
+  outline: 1px solid var(--ard-bg);
 }
 .status-indicator {
   position: absolute;
@@ -38,4 +43,16 @@ img {
     color: var(--ard-text3);
     font-size: 0.75rem;
   }
+}
+.empty-container {
+  background-color: #e5e5e5;
+  color: #46454a;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.075em;
+  cursor: default;
+  user-select: none;
 }

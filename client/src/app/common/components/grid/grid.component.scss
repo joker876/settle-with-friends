@@ -7,9 +7,13 @@
 
 .heading-cell,
 .data-cell {
-  padding: 0 1rem;
+  padding: 0 0.625rem;
   display: flex;
   align-items: center;
+
+  @media (width > 40rem) {
+  padding: 0 1rem;
+  }
 }
 .heading-cell {
   background-color: #f5f7fb;

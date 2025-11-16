@@ -1,8 +1,13 @@
 <div class="img-wrapper" [title]="name()">
+  @if (empty()) {
+    <div class="empty-container">
+      +{{ emptyNumber() }}
+    </div>
+  } @else {
   <img [src]="photo() ?? 'avatar-placeholder.jpg'" [alt]="name()" />
   @if (withStatus()) {
   <div class="status-indicator"></div>
-  }
+  } }
 </div>
 @if (showName()) { @if (withStatus()) {
 <div class="name-wrapper">

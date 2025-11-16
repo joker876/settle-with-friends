@@ -131,8 +131,8 @@ export class ReckoningsService {
           displayName: true,
           photo: true,
         },
-      }
+      },
     });
-    return reckoningUsers.map(ru => ({ ...ru.user, role: ru.role }) );
+    return reckoningUsers.map(ru => ({ ...ru.user, role: ru.role }));
   }
 }

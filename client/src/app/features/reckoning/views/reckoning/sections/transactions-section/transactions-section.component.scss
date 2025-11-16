@@ -1,7 +1,41 @@
 app-grid {
-  grid-template-columns: max-content 1fr 10rem 10rem max-content max-content;
+  grid-template-columns: max-content 1fr max-content max-content;
+
+  @media (width > 60rem) {
+    grid-template-columns: max-content 1fr 10rem 10rem max-content max-content;
+  }
 }
 
-.reveal-button .icon {
-  width: 1.5rem;
+.date-cell {
+  color: var(--ard-text);
+}
+.name-cell {
+  color: var(--ard-text);
+  font-weight: 500;
+  line-height: 1.1;
+}
+.amount-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 0.75rem;
+
+  .main-currency-amount,
+  .original-amount:first-child {
+    font-size: 1rem;
+    color: var(--ard-text);
+    font-weight: 500;
+    line-height: 1;
+  }
+  .original-amount {
+    font-size: 0.8125rem;
+    color: var(--ard-text3);
+  }
+}
+.reveal-button {
+  margin-left: -0.5rem;
+
+  .icon {
+    width: 1.5rem;
+  }
 }

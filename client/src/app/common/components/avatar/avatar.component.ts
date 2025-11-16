@@ -14,5 +14,8 @@ export class AvatarComponent {
   });
 
   readonly showName = input<boolean, any>(false, { transform: v => coerceBooleanProperty(v) });
+  readonly empty = input<boolean, any>(false, { transform: v => coerceBooleanProperty(v) });
   readonly withStatus = input<boolean, any>(false, { transform: v => coerceBooleanProperty(v) });
+
+  readonly emptyNumber = input<string | number>('');
 }
