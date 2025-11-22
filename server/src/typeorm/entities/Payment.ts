@@ -22,13 +22,13 @@ export class Payment implements IPayment {
   @Column()
   name: string;
 
-  @Column({ type: 'decimal', precision: 15, scale: 2 })
+  @Column({ type: 'double' })
   amount: number;
 
   @Column()
   currencyCode: string;
 
-  @Column({ type: 'decimal', precision: 15, scale: 4, nullable: true })
+  @Column({ type: 'double', nullable: true })
   currencyRate?: number;
 
   @Column({ nullable: true })

@@ -1,3 +1,5 @@
+import { ITransactionSplitPart } from './transaction-includee';
+import { ITransactionPayer } from './transaction-payer';
 import { IUser } from './user';
 
 export interface ITransaction {
@@ -14,12 +16,6 @@ export interface ITransaction {
   updatedByUserId: number;
   updatedBy: IUser;
   updatedDate: Date;
-  payers: ITransactionUser[];
-  includees: ITransactionUser[];
-}
-
-export interface ITransactionUser {
-  userId: number;
-  user: IUser;
-  amount: number;
+  payers: ITransactionPayer[];
+  splitParts: ITransactionSplitPart[];
 }

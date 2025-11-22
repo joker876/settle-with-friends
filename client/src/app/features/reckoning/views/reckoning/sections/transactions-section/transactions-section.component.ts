@@ -9,7 +9,6 @@ import { CardComponent } from '@common/components/card/card.component';
 import { GridColumnTemplateDirective, GridComponent, IColumnDef } from '@common/components/grid';
 import { ArdIconChevronDown_2 } from '@common/icons/chevron-down-2.icon';
 import { ITransaction } from '@shared/entities/transaction';
-import { ITransactionIncludee } from '@shared/entities/transaction-includee';
 import { ITransactionPayer } from '@shared/entities/transaction-payer';
 import { IUser } from '@shared/entities/user';
 import { map, Subject, takeUntil } from 'rxjs';
@@ -64,7 +63,7 @@ export class TransactionsSectionComponent {
     {
       heading: $localize`:@@reckoning-page.transactions.grid-heading.includees:Wliczani`,
       source: 'includees',
-      templateName: 'userlist',
+      // templateName: 'userlist',
       isHidden: !this.isLargeScreen(),
     },
     {
@@ -79,7 +78,7 @@ export class TransactionsSectionComponent {
     },
   ]);
 
-  mapPayersIncludeesToUsers(payersOrIncludees: ITransactionPayer[] | ITransactionIncludee[]): IUser[] {
+  mapPayersIncludeesToUsers(payersOrIncludees: ITransactionPayer[]): IUser[] {
     return payersOrIncludees.map(v => v.user);
   }
 }

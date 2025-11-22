@@ -1,6 +1,6 @@
 import { IReckoning } from '@shared/entities/reckoning';
 import { ITransaction } from '@shared/entities/transaction';
-import { ITransactionIncludee } from '@shared/entities/transaction-includee';
+import { ITransactionSplitPartInternal } from '@shared/entities/transaction-includee';
 import { ITransactionPayer } from '@shared/entities/transaction-payer';
 import { IUser } from '@shared/entities/user';
 import {
@@ -15,8 +15,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Reckoning } from './Reckoning';
-import { TransactionIncludee } from './TransactionIncludee';
 import { TransactionPayer } from './TransactionPayer';
+import { TransactionSplitPart } from './TransactionSplitPart';
 import { User } from './User';
 import { cascade } from './utils';
 
@@ -29,13 +29,13 @@ export class Transaction implements ITransaction {
   @Column()
   name: string;
 
-  @Column({ type: 'decimal', precision: 15, scale: 2 })
+  @Column({ type: 'double' })
   amount: number;
 
   @Column()
   currencyCode: string;
 
-  @Column({ type: 'decimal', precision: 15, scale: 4, nullable: true })
+  @Column({ type: 'double', nullable: true })
   currencyRate?: number;
 
   @Column({ nullable: true })
@@ -71,6 +71,6 @@ export class Transaction implements ITransaction {
   @OneToMany(() => TransactionPayer, payer => payer.transaction, cascade)
   payers: ITransactionPayer[];
 
-  @OneToMany(() => TransactionIncludee, includee => includee.transaction, cascade)
-  includees: ITransactionIncludee[];
+  @OneToMany(() => TransactionSplitPart, part => part.transaction, cascade)
+  splitParts: ITransactionSplitPartInternal[];
 }

@@ -14,7 +14,7 @@ export class TransactionsService {
     return this.transactionRepo.find({
       relations: {
         payers: {},
-        includees: {},
+        splitParts: { includees: {} },
       },
       where: {
         reckoning: { id },

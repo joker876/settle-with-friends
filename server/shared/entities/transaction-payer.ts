@@ -5,7 +5,7 @@ export interface ITransactionPayer {
   id: number;
   userId: number;
   user: IUser;
-  amount: number;
+  amount: number | null;
 }
 
 export interface ITransactionPayerInternal extends ITransactionPayer {

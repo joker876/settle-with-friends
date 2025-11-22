@@ -3,8 +3,9 @@ import { Reckoning } from './Reckoning';
 import { ReckoningUser } from './ReckoningUser';
 import { SessionEntity } from './Session';
 import { Transaction } from './Transaction';
-import { TransactionIncludee } from './TransactionIncludee';
 import { TransactionPayer } from './TransactionPayer';
+import { TransactionSplitPart } from './TransactionSplitPart';
+import { TransactionSplitPartIncludee } from './TransactionSplitPartIncludee';
 import { User } from './User';
 
 export * from './Payment';
@@ -12,8 +13,9 @@ export * from './Reckoning';
 export * from './ReckoningUser';
 export * from './Session';
 export * from './Transaction';
-export * from './TransactionIncludee';
 export * from './TransactionPayer';
+export * from './TransactionSplitPart';
+export * from './TransactionSplitPartIncludee';
 export * from './User';
 
 export const entities = [
@@ -24,5 +26,6 @@ export const entities = [
   Transaction,
   Payment,
   TransactionPayer,
-  TransactionIncludee,
+  TransactionSplitPart,
+  TransactionSplitPartIncludee,
 ];
