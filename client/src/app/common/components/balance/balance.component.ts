@@ -25,4 +25,5 @@ export class BalanceComponent {
   readonly currency = input.required<string>();
 
   readonly coloringType = input<BalanceColoringType>(BalanceColoringType.None);
+  readonly places = input<string>('2-2');
 }

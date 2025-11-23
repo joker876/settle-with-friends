@@ -1,8 +1,8 @@
 :host {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  height: 2rem;
+  gap: calc(var(--avatar-size) / 4);
+  height: var(--avatar-size);
   border-radius: 9999px;
 }
 .img-wrapper {
@@ -31,9 +31,8 @@ img {
 }
 
 .name {
-  font-weight: 500;
   font-size: 0.875em;
-  color: var(--ard-text);
+  color: var(--ard-text2);
 }
 .name-wrapper {
   display: flex;

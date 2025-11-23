@@ -1,0 +1,22 @@
+:host {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 0.5rem;
+  background-color: var(--ard-bg-filled);
+  width: max-content;
+}
+button {
+  padding: 0.125rem 0.375rem;
+  border: 1px solid transparent;
+  color: var(--ard-text2);
+  font-size: 0.75rem;
+  border-radius: 0.375rem;
+  background-color: transparent;
+
+  &.active {
+    background-color: var(--ard-bg);
+    border-color: var(--ard-border-light);
+    color: var(--ard-text);
+  }
+}

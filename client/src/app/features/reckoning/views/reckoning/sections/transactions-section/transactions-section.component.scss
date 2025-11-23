@@ -39,3 +39,9 @@ app-grid {
     width: 1.5rem;
   }
 }
+.transaction-list {
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}

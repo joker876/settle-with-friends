@@ -2,39 +2,8 @@
   <h2 i18n="reckoning-page.transactions.heading">Transakcje</h2>
 
   <div class="transaction-list">
-    <app-grid [columns]="GRID_COL_DEFS()" [data]="transactions()">
-      <ng-template app-column-tmp="date" let-date>
-        <div class="date-cell">
-          {{ date | date : 'd MMM' }}
-        </div>
-      </ng-template>
-      <ng-template app-column-tmp="name" let-name>
-        <div class="name-cell">
-          {{ name }}
-        </div>
-      </ng-template>
-      <ng-template app-column-tmp="userlist" let-userlist>
-        <div class="users-cell">
-          <app-avatar-list [users]="mapPayersIncludeesToUsers(userlist)" />
-        </div>
-      </ng-template>
-      <ng-template app-column-tmp="amount" let-data="data">
-        <div class="amount-cell">
-          @if (data.currencyRate) {
-          <app-balance
-            [balance]="data.amount * data.currencyRate"
-            [currency]="mainCurrency()"
-            class="main-currency-amount"
-          />
-          }
-          <app-balance [balance]="data.amount" [currency]="data.currencyCode" class="original-amount" />
-        </div>
-      </ng-template>
-      <ng-template app-column-tmp="actions">
-        <ard-icon-button class="reveal-button" (click)="$event.stopPropagation()">
-          <ard-icon-chevron-down-2 class="icon" />
-        </ard-icon-button>
-      </ng-template>
-    </app-grid>
+    @for (transx of transactions(); track transx.id) {
+    <app-transaction-list-item [data]="transx" [mainCurrency]="mainCurrency()" />
+    }
   </div>
 </app-card>

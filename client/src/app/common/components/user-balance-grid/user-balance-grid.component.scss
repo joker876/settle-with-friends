@@ -1,0 +1,32 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 20rem;
+}
+.heading-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.heading {
+  font-size: 0.875rem;
+  color: var(--ard-text);
+  font-weight: 500;
+}
+.user-grid {
+  padding-top: 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  gap: 0.25rem;
+  --avatar-size: 1.5rem;
+}
+app-balance {
+  font-size: 0.875rem;
+  color: var(--ard-text);
+  font-weight: 500;
+}
+.remaining {
+  font-size: 0.6875rem;
+  color: var(--ard-text3);
+  margin-right: 0.6ch;
+}

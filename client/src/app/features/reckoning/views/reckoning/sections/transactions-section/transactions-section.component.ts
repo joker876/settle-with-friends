@@ -12,6 +12,7 @@ import { ITransaction } from '@shared/entities/transaction';
 import { ITransactionPayer } from '@shared/entities/transaction-payer';
 import { IUser } from '@shared/entities/user';
 import { map, Subject, takeUntil } from 'rxjs';
+import { TransactionListItemComponent } from "../../components/transaction-list-item/transaction-list-item.component";
 
 @Component({
   selector: 'app-transactions-section',
@@ -24,7 +25,8 @@ import { map, Subject, takeUntil } from 'rxjs';
     BalanceComponent,
     ArdiumIconButtonModule,
     ArdIconChevronDown_2,
-  ],
+    TransactionListItemComponent
+],
   templateUrl: './transactions-section.component.html',
   styleUrl: './transactions-section.component.scss',
 })

@@ -1,0 +1,5 @@
+@for (opt of options(); track opt.value) {
+<button (click)="value.set(opt.value)" [class.active]="value() === opt.value">
+  {{ opt.label }}
+</button>
+}

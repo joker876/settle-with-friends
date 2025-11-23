@@ -1,0 +1,9 @@
+<app-statistic>
+  <div class="icon">
+    <ng-content />
+  </div>
+  <div class="value">
+    {{ value() }}
+    <ng-content select="value" />
+  </div>
+</app-statistic>
