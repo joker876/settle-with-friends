@@ -45,7 +45,7 @@ export class TransactionListItemComponent {
   readonly data = input.required<ITransaction>();
   readonly mainCurrency = input.required<string>();
 
-  readonly isDetailsOpen = model<boolean>(true); // TODO set to false
+  readonly isDetailsOpen = model<boolean>(false);
 
   onShowDetailsClick() {
     this.isDetailsOpen.update(v => !v);
