@@ -26,6 +26,9 @@ import { entities } from './typeorm/entities/index';
       database: process.env.DB_DATABASE,
       entities,
       synchronize: true,
+      extra: {
+        decimalNumbers: true,
+      },
     }),
     TypeOrmModule.forFeature([SessionEntity]),
     PassportModule.register({ session: true }),

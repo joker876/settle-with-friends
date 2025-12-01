@@ -13,7 +13,7 @@ export class TransactionSplitPart implements ITransactionSplitPartInternal {
   @Column({ type: 'tinytext' })
   name: string;
 
-  @Column({ type: 'double', nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   amount: number | null;
 
   @OneToMany(() => TransactionSplitPartIncludee, includee => includee.splitPart, cascade)

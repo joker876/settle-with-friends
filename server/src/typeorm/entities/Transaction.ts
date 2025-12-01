@@ -29,13 +29,13 @@ export class Transaction implements ITransaction {
   @Column()
   name: string;
 
-  @Column({ type: 'double' })
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
   @Column()
   currencyCode: string;
 
-  @Column({ type: 'double', nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
   currencyRate?: number;
 
   @Column({ nullable: true })

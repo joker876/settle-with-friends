@@ -18,7 +18,7 @@ export class TransactionPayer implements ITransactionPayer {
   @JoinColumn({ name: 'userId' })
   user: IUser;
 
-  @Column({ type: 'double', nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   amount: number | null;
 
   transactionId: number;
