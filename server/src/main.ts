@@ -8,8 +8,7 @@ import { DataSource } from 'typeorm';
 import { AppModule } from './app.module';
 import { SessionEntity } from './typeorm/entities/Session';
 
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
-(async () => {
+void (async () => {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
 
@@ -23,6 +22,7 @@ import { SessionEntity } from './typeorm/entities/Session';
   const sessionRepo = dataSource.getRepository(SessionEntity);
 
   app.use(
+    // @ts-ignore  Nest compiler thinks this is correct, but TS compiler disagrees
     session({
       secret: process.env.SESSION_SECRET ?? '',
       saveUninitialized: false,
@@ -36,9 +36,11 @@ import { SessionEntity } from './typeorm/entities/Session';
         ttl: parseInt(process.env.SESSION_COOKIE_DURATION ?? '86400000') / 1000,
         limitSubquery: false,
       }).connect(sessionRepo),
-    })
+    }),
   );
   app.use(passport.initialize());
   app.use(passport.session());
-  await app.listen(5280);
+  await app.listen(Number(process.env.PORT) || 5280, process.env.IPV4 ?? '127.0.0.1');
+
+  console.log(`Server is running on: ${await app.getUrl()}`);
 })();

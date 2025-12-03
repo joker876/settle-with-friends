@@ -1,7 +1,7 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { HttpService } from '@common/services/http-service';
-import { MappingToken } from '@common/utils/hydration';
+import { hydrateAllInArray, hydrateSingleProp, MappingToken } from '@common/utils/hydration';
 import { IUser } from '@shared/entities/user';
 import { of } from 'rxjs';
 import { ReckoningService } from './reckoning.service';
@@ -29,39 +29,15 @@ export class UsersService {
       }, {} as Record<number, IUser>) ?? {},
   );
 
-  private _getUser(userId: number): IUser {
-    return this._userMap()[userId];
-  }
-
-  private _mapUsersMutate<T extends Record<string, any>>(objects: T[], destProp: keyof T, idProp: keyof T): void {
-    objects.forEach(v => (v[destProp] = this._userMap()[v[idProp]] as any));
-  }
-
   hydrateUsers<T extends Record<string, any>>(mappingTokens: MappingToken<T>[]): (objects: T[]) => T[] {
-    return objects =>
-      objects.map(v => {
-        for (const token of mappingTokens) {
-          if (token.isSingle) {
-            v[token.destProp] = this._getUser(v[token.idProp]) as any;
-            continue;
-          }
-          this._mapUsersMutate<T>(v[token.arrayProp!], token.destProp, token.idProp);
-        }
-        return v;
-      });
+    return hydrateSingleProp<T, IUser>(mappingTokens, this._userMap());
   }
 
   hydrateUsersInArray<T extends Record<string, any>, A extends Record<string, any>>(
     arrayProp: keyof T,
     mappingTokens: MappingToken<A>[],
   ): (objects: T[]) => T[] {
-    return objects =>
-      objects.map(obj => {
-        if (Array.isArray(obj[arrayProp])) {
-          obj[arrayProp] = this.hydrateUsers<A>(mappingTokens)(obj[arrayProp]) as any;
-        }
-        return obj;
-      });
+    return hydrateAllInArray<T, A, IUser>(arrayProp, mappingTokens, this._userMap());
   }
 }
 
