@@ -14,32 +14,29 @@ export class ReckoningsService {
   private readonly _snackbarController = inject(SnackbarController);
 
   private readonly _reckonings = rxResource({
-    loader: () => this._http.get<GetAllReckoningsResponseDto>('/reckonings'),
+    stream: () => this._http.get<GetAllReckoningsResponseDto>('/reckonings'),
   });
   public readonly reckonings = this._reckonings.asReadonly();
 
   private _addReckoningToList(data: IReckoningTableData): void {
-    this._reckonings.update(reckonings => [
-      ...(reckonings ?? []),
-      data,
-    ]);
+    this._reckonings.update(reckonings => [...(reckonings ?? []), data]);
   }
 
   //! creating
-  private readonly _createReckoningStatus = signal<ResourceStatus>(ResourceStatus.Idle);
+  private readonly _createReckoningStatus = signal<ResourceStatus>('idle');
   public readonly createReckoningStatus = this._createReckoningStatus.asReadonly();
 
   public createReckoning(reckoningData: ICreateReckoningRequestDto) {
-    if (this._createReckoningStatus() === ResourceStatus.Loading) return;
+    if (this._createReckoningStatus() === 'loading') return;
 
-    this._createReckoningStatus.set(ResourceStatus.Loading);
+    this._createReckoningStatus.set('loading');
 
     return new Promise<boolean>(resolve => {
       this._http
         .post<IReckoningTableData, ICreateReckoningRequestDto>('/reckonings', reckoningData)
         .pipe(setResourceStatusAfterLoaded(this._createReckoningStatus))
         .subscribe({
-          next: (res) => {
+          next: res => {
             resolve(true);
             this._addReckoningToList(res);
             console.log("%cChange URL to reckoning's page", 'color:lime');

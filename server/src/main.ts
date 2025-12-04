@@ -13,7 +13,7 @@ void (async () => {
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') ?? 'http://localhost:4200',
+    origin: process.env.CLIENT_URL?.split(',') ?? 'http://localhost:4200',
     credentials: true,
   });
   app.useGlobalPipes(new ValidationPipe());

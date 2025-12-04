@@ -22,7 +22,7 @@ export class AuthService {
   private readonly _snackbarController = inject(SnackbarController);
 
   private readonly _authStatus = rxResource({
-    loader: () => this._http.get<IAuthStatusResponseDto>('/auth/status'),
+    stream: () => this._http.get<IAuthStatusResponseDto>('/auth/status'),
   });
 
   public readonly isSafeToRedirect = computed<boolean>(() => !!this._authStatus.value());
@@ -140,13 +140,13 @@ export class AuthService {
   }
 
   //! register
-  private readonly _registerStatus = signal<ResourceStatus>(ResourceStatus.Idle);
+  private readonly _registerStatus = signal<ResourceStatus>('idle');
   public readonly registerStatus = this._registerStatus.asReadonly();
 
   public register(registerData: IAuthRegisterRequestDto) {
-    if (this._registerStatus() === ResourceStatus.Loading) return;
+    if (this._registerStatus() === 'loading') return;
 
-    this._registerStatus.set(ResourceStatus.Loading);
+    this._registerStatus.set('loading');
 
     this._http
       .post<IAuthRegisterRequestDto>('/auth/register', registerData)
@@ -159,7 +159,7 @@ export class AuthService {
         },
         error: () => {
           this._snackbarController.openError(
-            $localize`:@@register.snackbar.error:Nie udało się zapisać danych. Spróbuj ponownie za chwilę.`
+            $localize`:@@register.snackbar.error:Nie udało się zapisać danych. Spróbuj ponownie za chwilę.`,
           );
         },
       });

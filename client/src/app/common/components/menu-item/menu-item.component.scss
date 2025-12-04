@@ -9,4 +9,7 @@
     display: block;
     height: 1.625rem;
   }
-} 
+}
+:host ::ng-deep .mat-mdc-menu-item {
+  padding-left: 0.75rem;
+}

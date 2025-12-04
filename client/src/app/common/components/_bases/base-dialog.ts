@@ -6,7 +6,7 @@ import { WrapInAbstractControl } from '@common/utils/form-types';
 export abstract class _BaseFormDialogComponent<T extends Record<string, any>> implements OnChanges {
   readonly open = model.required<boolean>();
 
-  readonly loadingStatus = input<ResourceStatus>(ResourceStatus.Idle);
+  readonly loadingStatus = input<ResourceStatus>('idle');
 
   readonly submit = output<T>();
 
