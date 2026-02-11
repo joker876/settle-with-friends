@@ -68,7 +68,8 @@ export const appConfig: ApplicationConfig = {
       UTC: true,
       serializeFn: DATE_SERIALIZATION_FN,
       deserializeFn: DATE_DESERIALIZATION_FN,
-      startView: ArdCalendarView.Years,
+      startView: ArdCalendarView.Days,
+      appearance: FormElementAppearance.Filled,
     }),
     provideInputDefaults({
       placeholder: '',
@@ -93,7 +94,8 @@ export const appConfig: ApplicationConfig = {
       alignText: OneAxisAlignment.Left,
       noButtons: true,
       min: 0,
-      allowFloat: false,
+      allowFloat: true,
+      
     }),
     provideSpinnerDefaults({ color: ComponentColor.None }),
   ],

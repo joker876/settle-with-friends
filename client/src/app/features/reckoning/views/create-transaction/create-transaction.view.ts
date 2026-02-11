@@ -1,7 +1,20 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ArdiumFormFieldModule, ArdiumInputModule, ArdiumNumberInputModule, ArdiumSelectModule } from '@ardium-ui/ui';
+import {
+  ArdiumDateInputModule,
+  ArdiumFormFieldModule,
+  ArdiumInputModule,
+  ArdiumNumberInputModule,
+  ArdiumSelectModule,
+} from '@ardium-ui/ui';
+import { CardWithHeadingComponent } from '@common/components/card-with-heading/card-with-heading.component';
+import { CurrencyRateInputComponent } from '@common/components/currency-rate-input/currency-rate-input.component';
+import { DataGridComponent } from '@common/components/data-grid/data-grid.component';
+import { GridItemComponent } from '@common/components/data-grid/grid-item/grid-item.component';
+import { SelectComponent } from '@common/components/select/select.component';
+import { StackComponent } from '@common/components/stack/stack.component';
+import { ViewH1Component } from '@common/components/view-h1/view-h1.component';
 import { MapErrorPipe } from '@common/pipes/map-error.pipe';
 import { WrapInAbstractControl } from '@common/utils/form-types';
 import { CurrencyRatesService } from '@features/reckoning/services/currency-rates.service';
@@ -18,6 +31,14 @@ import { startWith } from 'rxjs';
     ArdiumSelectModule,
     ReactiveFormsModule,
     MapErrorPipe,
+    StackComponent,
+    CardWithHeadingComponent,
+    ViewH1Component,
+    SelectComponent,
+    DataGridComponent,
+    GridItemComponent,
+    ArdiumDateInputModule,
+    CurrencyRateInputComponent,
   ],
   templateUrl: './create-transaction.view.html',
   styleUrl: './create-transaction.view.scss',
@@ -26,19 +47,41 @@ export class CreateTransactionView {
   private readonly _currencyRatesService = inject(CurrencyRatesService);
   private readonly _transactionService = inject(TransactionsService);
 
+  readonly TODAY = new Date();
+
   readonly form = new FormGroup<WrapInAbstractControl<ICreateTransactionRequestDto['transaction']>>({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    amount: new FormControl(0, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
-    currencyCode: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    amount: new FormControl(null as unknown as number, {
+      nonNullable: true,
+      validators: [Validators.required, Validators.min(0)],
+    }),
+    currencyCode: new FormControl(null as unknown as string, { nonNullable: true, validators: [Validators.required] }),
     currencyRate: new FormControl<number | null>(null, { validators: [Validators.required, Validators.min(0)] }),
     isCurrencyRateFromApi: new FormControl<boolean | null>(null, { validators: [Validators.required] }),
-    transactionDate: new FormControl(new Date(), { nonNullable: true, validators: [Validators.required] }),
+    transactionDate: new FormControl(this.TODAY, { nonNullable: true, validators: [Validators.required] }),
   });
   readonly formValue = toSignal(this.form.valueChanges.pipe(startWith(this.form.value)));
   readonly currencyCodeValue = computed<string>(() => this.formValue()!.currencyCode!);
   readonly transactionDateValue = computed<Date>(() => this.formValue()!.transactionDate!);
 
+  readonly currencies = this._currencyRatesService.currencies;
+  readonly isCurrencyRateLoading = signal<boolean>(false);
+
   constructor() {
+    // set initial currency code to main currency if available
+    let wasInitialCurrencySet = false;
+    effect(() => {
+      const mainCurrency = this._currencyRatesService.mainCurrency();
+
+      if (!wasInitialCurrencySet && mainCurrency) {
+        // wait for the select options to be initialized before setting the value to avoid warnings
+        setTimeout(() => {
+          this.form.controls.currencyCode.setValue(mainCurrency, { emitEvent: false });
+        }, 0);
+        wasInitialCurrencySet = true;
+      }
+    });
+    // disable currency code and rate if there's only one currency available
     effect(() => {
       const isMoreThanOneCurrency = this._currencyRatesService.isMoreThanOneCurrency();
 
@@ -53,27 +96,37 @@ export class CreateTransactionView {
         this.form.controls.currencyCode.enable({ emitEvent: false });
       }
     });
+    // fetch currency rate when currency code or transaction date changes, but only if the user hasn't manually edited the rate
+    effect(async () => {
+      const currencyCode = this.currencyCodeValue();
+      const mainCurrency = this._currencyRatesService.mainCurrency();
+
+      if (!currencyCode) {
+        return;
+      }
+
+      const date = this.transactionDateValue();
+      this.isCurrencyRateLoading.set(true);
+      await untracked(() => this._currencyRatesService.fetchAndStoreCurrencyRate(currencyCode, date));
+      this.isCurrencyRateLoading.set(false);
+
+      if (this.form.controls.currencyRate.touched) {
+        return;
+      }
+      if (this.currencyCodeValue() === mainCurrency) {
+        this.form.controls.currencyRate.setValue(null, { emitEvent: false });
+        this.form.controls.isCurrencyRateFromApi.setValue(null, { emitEvent: false });
+        return;
+      }
+      const rate = untracked(() => this._currencyRatesService.getCurrencyRate(currencyCode, date));
+      this.form.controls.currencyRate.setValue(rate, { emitEvent: false });
+      this.form.controls.isCurrencyRateFromApi.setValue(rate !== null, { emitEvent: false });
+    });
     effect(() => {
       const currencyCode = this.currencyCodeValue();
-
-      if (currencyCode !== this._currencyRatesService.currencies()[0]) {
-        const rate = this._currencyRatesService.getCurrencyRate(currencyCode, this.transactionDateValue());
-
-        this.form.controls.currencyRate.enable({ emitEvent: false });
-        this.form.controls.isCurrencyRateFromApi.enable({ emitEvent: false });
-
-        this.form.controls.currencyRate.setValue(rate);
-        this.form.controls.isCurrencyRateFromApi.setValue(rate !== null);
+      if (currencyCode) {
+        this.form.controls.currencyRate.markAsUntouched({ emitEvent: false });
       }
     });
   }
-
-  readonly shouldShowRatePicker = computed<boolean>(() => {
-    const mainCurrency = this._currencyRatesService.currencies()[0];
-    return (
-      this._currencyRatesService.isMoreThanOneCurrency() &&
-      !!mainCurrency &&
-      this.formValue()?.currencyCode !== mainCurrency
-    );
-  });
 }

@@ -3,7 +3,9 @@
     <div class="heading-row-grid">
       <div>
         <h2 class="heading">{{ heading() }}</h2>
-        <app-statistic class="subheading">{{ subheading() }}</app-statistic>
+        @if (subheading()) {
+          <app-statistic class="subheading">{{ subheading() }}</app-statistic>
+        }
       </div>
       <ng-content select="heading-row-items" />
     </div>

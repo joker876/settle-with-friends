@@ -1,0 +1,11 @@
+:host {
+  display: flex;
+  gap: 0.25ch;
+  align-items: center;
+}
+.icon {
+  width: 1rem;
+}
+.disabled {
+  opacity: 50%;
+}

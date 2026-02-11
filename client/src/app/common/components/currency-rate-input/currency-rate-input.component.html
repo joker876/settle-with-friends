@@ -1,0 +1,18 @@
+<app-statistic-with-value text="Kurs wymiany" i18n-text="@@common.currency-rate">
+  1 {{ currencyCode() }}
+  =
+  <app-balance [balance]="value()!" [currency]="mainCurrency()" places="4-4" [class.disabled]="isValueLoading()" />
+</app-statistic-with-value>
+<ard-icon-button (click)="openDialog()">
+  <ard-icon-edit-line-2 class="icon" />
+</ard-icon-button>
+
+<ard-dialog
+  heading="Modyfikuj kurs wymiany"
+  i18n-heading="@@common.modify-currency-rate"
+  [(open)]="isDialogOpen"
+  [canConfirm]="tempValue() !== null"
+  (confirm)="onConfirmDialog()"
+>
+  <ard-number-input [(value)]="tempValue" />
+</ard-dialog>

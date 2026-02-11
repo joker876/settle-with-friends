@@ -1,3 +1,13 @@
-h1 {
-  padding-bottom: 2rem;
+@use '../../../../../breakpoints.scss' as *;
+
+.amount-row {
+  display: grid;
+  gap: 0.375rem;
+  grid-template-columns: 1fr 8ch;
+}
+@media (width >= $bp-md) {
+  app-currency-rate-input {
+    position: relative;
+    top: 1.875rem;
+  }
 }

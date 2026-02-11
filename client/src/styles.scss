@@ -5,6 +5,8 @@
 @use '../node_modules/@ardium-ui/ui/themes/default/snackbar.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/inputs/input.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/inputs/number-input.scss';
+@use '../node_modules/@ardium-ui/ui/themes/default/inputs/date-input.scss';
+@use '../node_modules/@ardium-ui/ui/themes/default/calendar.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/progress-circle.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/spinner.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/select.scss';
@@ -35,6 +37,7 @@
   --border: #e5e5e5;
   --border-strong: #d4d4d4;
 
+  --font-family: 'Inter', sans-serif;
   --text: black;
   --text2: #222222;
   --text3: #717182;
@@ -81,6 +84,7 @@
   --ard-success-700: 44, 141, 34;
   --ard-success-900: 23, 88, 16;
 
+  --ard-font-family: var(--font-family);
   --ard-text: var(--text);
   --ard-text2: var(--text2);
   --ard-text3: var(--text3);
@@ -88,7 +92,7 @@
 
   --ard-button-height: 2.3125rem;
   --ard-button-height-compact: 1.5rem;
-  --ard-button-font-size: 1rem;
+  --ard-button-font-size: 0.9375rem;
   --ard-button-font-size-compact: 0.75rem;
   --ard-button-padding: 0 0.625rem;
   --ard-button-rounded-corner-radius: 0.375rem;
@@ -96,8 +100,10 @@
   --ard-icon-button-margin: 0;
   --ard-icon-button-height: 1.75rem;
   --ard-icon-button-height-compact: 1.5rem;
+  --ard-icon-button-disabled-opacity: 0;
 
   --ard-form-field-font-size: 0.875rem;
+  --ard-form-field-height: 1.875rem;
   --ard-select-font-size: 0.875rem;
   --ard-select-padding: 0 0.375rem;
   --ard-select-dropdown-padding: 0.75rem;
@@ -107,6 +113,7 @@
   --ard-select-dropdown-max-height: 15.5rem;
   --ard-select-placeholder-color: var(--text3);
   --ard-input-padding: 0 0.375rem;
+  // --ard-date-input-padding: 0.375rem;
 
   //! Colors derived from Ardium UI
   --primary: rgb(var(--ard-primary-500));
@@ -150,7 +157,7 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   position: relative;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-family);
 }
 
 img,
@@ -195,13 +202,11 @@ ol {
   padding: 0.5rem 0 0.5rem 1.75rem;
 }
 //! Global styles
-h2 {
-  font-size: 1.4125rem;
-  font-weight: 600;
-  color: var(--ard-text2);
-}
 .page-wrapper-g {
   padding: 1rem;
+  max-width: 90ch;
+  box-sizing: content-box;
+  margin: 0 auto;
 
   @media (width > 32rem) {
     padding: 1.5rem 3rem;
@@ -403,12 +408,14 @@ ard-button {
     z-index: 1;
   }
   &.ard-color-primary {
-    --ard-cmpcl--on-bg: var(--ard-text);
-    --ard-cmpcl--on-bg-colored: var(--ard-text);
+    --ard-cmpcl--on-bg: var(--ard-text-alt);
+    --ard-cmpcl--on-bg-colored: var(--ard-text-alt);
   }
   &.ard-color-danger {
     --ard-cmpcl--bg: var(--red);
     --ard-cmpcl--bg-colored: var(--red);
+    --ard-cmpcl--on-bg: var(--ard-text-alt);
+    --ard-cmpcl--on-bg-colored: var(--ard-text-alt);
   }
   &.ard-appearance-flat {
     border: 1px solid var(--ard-cmpcl--bg-colored);
@@ -476,12 +483,12 @@ ard-button.icon-only-g .ard-button {
 
   .ard-label {
     font-size: 0.875rem;
-    font-weight: 400;
+    font-weight: 600;
 
     .ard-label__required .ard-label__required-optional-text {
       font: inherit;
       color: inherit;
-      padding-left: 0.125rem;
+      padding-left: 0.125ch;
     }
   }
   .ard-form-field__hints {
@@ -505,8 +512,10 @@ ard-button.icon-only-g .ard-button {
   min-width: max-content;
 }
 // date input
-.ard-date-input .ard-date-input__value-container {
-  position: unset;
+.ard-date-input {
+  .ard-date-input__value-container {
+    position: unset;
+  }
 }
 // radio group
 ard-radio-group {

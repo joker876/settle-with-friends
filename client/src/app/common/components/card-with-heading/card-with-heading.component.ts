@@ -12,7 +12,7 @@ import { StatisticComponent } from '@common/components/statistic/statistic.compo
 })
 export class CardWithHeadingComponent {
   readonly heading = input.required<string>();
-  readonly subheading = input.required<string>();
+  readonly subheading = input<string>();
 
   readonly dangerZone = input<boolean, BooleanLike>(false, { transform: v => coerceBooleanProperty(v) });
 }

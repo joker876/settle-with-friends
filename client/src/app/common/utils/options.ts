@@ -11,3 +11,7 @@ export interface SelectableOption<T = any> {
   /** Optional label to show when the option is selected. */
   selectedLabel?: string;
 }
+
+export function createSelectableOptions(options: string[]): SelectableOption<string>[] {
+  return options.map(option => ({ label: option, value: option }));
+}
