@@ -5,11 +5,20 @@ import { ApplicationConfig, importProvidersFrom, LOCALE_ID, provideZoneChangeDet
 import { EVENT_MANAGER_PLUGINS } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import {
+  ArdCalendarView,
   ButtonAppearance,
   ComponentColor,
+  DropdownPanelAppearance,
+  FormElementAppearance,
+  OneAxisAlignment,
   provideButtonDefaults,
+  provideDateInputDefaults,
   provideDialogDefaults,
   provideIconButtonDefaults,
+  provideInputDefaults,
+  provideNumberInputDefaults,
+  provideSelectDefaults,
+  provideSpinnerDefaults,
 } from '@ardium-ui/ui';
 import { AuthInterceptor } from '@common/interceptors/auth.interceptor';
 import {
@@ -19,6 +28,7 @@ import {
 } from '@common/interceptors/date-mapping.interceptor';
 import { PreventAndStopPlugin } from '@common/plugins/prevent-default-event-manager';
 import { AuthService } from '@common/services/auth.service';
+import { DATE_DESERIALIZATION_FN, DATE_SERIALIZATION_FN } from '@common/utils/date-serialization';
 import { TimeagoCustomFormatter, TimeagoFormatter, TimeagoIntl, TimeagoModule } from 'ngx-timeago';
 import { routes } from './app.routes';
 
@@ -53,14 +63,38 @@ export const appConfig: ApplicationConfig = {
       rejectButtonText: $localize`:@@common.cancel:Anuluj`,
       confirmButtonAppearance: ButtonAppearance.RaisedStrong,
     }),
-    // provideDateInputDefaults({
-    //   placeholder: '',
-    //   UTC: true,
-    //   serializeFn: DATE_SERIALIZATION_FN,
-    //   deserializeFn: DATE_DESERIALIZATION_FN,
-    //   min: new Date(1901, 0, 1),
-    //   max: new Date(),
-    //   startView: ArdCalendarView.Years,
-    // }),
+    provideDateInputDefaults({
+      placeholder: '',
+      UTC: true,
+      serializeFn: DATE_SERIALIZATION_FN,
+      deserializeFn: DATE_DESERIALIZATION_FN,
+      startView: ArdCalendarView.Years,
+    }),
+    provideInputDefaults({
+      placeholder: '',
+      appearance: FormElementAppearance.Filled,
+    }),
+    provideSelectDefaults({
+      placeholder: '',
+      appearance: FormElementAppearance.Filled,
+      clearButtonTitle: 'Wyczyść',
+      clearable: false,
+      searchable: true,
+      hideSelected: false,
+      multiselectable: false,
+      dropdownAppearance: DropdownPanelAppearance.Outlined,
+      loadingPlaceholderText: 'Ładowanie...',
+      noItemsFoundText: 'Nie znaleziono',
+      addCustomOptionText: 'Utwórz',
+    }),
+    provideNumberInputDefaults({
+      placeholder: '',
+      appearance: FormElementAppearance.Filled,
+      alignText: OneAxisAlignment.Left,
+      noButtons: true,
+      min: 0,
+      allowFloat: false,
+    }),
+    provideSpinnerDefaults({ color: ComponentColor.None }),
   ],
 };

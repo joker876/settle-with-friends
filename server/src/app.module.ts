@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -11,6 +11,7 @@ import { ReckoningsModule } from './reckonings/reckonings.module';
 import { TransactionsModule } from './reckonings/transactions/transactions.module';
 import { SessionEntity } from './typeorm/entities/Session';
 import { entities } from './typeorm/entities/index';
+import { DateMappingInterceptor } from './utils/date-mapping.interceptor';
 
 @Module({
   imports: [
@@ -42,6 +43,10 @@ import { entities } from './typeorm/entities/index';
     {
       provide: APP_GUARD,
       useClass: SessionAuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: DateMappingInterceptor,
     },
   ],
 })

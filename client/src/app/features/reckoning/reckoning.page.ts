@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { CurrencyRatesService } from './services/currency-rates.service';
 import { ReckoningService } from './services/reckoning.service';
 import { TransactionsService } from './services/transactions.service';
 import { UsersService } from './services/users.service';
@@ -9,7 +10,7 @@ import { UsersService } from './services/users.service';
   imports: [RouterModule],
   templateUrl: './reckoning.page.html',
   styleUrl: './reckoning.page.scss',
-  providers: [ReckoningService, TransactionsService, UsersService],
+  providers: [ReckoningService, TransactionsService, UsersService, CurrencyRatesService],
 })
 export class ReckoningPage {
   readonly reckoningService = inject(ReckoningService);

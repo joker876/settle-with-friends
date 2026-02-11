@@ -103,6 +103,7 @@
     <app-transactions-section
       [transactions]="transactionsService.transactions.value() ?? []"
       [mainCurrency]="reckoningService.reckoning.value()?.mainCurrency ?? ''"
+      (createTransactionClick)="navigateToCreateTransaction()"
     />
   </section>
 </div>

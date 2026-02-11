@@ -16,7 +16,7 @@ void (async () => {
     origin: process.env.CLIENT_URL?.split(',') ?? 'http://localhost:4200',
     credentials: true,
   });
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
   const dataSource = app.get<DataSource>(getDataSourceToken());
   const sessionRepo = dataSource.getRepository(SessionEntity);

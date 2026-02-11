@@ -141,6 +141,7 @@ p {
 h2 {
   font-size: 1.4125rem;
   font-weight: 600;
+  color: var(--ard-text2);
 }
 .page-wrapper-g {
   padding: 1rem;
@@ -363,4 +364,9 @@ ard-button.icon-only-g .ard-button {
 }
 ard-label {
   display: flex;
+}
+// border overrides
+.ard-form-field-frame.ard-appearance-outlined,
+.ard-number-input.ard-appearance-outlined {
+  --ard-appearance-border-color: var(--ard-border-light);
 }

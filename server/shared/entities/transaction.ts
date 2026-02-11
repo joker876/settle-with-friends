@@ -2,14 +2,17 @@ import { ITransactionSplitPart } from './transaction-includee';
 import { ITransactionPayer } from './transaction-payer';
 import { IUser } from './user';
 
-export interface ITransaction {
-  id: number;
+export interface ITransactionBasicData {
   name: string;
   amount: number;
   currencyCode: string;
   currencyRate?: number;
   isCurrencyRateFromApi?: boolean;
   transactionDate: Date;
+}
+
+export interface ITransaction extends ITransactionBasicData {
+  id: number;
   createdByUserId: number;
   createdBy: IUser;
   createdDate: Date;

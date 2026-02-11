@@ -1,0 +1,28 @@
+<div class="page-wrapper-g">
+  <h1 i18n="@@create-transaction.heading">Dodawanie transkacji</h1>
+  <form>
+    <ard-form-field>
+      <ard-label i18n="@@create-transaction.field.name">Tytuł transakcji</ard-label>
+      <ard-input [formControl]="form.controls.name" />
+      @if (form.controls.name.touched && form.controls.name.errors) {
+      <ard-error>{{ form.controls.name.errors | mapError }}</ard-error>
+      }
+    </ard-form-field>
+    <div class="form-row">
+      <ard-form-field>
+        <ard-label i18n="@@create-transaction.field.amount">Kwota</ard-label>
+        <ard-number-input [formControl]="form.controls.amount" />
+        @if (form.controls.amount.touched && form.controls.amount.errors) {
+        <ard-error>{{ form.controls.amount.errors | mapError }}</ard-error>
+        }
+      </ard-form-field>
+      <ard-form-field>
+        <ard-label>&nbsp;</ard-label>
+        <ard-select [formControl]="form.controls.currencyCode" />
+        @if (form.controls.amount.touched && form.controls.amount.errors) {
+        <ard-error>{{ form.controls.amount.errors | mapError }}</ard-error>
+        }
+      </ard-form-field>
+    </div>
+  </form>
+</div>

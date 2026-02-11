@@ -36,6 +36,7 @@ export default tseslint.config(
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/prefer-promise-reject-errors': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/no-unsafe-function-type': 'off',
       'prettier/prettier': 0,
     },
   }

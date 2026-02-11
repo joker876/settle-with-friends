@@ -4,10 +4,9 @@ import { Reckoning, ReckoningUser, User } from '../typeorm/entities';
 import { ReckoningAccessService } from './reckoning-access.service';
 import { ReckoningsController } from './reckonings.controller';
 import { ReckoningsService } from './reckonings.service';
-import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Reckoning, ReckoningUser]), TransactionsModule],
+  imports: [TypeOrmModule.forFeature([User, Reckoning, ReckoningUser])],
   controllers: [ReckoningsController],
   providers: [ReckoningsService, ReckoningAccessService],
 })

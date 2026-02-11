@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "start-client": "cd client && pnpm start",
+    "start-server": "cd server && pnpm start:dev"
+  }
+}

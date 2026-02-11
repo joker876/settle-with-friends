@@ -8,9 +8,7 @@ import { IUser } from '@shared/entities/user';
 import { OperatorFunction } from 'rxjs';
 import { ReckoningService } from './reckoning.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class UsersService {
   private readonly _reckoningService = inject(ReckoningService);
   private readonly _http = inject(HttpService);

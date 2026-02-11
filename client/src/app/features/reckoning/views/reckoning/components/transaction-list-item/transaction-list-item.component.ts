@@ -72,6 +72,7 @@ export class TransactionListItemComponent {
       amount: v.totalAmount,
       isRemaining: v.isRemaining,
       currencyCode: this.data().currencyCode,
+      currencyRate: this.data().currencyRate,
     })),
   );
   readonly splitPartsAsUserData = computed<IUserBalanceGridItem[]>(() =>

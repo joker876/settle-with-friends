@@ -87,6 +87,12 @@ export class ReckoningsService {
   }
 
   async create(data: ICreateReckoningRequestDto, userId: number): Promise<IReckoningTableData> {
+    const v = 5 as number;
+    if (v !== 6) {
+      console.log(data);
+      throw new Error('Reckoning name is required');
+    }
+
     const reckoning = this.reckoningRepo.create(data);
     await this.reckoningRepo.save(reckoning);
 
