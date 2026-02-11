@@ -55,7 +55,7 @@ export class CreateTransactionView {
       nonNullable: true,
       validators: [Validators.required, Validators.min(0)],
     }),
-    currencyCode: new FormControl(null as unknown as string, { nonNullable: true, validators: [Validators.required] }),
+    currencyCode: new FormControl(null as unknown as string, { nonNullable: true }),
     currencyRate: new FormControl<number | null>(null, { validators: [Validators.required, Validators.min(0)] }),
     isCurrencyRateFromApi: new FormControl<boolean | null>(null, { validators: [Validators.required] }),
     transactionDate: new FormControl(this.TODAY, { nonNullable: true, validators: [Validators.required] }),
