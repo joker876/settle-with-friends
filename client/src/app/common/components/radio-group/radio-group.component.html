@@ -1,0 +1,5 @@
+<ard-radio-group [formControl]="control()">
+  @for (opt of options(); track opt.value) {
+    <ard-radio [value]="opt.value" color="none">{{ opt.label }}</ard-radio>
+  }
+</ard-radio-group>

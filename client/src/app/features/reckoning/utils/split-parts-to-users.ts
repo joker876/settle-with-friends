@@ -5,7 +5,7 @@ import { IUser } from '@shared/entities/user';
 export interface IUserBalanceData {
   user: IUser;
   totalAmount: number;
-  isRemaining?: boolean;
+  isRemaining: boolean | null;
 }
 
 export function transactionSplitPartsToUserIncludeeData(
@@ -26,6 +26,7 @@ export function transactionSplitPartsToUserIncludeeData(
         users[includee.userId] = {
           user: includee.user,
           totalAmount: 0,
+          isRemaining: null,
         };
       }
       const userData = users[includee.userId]!;

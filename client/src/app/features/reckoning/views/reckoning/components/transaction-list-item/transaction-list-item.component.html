@@ -10,9 +10,9 @@
           <ard-icon-user-arrow-right-out-2 />
           <ng-container ngProjectAs="value">
             @if (data().payers.length === 1) {
-            {{ data().payers[0].user.displayName }}
+              {{ data().payers[0].user.displayName }}
             } @else {
-            {{ data().payers.length | pluralizePL : PAYERS1 : PAYERS2 : PAYERS5 : true }}
+              {{ data().payers.length | pluralizePL: PAYERS1 : PAYERS2 : PAYERS5 : true }}
             }
           </ng-container>
         </app-statistic-with-icon>
@@ -20,9 +20,9 @@
           <ard-icon-user-arrow-left-in-2 />
           <ng-container ngProjectAs="value">
             @if (numberOfIncludees() === 1) {
-            {{ data().splitParts[0].includees[0].user.displayName }}
+              {{ data().splitParts[0].includees[0].user.displayName }}
             } @else {
-            {{ numberOfIncludees() | pluralizePL : INCLUDEES1 : INCLUDEES2 : INCLUDEES5 : true }}
+              {{ numberOfIncludees() | pluralizePL: INCLUDEES1 : INCLUDEES2 : INCLUDEES5 : true }}
             }
           </ng-container>
         </app-statistic-with-icon>
@@ -32,54 +32,57 @@
       <div class="balance-container">
         <app-balance [balance]="amountInMainCurrency()" [currency]="mainCurrency()" />
         @if (data().currencyRate) {
-        <app-statistic>
-          <app-balance [balance]="data().amount" [currency]="data().currencyCode" />
-        </app-statistic>
+          <app-statistic>
+            <app-balance [balance]="data().amount" [currency]="data().currencyCode" />
+          </app-statistic>
         }
       </div>
       <ard-icon-button (click)="onShowDetailsClick()">
-        <ard-icon-chevron-down-2 class="chevron" [class.active]="isDetailsOpen()" />
+        <ard-icon-chevron class="chevron" [up]="isDetailsOpen()" [down]="!isDetailsOpen()" />
       </ard-icon-button>
     </div>
   </div>
   @if (isDetailsOpen()) {
-  <hr />
-  <div class="details-part">
-    @if (data().currencyRate) {
-    <app-statistic-row>
-      <app-statistic-with-value
-        text="Kwota oryginalna"
-        i18n-text="@@reckoning-page.transactions.transaction.original-amount"
-      >
-        <app-balance [balance]="data().amount" [currency]="data().currencyCode" />
-      </app-statistic-with-value>
-      <app-statistic-with-value text="Kurs wymiany" i18n-text="@@reckoning-page.transactions.transaction.currency-rate">
-        1 {{ data().currencyCode }}
-        =
-        <app-balance [balance]="data().currencyRate!" [currency]="mainCurrency()" places="4-4" />
-      </app-statistic-with-value>
-      <app-statistic-with-value [text]="amountInMainCurrencyText()">
-        <app-balance [balance]="amountInMainCurrency()" [currency]="mainCurrency()" />
-      </app-statistic-with-value>
-    </app-statistic-row>
-    }
-    <div class="user-details">
-      <app-user-balance-grid
-        heading="Opłacone przez"
-        i18n="@@reckoning-page.transactions.transaction.paid-by"
-        [usersAndValues]="payersAsUserData()"
-        [mainCurrency]="mainCurrency()"
-      />
-      <div>
-        <hr class="vertical-g" />
+    <hr />
+    <div class="details-part">
+      @if (data().currencyRate) {
+        <app-statistic-row>
+          <app-statistic-with-value
+            text="Kwota oryginalna"
+            i18n-text="@@reckoning-page.transactions.transaction.original-amount"
+          >
+            <app-balance [balance]="data().amount" [currency]="data().currencyCode" />
+          </app-statistic-with-value>
+          <app-statistic-with-value
+            text="Kurs wymiany"
+            i18n-text="@@reckoning-page.transactions.transaction.currency-rate"
+          >
+            1 {{ data().currencyCode }}
+            =
+            <app-balance [balance]="data().currencyRate!" [currency]="mainCurrency()" places="4-4" />
+          </app-statistic-with-value>
+          <app-statistic-with-value [text]="amountInMainCurrencyText()">
+            <app-balance [balance]="amountInMainCurrency()" [currency]="mainCurrency()" />
+          </app-statistic-with-value>
+        </app-statistic-row>
+      }
+      <div class="user-details">
+        <app-user-balance-grid
+          heading="Opłacone przez"
+          i18n="@@reckoning-page.transactions.transaction.paid-by"
+          [usersAndValues]="payersAsUserData()"
+          [mainCurrency]="mainCurrency()"
+        />
+        <div>
+          <hr class="vertical-g" />
+        </div>
+        <app-user-balance-grid
+          heading="Osoby wliczane"
+          i18n="@@reckoning-page.transactions.transaction.includees"
+          [usersAndValues]="splitPartsAsUserData()"
+          [mainCurrency]="mainCurrency()"
+        />
       </div>
-      <app-user-balance-grid
-        heading="Osoby wliczane"
-        i18n="@@reckoning-page.transactions.transaction.includees"
-        [usersAndValues]="splitPartsAsUserData()"
-        [mainCurrency]="mainCurrency()"
-      />
     </div>
-  </div>
   }
 </app-card>

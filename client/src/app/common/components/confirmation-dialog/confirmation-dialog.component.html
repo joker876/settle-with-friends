@@ -1,0 +1,13 @@
+<ard-dialog
+  [heading]="heading()"
+  [confirmButtonText]="confirmButtonTextWithTime()"
+  confirmButtonColor="danger"
+  rejectButtonText="Anuluj"
+  [(open)]="open"
+  (confirm)="submit.emit()"
+  [canConfirm]="!isSubmitLoading() && canConfirm()"
+>
+  <div class="content">
+    <ng-content />
+  </div>
+</ard-dialog>

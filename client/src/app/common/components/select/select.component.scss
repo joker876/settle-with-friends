@@ -1,0 +1,27 @@
+:host {
+  display: block;
+  --arrow-size: 1rem;
+  cursor: pointer;
+}
+.option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+
+  .check-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+}
+.dropdown-arrow {
+  width: var(--arrow-size, 1rem);
+  height: var(--arrow-size, 1rem);
+}
+.select-value {
+  font-weight: inherit;
+
+  &:not(.searchable) {
+    cursor: pointer;
+  }
+}

@@ -11,7 +11,7 @@ import {
   IUserBalanceGridItem,
   UserBalanceGridComponent,
 } from '@common/components/user-balance-grid/user-balance-grid.component';
-import { ArdIconChevronDown_2 } from '@common/icons/chevron-down-2.icon';
+import { ArdIconChevron } from '@common/icons/chevron.icon';
 import { ArdIconUserArrowLeftIn_2 } from '@common/icons/user-arrow-left-in-2.icon';
 import { ArdIconUserArrowRightOut_2 } from '@common/icons/user-arrow-right-out-2.icon';
 import {
@@ -27,7 +27,7 @@ import { PluralizePLPipe } from 'ngx-polish-number-to-words';
     CardComponent,
     BalanceComponent,
     ArdiumIconButtonModule,
-    ArdIconChevronDown_2,
+    ArdIconChevron,
     PluralizePLPipe,
     DatePipe,
     ArdIconUserArrowRightOut_2,
@@ -81,6 +81,7 @@ export class TransactionListItemComponent {
       amount: v.totalAmount,
       currencyCode: this.data().currencyCode,
       currencyRate: this.data().currencyRate,
+      isRemaining: v.isRemaining,
     })),
   );
 

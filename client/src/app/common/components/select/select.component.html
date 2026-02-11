@@ -1,0 +1,35 @@
+<ard-select
+  [formControl]="control()"
+  [items]="options()"
+  valueFrom="value"
+  labelFrom="label"
+  [placeholder]="placeholder()"
+  [id]="htmlId()"
+  [isLoading]="areOptionsLoading()"
+  [searchable]="searchable()"
+  [addCustom]="addCustomFn()"
+  [compareWith]="compareWithFn()"
+  [appearance]="appearance()"
+>
+  @if (withPrefix()) {
+    <ng-template ard-prefix-tmp>
+      <ng-content />
+    </ng-template>
+  }
+  <ng-template ard-value-tmp let-itemData="itemData">
+    <span class="select-value" [class.searchable]="searchable()">{{ itemData.selectedLabel ?? itemData.label }}</span>
+  </ng-template>
+
+  <ng-template ard-option-tmp let-label="label" let-selected="selected">
+    <div class="option">
+      <span class="label">{{ label }}</span>
+      @if (selected) {
+        <ard-icon-check class="check-icon" />
+      }
+    </div>
+  </ng-template>
+
+  <ng-template ard-dropdown-arrow-tmp>
+    <ard-icon-chevron class="dropdown-arrow" />
+  </ng-template>
+</ard-select>

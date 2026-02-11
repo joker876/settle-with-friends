@@ -1,0 +1,27 @@
+:host {
+  display: grid;
+  grid-template-columns: repeat(var(--_data-grid-cols-base), 1fr);
+  column-gap: 1rem;
+  row-gap: 0.5rem;
+}
+
+@media (width >= 36rem) {
+  :host {
+    grid-template-columns: repeat(var(--_data-grid-cols-sm), 1fr);
+  }
+}
+@media (width >= 48rem) {
+  :host {
+    grid-template-columns: repeat(var(--_data-grid-cols-md), 1fr);
+  }
+}
+@media (width >= 64rem) {
+  :host {
+    grid-template-columns: repeat(var(--_data-grid-cols-lg), 1fr);
+  }
+}
+@media (width >= 80rem) {
+  :host {
+    grid-template-columns: repeat(var(--_data-grid-cols-xl), 1fr);
+  }
+}

@@ -6,8 +6,8 @@ export interface ITransactionBasicData {
   name: string;
   amount: number;
   currencyCode: string;
-  currencyRate?: number;
-  isCurrencyRateFromApi?: boolean;
+  currencyRate: number | null;
+  isCurrencyRateFromApi: boolean | null;
   transactionDate: Date;
 }
 

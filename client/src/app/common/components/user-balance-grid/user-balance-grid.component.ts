@@ -10,8 +10,8 @@ export interface IUserBalanceGridItem {
   user: IUser;
   amount: number;
   currencyCode: string;
-  currencyRate?: number;
-  isRemaining?: boolean;
+  currencyRate: number | null;
+  isRemaining: boolean | null;
 }
 
 @Component({

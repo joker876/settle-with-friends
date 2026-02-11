@@ -1,0 +1,24 @@
+:host {
+  grid-column: span var(--_data-grid-span-base);
+}
+
+@media (width >= 36rem) {
+  :host {
+    grid-column: span var(--_data-grid-span-sm);
+  }
+}
+@media (width >= 48rem) {
+  :host {
+    grid-column: span var(--_data-grid-span-md);
+  }
+}
+@media (width >= 64rem) {
+  :host {
+    grid-column: span var(--_data-grid-span-lg);
+  }
+}
+@media (width >= 80rem) {
+  :host {
+    grid-column: span var(--_data-grid-span-xl);
+  }
+}

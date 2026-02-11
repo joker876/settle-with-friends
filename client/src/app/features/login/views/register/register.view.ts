@@ -1,5 +1,5 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ArdiumButtonModule, ArdiumFormFieldModule, ArdiumInputModule, ArdiumSegmentModule } from '@ardium-ui/ui';
 import { AuthService } from '@common/services/auth.service';
 import { RequiredNonNullable, WrapInAbstractControl } from '@common/utils/form-types';
@@ -33,8 +33,8 @@ export class RegisterView {
   }
 
   readonly form = new FormGroup<WrapInAbstractControl<IAuthRegisterRequestDto>>({
-    displayName: new FormControl<string>(''),
-    acceptsPhoto: new FormControl<boolean>(false),
+    displayName: new FormControl<string>('', { validators: [Validators.required], nonNullable: true }),
+    acceptsPhoto: new FormControl<boolean>(false, { nonNullable: true }),
   });
 
   //! display name

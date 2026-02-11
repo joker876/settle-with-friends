@@ -16,6 +16,6 @@ export class CreateReckoningDialogComponent extends _BaseFormDialogComponent<ICr
   override autoClose: boolean = false;
 
   public readonly form = new FormGroup<WrapInAbstractControl<ICreateReckoningRequestDto>>({
-    name: new FormControl<string>('', [Validators.required]),
+    name: new FormControl<string>('', { validators: [Validators.required], nonNullable: true }),
   });
 }

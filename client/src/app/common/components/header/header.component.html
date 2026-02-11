@@ -7,7 +7,7 @@
     <div class="menu-container">
       <ard-button appearance="outlined" variant="pill" color="none" [matMenuTriggerFor]="menu">
         <app-avatar [photo]="authService.userData()?.photo" [name]="authService.userData()?.displayName ?? ''" withStatus />
-        <ard-icon-chevron-down-2 class="icon" [class.rotated]="false" />
+        <ard-icon-chevron down class="icon" />
       </ard-button>
     </div>
     }

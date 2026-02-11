@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { ArdiumButtonModule } from '@ardium-ui/ui';
-import { ArdIconChevronDown_2 } from '@common/icons/chevron-down-2.icon';
+import { ArdIconChevron } from '@common/icons/chevron.icon';
 import { ArdIconLogout } from "@common/icons/logout.icon";
 import { ArdIconSettings } from "@common/icons/settings.icon";
 import { AuthService } from '@common/services/auth.service';
@@ -12,7 +12,7 @@ import { MenuItemComponent } from "../menu-item/menu-item.component";
 
 @Component({
   selector: 'app-header',
-  imports: [FormsModule, AvatarComponent, ArdiumButtonModule, ArdIconChevronDown_2, MatMenuModule, MatDividerModule, MenuItemComponent, ArdIconSettings, ArdIconLogout],
+  imports: [FormsModule, AvatarComponent, ArdiumButtonModule, ArdIconChevron, MatMenuModule, MatDividerModule, MenuItemComponent, ArdIconSettings, ArdIconLogout],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })

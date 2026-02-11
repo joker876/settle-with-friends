@@ -1,0 +1,16 @@
+.heading-row-grid {
+  display: flex;
+  gap: 1rem 3.5rem;
+  align-items: end;
+  flex-wrap: wrap;
+}
+app-card {
+  padding: 1.5rem;
+  margin-bottom: 0.75rem;
+
+  &.danger-zone {
+    .heading {
+      color: var(--red);
+    }
+  }
+}
