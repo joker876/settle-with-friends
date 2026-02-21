@@ -42,11 +42,11 @@ importers:
         specifier: ^21.0.3
         version: 21.0.3(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(@angular/platform-browser@21.0.3(@angular/animations@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(rxjs@7.8.1)
       '@ardium-ui/devkit':
-        specifier: ^8.0.1
-        version: 8.0.1(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(@angular/platform-browser@21.0.3(@angular/animations@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))
+        specifier: 8.0.2-alpha.1
+        version: 8.0.2-alpha.1(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(@angular/platform-browser@21.0.3(@angular/animations@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))
       '@ardium-ui/ui':
-        specifier: 5.0.0-alpha.51
-        version: 5.0.0-alpha.51(@angular/cdk@21.0.2(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(@angular/platform-browser@21.0.3(@angular/animations@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@types/node@22.7.5)
+        specifier: 5.0.0-alpha.54
+        version: 5.0.0-alpha.54(@angular/cdk@21.0.2(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(@angular/platform-browser@21.0.3(@angular/animations@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@types/node@22.7.5)
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -351,15 +351,15 @@ packages:
       '@angular/core': '>=19.0.0'
       '@angular/platform-browser': '>=19.0.0'
 
-  '@ardium-ui/devkit@8.0.1':
-    resolution: {integrity: sha512-ENhvhjALVl2NvpzQLaxKLqwIQW43K8OdwF9pVygjEd4dP9o0nFi9UJhdLcvFzxkhsWwIokjIBdA8AJRs09J1NQ==}
+  '@ardium-ui/devkit@8.0.2-alpha.1':
+    resolution: {integrity: sha512-j5pLCuS5byLjsQy4smKuRtKkoImg8C2Jj/fJeaq/8r7PqpMCWLMPbYYedqEM9a1DdgQKLeQLWaDaYTus4nyE5g==}
     peerDependencies:
       '@angular/common': '>=19.0.0'
       '@angular/core': '>=19.0.0'
       '@angular/platform-browser': '>=19.0.0'
 
-  '@ardium-ui/ui@5.0.0-alpha.51':
-    resolution: {integrity: sha512-/IF9F0d277Ga5xICOuYcdfcSkeRd74iGNzPIcBYtnc/FR8ut246MTPUc+yMyecp8dXZy/JQVsTo1/skttcZ/4g==}
+  '@ardium-ui/ui@5.0.0-alpha.54':
+    resolution: {integrity: sha512-IB7SGVrRcqPU2wXrWXXk6blvi6NQ8I8QhI/KrzPU4pQVlmM5ToXcR/bObVWqyeK3fXDP4bghgHDQ8gOUJfRVqw==}
     peerDependencies:
       '@angular/cdk': '>=18.0.0'
       '@angular/common': '>=18.0.0'
@@ -4147,7 +4147,7 @@ snapshots:
       simple-bool: 3.1.0
       tslib: 2.8.1
 
-  '@ardium-ui/devkit@8.0.1(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(@angular/platform-browser@21.0.3(@angular/animations@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))':
+  '@ardium-ui/devkit@8.0.2-alpha.1(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(@angular/platform-browser@21.0.3(@angular/animations@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))':
     dependencies:
       '@angular/common': 21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
       '@angular/core': 21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)
@@ -4158,7 +4158,7 @@ snapshots:
       simple-bool: 3.1.0
       tslib: 2.8.1
 
-  '@ardium-ui/ui@5.0.0-alpha.51(@angular/cdk@21.0.2(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(@angular/platform-browser@21.0.3(@angular/animations@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@types/node@22.7.5)':
+  '@ardium-ui/ui@5.0.0-alpha.54(@angular/cdk@21.0.2(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(@angular/platform-browser@21.0.3(@angular/animations@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@types/node@22.7.5)':
     dependencies:
       '@angular/cdk': 21.0.2(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
       '@angular/common': 21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)

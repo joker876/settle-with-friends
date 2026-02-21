@@ -8,40 +8,62 @@
     />
     <form>
       <app-stack>
-        <app-card-with-heading heading="Informacje podstawowe" i18n-heading="@@create-transaction.basic-info">
+        <app-card-with-heading
+          heading="Informacje podstawowe"
+          i18n-heading="@@create-transaction.basic-info"
+          subheading="Podstawowe informacje o o transakcji"
+          i18n-subheading="@@create-transaction.basic-info-subheading"
+        >
           <app-data-grid cols="1 md:2">
             <app-grid-item>
               <ard-form-field>
-                <ard-label i18n="@@create-transaction.field.name" required>Tytuł transakcji</ard-label>
-                <ard-input [formControl]="form.controls.name" />
-                @if (form.controls.name.touched && form.controls.name.errors) {
-                <ard-error>{{ form.controls.name.errors | mapError }}</ard-error>
+                <ard-label i18n="@@create-transaction.field.name.label" required>Tytuł transakcji</ard-label>
+                <ard-input
+                  [formControl]="form.controls.transaction.controls.name"
+                  placeholder="np. Zakupy, Paliwo, Restauracja"
+                  i18n-placeholder="@@create-transaction.field.name.placeholder"
+                />
+                @if (form.controls.transaction.controls.name.touched && form.controls.transaction.controls.name.errors)
+                {
+                <ard-error>{{ form.controls.transaction.controls.name.errors | mapError }}</ard-error>
                 }
               </ard-form-field>
             </app-grid-item>
             <app-grid-item>
               <ard-form-field>
-                <ard-label i18n="@@create-transaction.field.date" required>Data transakcji</ard-label>
-                <ard-date-input [formControl]="form.controls.transactionDate" [max]="TODAY" />
-                @if (form.controls.transactionDate.touched && form.controls.transactionDate.errors) {
-                <ard-error>{{ form.controls.transactionDate.errors | mapError }}</ard-error>
+                <ard-label i18n="@@create-transaction.field.date.label" required>Data transakcji</ard-label>
+                <ard-date-input
+                  [formControl]="form.controls.transaction.controls.transactionDate"
+                  [max]="TODAY"
+                  placeholder="DD.MM.YYYY"
+                  i18n-placeholder="@@create-transaction.field.date.placeholder"
+                />
+                @if (form.controls.transaction.controls.transactionDate.touched &&
+                form.controls.transaction.controls.transactionDate.errors) {
+                <ard-error>{{ form.controls.transaction.controls.transactionDate.errors | mapError }}</ard-error>
                 }
               </ard-form-field>
             </app-grid-item>
             <app-grid-item>
               <div class="amount-row">
                 <ard-form-field>
-                  <ard-label i18n="@@create-transaction.field.amount" required>Kwota</ard-label>
-                  <ard-number-input [formControl]="form.controls.amount" />
-                  @if (form.controls.amount.touched && form.controls.amount.errors) {
-                  <ard-error>{{ form.controls.amount.errors | mapError }}</ard-error>
+                  <ard-label i18n="@@create-transaction.field.amount.label" required>Kwota</ard-label>
+                  <ard-number-input
+                    [formControl]="form.controls.transaction.controls.amount"
+                    placeholder="np. 307,42"
+                    i18n-placeholder="@@create-transaction.field.amount.placeholder"
+                  />
+                  @if (form.controls.transaction.controls.amount.touched &&
+                  form.controls.transaction.controls.amount.errors) {
+                  <ard-error>{{ form.controls.transaction.controls.amount.errors | mapError }}</ard-error>
                   }
                 </ard-form-field>
                 <ard-form-field>
                   <ard-label>&nbsp;</ard-label>
-                  <app-select [options]="currencies()" [control]="form.controls.currencyCode" />
-                  @if (form.controls.currencyCode.touched && form.controls.currencyCode.errors) {
-                  <ard-error>{{ form.controls.currencyCode.errors | mapError }}</ard-error>
+                  <app-select [options]="currencies()" [control]="form.controls.transaction.controls.currencyCode" />
+                  @if (form.controls.transaction.controls.currencyCode.touched &&
+                  form.controls.transaction.controls.currencyCode.errors) {
+                  <ard-error>{{ form.controls.transaction.controls.currencyCode.errors | mapError }}</ard-error>
                   }
                 </ard-form-field>
               </div>
@@ -51,19 +73,32 @@
               <app-currency-rate-input
                 [mainCurrency]="currencies()[0].value"
                 [currencyCode]="currencyCodeValue()"
-                [formControl]="form.controls.currencyRate"
-                [isCurrencyRateFromApiControl]="form.controls.isCurrencyRateFromApi"
-                [isValueLoading]="isCurrencyRateLoading() && !form.controls.currencyRate.touched"
+                [formControl]="form.controls.transaction.controls.currencyRate"
+                [isCurrencyRateFromApiControl]="form.controls.transaction.controls.isCurrencyRateFromApi"
+                [isValueLoading]="isCurrencyRateLoading() && !form.controls.transaction.controls.currencyRate.touched"
               />
               }
             </app-grid-item>
           </app-data-grid>
         </app-card-with-heading>
-        <app-card-with-heading heading="Osoby płacące" i18n-heading="@@create-transaction.payers">
-          
+        <app-card-with-heading
+          heading="Osoby płacące"
+          i18n-heading="@@create-transaction.payers"
+          subheading="Podaj, kto i ile zapłacił za transakcję"
+          i18n-subheading="@@create-transaction.payers.subheading"
+        >
+          <app-payers-adder
+            [formControl]="form.controls.payers"
+            [totalAmount]="formValue()!.transaction!.amount!"
+            [currencyCode]="formValue()!.transaction!.currencyCode!"
+          />
         </app-card-with-heading>
-        <app-card-with-heading heading="Podział kosztów" i18n-heading="@@create-transaction.cost-splits">
-
+        <app-card-with-heading
+          heading="Podział kosztów"
+          i18n-heading="@@create-transaction.cost-splits"
+          subheading="Podaj, do kogo należą poszczególne części rachunku"
+          i18n-subheading="@@create-transaction.cost-splits.subheading"
+        >
         </app-card-with-heading>
       </app-stack>
     </form>

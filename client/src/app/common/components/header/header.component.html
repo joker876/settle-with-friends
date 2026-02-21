@@ -6,7 +6,7 @@
     @if (authService.isLoggedIn()) {
     <div class="menu-container">
       <ard-button appearance="outlined" variant="pill" color="none" [matMenuTriggerFor]="menu">
-        <app-avatar [photo]="authService.userData()?.photo" [name]="authService.userData()?.displayName ?? ''" withStatus />
+        <app-avatar [photo]="authService.userData()?.photo ?? null" [name]="authService.userData()?.displayName ?? ''" withStatus />
         <ard-icon-chevron down class="icon" />
       </ard-button>
     </div>
@@ -16,7 +16,7 @@
 
 <mat-menu #menu="matMenu">
   <div class="menu-person-container">
-    <app-avatar [photo]="authService.userData()?.photo" [name]="authService.userData()?.displayName ?? ''" showName withStatus />
+    <app-avatar [photo]="authService.userData()?.photo ?? null" [name]="authService.userData()?.displayName ?? ''" showName withStatus />
   </div>
   <mat-divider />
   <app-menu-item>

@@ -95,7 +95,8 @@ export const appConfig: ApplicationConfig = {
       noButtons: true,
       min: 0,
       allowFloat: true,
-      
+      maxDecimalPlaces: 2,
+      fixedDecimalPlaces: true,
     }),
     provideSpinnerDefaults({ color: ComponentColor.None }),
   ],

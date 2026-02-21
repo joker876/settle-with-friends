@@ -29,10 +29,10 @@ export class Payment implements IPayment {
   currencyCode: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
-  currencyRate?: number;
+  currencyRate: number | null;
 
-  @Column({ nullable: true })
-  isCurrencyRateFromApi?: boolean;
+  @Column({ type: 'boolean', nullable: true })
+  isCurrencyRateFromApi: boolean | null;
 
   @Column()
   paymentDate: Date;

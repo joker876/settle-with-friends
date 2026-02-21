@@ -1,8 +1,9 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { HttpService } from '@common/services/http-service';
 import { hydrateAllInArray, hydrateSingleProp, MappingToken } from '@common/utils/hydration';
 import { ensureParams, isResourceResolved } from '@common/utils/resource';
+import { mapResourceToIdMap, mapResourceToSelectableIdOptions } from '@common/utils/resource-mappers';
 import { bufferLastUntil } from '@common/utils/rxjs';
 import { IUser } from '@shared/entities/user';
 import { OperatorFunction } from 'rxjs';
@@ -16,33 +17,30 @@ export class UsersService {
   private readonly _users = rxResource({
     params: () => ({ reckoningId: this._reckoningService.reckoningId() }),
     stream: ({ params }) =>
-      ensureParams(params.reckoningId, this._http.get<IUser[]>(['reckonings', params.reckoningId!, 'users'])),
+      ensureParams(params.reckoningId, this._http.get<IUser[]>(['reckonings', params.reckoningId!, 'users']), []),
+    defaultValue: [],
   });
   private readonly _usersResolved$ = isResourceResolved(this._users);
 
   public readonly users = this._users.asReadonly();
 
-  private readonly _userMap = computed(
-    () =>
-      this.users.value()?.reduce((map, user) => {
-        map[user.id] = user;
-        return map;
-      }, {} as Record<number, IUser>) ?? {},
-  );
+  public readonly usersOptions = mapResourceToSelectableIdOptions(this.users, user => user.displayName);
+
+  public readonly userMap = mapResourceToIdMap(this.users);
 
   waitForUsersLoaded<T extends Record<string, any>>(): OperatorFunction<T[], T[]> {
     return bufferLastUntil<T[]>(this._usersResolved$);
   }
 
   hydrateUsers<T extends Record<string, any>>(mappingTokens: MappingToken<T>[]): (objects: T[]) => T[] {
-    return hydrateSingleProp<T, IUser>(mappingTokens, this._userMap);
+    return hydrateSingleProp<T, IUser>(mappingTokens, this.userMap);
   }
 
   hydrateUsersInArray<T extends Record<string, any>, A extends Record<string, any>>(
     arrayProp: keyof T,
     mappingTokens: MappingToken<A>[],
   ): (objects: T[]) => T[] {
-    return hydrateAllInArray<T, A, IUser>(arrayProp, mappingTokens, this._userMap);
+    return hydrateAllInArray<T, A, IUser>(arrayProp, mappingTokens, this.userMap);
   }
 }
 

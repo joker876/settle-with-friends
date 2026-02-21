@@ -1,0 +1,115 @@
+<div class="payers-grid">
+  @if (payers.controls.length > 0) {
+    <div class="header" i18n="@@create-transaction.payers.person">Osoba</div>
+    <div class="header" i18n="@@create-transaction.payers.amount">Kwota</div>
+    <div class="header"></div>
+    <div class="header actions"></div>
+  }
+
+  @for (payer of payers.controls; track payer; let i = $index) {
+    <div class="cell">
+      <div class="user-text" aria-label="Osoba" i18n-aria-label="@@create-transaction.payers.person">
+        {{ userName(payer.controls.userId.getRawValue()) }}
+      </div>
+    </div>
+    <div class="cell">
+      <ard-form-field>
+        <app-select
+          [options]="amountTypeOptions"
+          [dynamicLabelMap]="amountTypeLabelMap()"
+          [control]="payer.controls.type"
+          (close)="focusAmountField($index)"
+        />
+        @if (payer.controls.amount.touched && !!payer.controls.amount.errors) {
+          <ard-hint>&nbsp;</ard-hint>
+        }
+      </ard-form-field>
+    </div>
+    <div class="cell">
+      @if (payer.controls.type.value === PayerAmountType.Remaining) {
+        <div class="remaining-text">
+          <ng-container i18n="@@create-transaction.payers.payer-row.remaining-text">Kwota:</ng-container>&nbsp;
+          @if (remainingAmount()) {
+            {{ remainingAmount() | number: '1.2-2' }} {{ currencyCode() ?? '' }}
+          } @else {
+            <abbr
+              title="Wpisz kwotę transakcji w sekcji powyżej"
+              i18n-title="@@create-transaction.payers.payer-row.remaining-text.abbr"
+            >
+              – {{ currencyCode() ?? '' }}
+            </abbr>
+          }
+        </div>
+      } @else {
+        <ard-form-field>
+          <ard-number-input
+            #amountField
+            [formControl]="payer.controls.amount"
+            placeholder="Kwota"
+            i18n-placeholder="@@create-transaction.payers.amount"
+          >
+            <ng-template ard-suffix-tmp>
+              <div>
+                {{ currencyCode() ?? '' }}
+              </div>
+            </ng-template>
+          </ard-number-input>
+          @if (payer.controls.amount.touched && payer.controls.amount.errors) {
+            <ard-error>{{ payer.controls.amount.errors | mapError }}</ard-error>
+          }
+        </ard-form-field>
+      }
+    </div>
+    <div class="cell actions">
+      <ard-icon-button
+        (click)="removePayer(i)"
+        title="Usuń płacącego"
+        i18n-title="@@create-transaction.payers.remove"
+        aria-label="Usuń płacącego"
+        i18n-aria-label="@@create-transaction.payers.remove"
+      >
+        <ard-icon-trash-can-2 class="icon" />
+      </ard-icon-button>
+    </div>
+  }
+
+  @if (remainingUsersOptions().length > 0) {
+    <div class="cell">
+      <ard-form-field>
+        <app-select
+          [options]="remainingUsersOptions()"
+          [control]="newUserIdControl"
+          placeholder="Dodaj osobę"
+          i18n-placeholder="@@create-transaction.payers.add"
+        />
+      </ard-form-field>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell actions"></div>
+    </div>
+  }
+
+  @if (remainingAmount(); as amount) {
+    @if (amount < 0 || hasUnassignedRemainingAmount()) {
+      <div class="cell message-cell">
+        @if (amount < 0) {
+          <ard-error i18n="@@create-transaction.payers.overflow-text">
+            Łączna kwota zapłacona jest większa od kwoty transakcji (suma:
+            {{ totalAmount()! - amount | number: '1.2-2' }}&nbsp;{{ currencyCode() ?? '' }})!
+          </ard-error>
+        } @else if (hasUnassignedRemainingAmount()) {
+          @if (hasFilledAllAmountsAndNoUsersLeft()) {
+            <ard-error i18n="@@create-transaction.payers.remaining-no-users-text">
+              Pozostała kwota {{ amount | number: '1.2-2' }}&nbsp;{{ currencyCode() ?? '' }} pomimo, że wszyscy
+              użytkownicy są już przypisani!
+            </ard-error>
+          } @else {
+            <ng-container i18n="@@create-transaction.payers.remaining-text">
+              Pozostała kwota: {{ amount | number: '1.2-2' }}&nbsp;{{ currencyCode() ?? '' }}
+            </ng-container>
+          }
+        }
+      </div>
+    }
+  }
+</div>

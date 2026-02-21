@@ -36,10 +36,10 @@ export class Transaction implements ITransaction {
   currencyCode: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
-  currencyRate?: number;
+  currencyRate: number | null;
 
-  @Column({ nullable: true })
-  isCurrencyRateFromApi?: boolean;
+  @Column({ type: 'boolean', nullable: true })
+  isCurrencyRateFromApi: boolean | null;
 
   @Column({ type: 'date' })
   transactionDate: Date;

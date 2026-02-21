@@ -104,6 +104,7 @@
 
   --ard-form-field-font-size: 0.875rem;
   --ard-form-field-height: 1.875rem;
+  --ard-form-field-error-color: var(--red);
   --ard-select-font-size: 0.875rem;
   --ard-select-padding: 0 0.375rem;
   --ard-select-dropdown-padding: 0.75rem;
@@ -499,9 +500,23 @@ ard-button.icon-only-g .ard-button {
     }
   }
 }
+ard-error, .ard-error {
+  color: var(--ard-form-field-error-color);
+}
 // form field frame
 .ard-form-field-frame.ard-appearance-outlined {
   border: 1px solid var(--ard-border-light);
+}
+// number input
+.ard-number-input {
+  .ard-input-container,
+  .ard-placeholder {
+    padding: 0;
+  }
+  .ard-number-input-prefix-container,
+  .ard-number-input-suffix-container {
+    min-width: max-content;
+  }
 }
 // input
 .ard-input {
