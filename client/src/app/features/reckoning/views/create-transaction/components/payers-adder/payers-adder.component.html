@@ -154,7 +154,7 @@
             </div>
             <div class="right">
               <ard-icon-button
-                (click)="removePayer(payer.userId!)"
+                (click)="onClickRemoveRow($event, payer.userId)"
                 title="Usuń płacącego"
                 i18n-title="@@create-transaction.payers.remove"
                 aria-label="Usuń płacącego"
@@ -201,6 +201,7 @@
     confirmButtonText="Dodaj"
     i18n-confirmButtonText="@@common.add"
     (confirm)="savePayer()"
+    (close)="onDialogClose()"
   >
     <app-stack class="mobile">
       <ard-form-field>

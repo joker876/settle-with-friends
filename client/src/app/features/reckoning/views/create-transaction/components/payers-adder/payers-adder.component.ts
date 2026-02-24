@@ -86,10 +86,16 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
     { label: '', value: PayerAmountType.Amount },
     { label: '', value: PayerAmountType.Remaining },
   ];
-  readonly isOnlyOnePerson = computed(() => this.remainingUsersOptions().length === this.usersOptions().length - 1);
+  readonly isOnlyOnePerson = computed(() => this._payersValue().length <= 1);
+  readonly isNoPayers = computed(() => this._payersValue().length === 0);
+  readonly showEverythingLabel = computed<boolean>(() =>
+    this.deviceService.isWeb()
+      ? this.isOnlyOnePerson()
+      : this.isNoPayers() || (this.isOnlyOnePerson() && !!this.editedUserId()),
+  );
   readonly amountTypeLabelMap = computed<Record<PayerAmountType, string>>(() => ({
     [PayerAmountType.Amount]: $localize`:@@common.amount-ellipsis:Kwota...`,
-    [PayerAmountType.Remaining]: !this.isOnlyOnePerson()
+    [PayerAmountType.Remaining]: this.showEverythingLabel()
       ? $localize`:@@common.everything-titlecase:Całość`
       : $localize`:@@common.remaining-titlecase:Reszta`,
   }));
@@ -320,7 +326,7 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
         const otherValue = otherControl.getRawValue();
         if (otherValue.userId === this.editDialogForm.getRawValue().userId) continue;
         if (otherValue.type === PayerAmountType.Remaining) {
-          return { payerAmountType: { isOnlyOnePerson: this.isOnlyOnePerson() } };
+          return { payerAmountType: { everything: this.showEverythingLabel() } };
         }
       }
       return null;
@@ -337,16 +343,23 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
     }
     this.isEditDialogOpen.set(true);
   }
-  clickEditPayer(rawValue: PayerFormValue) {
+  clickEditPayer(v: PayerFormValue) {
     this.isEditDialogOpen.set(true);
-    this.editedUserId.set(rawValue.userId);
+    this.editedUserId.set(v.userId);
     // wait for options to update
     setTimeout(() => {
-      this.editDialogForm.setValue(rawValue);
+      this.editDialogForm.setValue(v);
     }, 0);
+  }
+  onClickRemoveRow(event: MouseEvent, userId: number | null) {
+    event.stopPropagation();
+    this.removePayer(userId);
   }
   savePayer() {
     this.addPayer(this.editDialogForm.getRawValue().userId!, this.editDialogForm.getRawValue());
+  }
+  onDialogClose() {
+    this.editedUserId.set(null);
   }
 }
 
