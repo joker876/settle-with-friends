@@ -1,21 +1,12 @@
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import {
-  ArdiumDateInputModule,
-  ArdiumFormFieldModule,
-  ArdiumInputModule,
-  ArdiumNumberInputModule,
-  ArdiumSelectModule,
-} from '@ardium-ui/ui';
+import { ArdiumDateInputModule, ArdiumFormFieldModule, ArdiumGridModule, ArdiumInputModule, ArdiumNumberInputModule, ArdiumSelectModule } from '@ardium-ui/ui';
 import { CardWithHeadingComponent } from '@common/components/card-with-heading/card-with-heading.component';
 import { CurrencyRateInputComponent } from '@common/components/currency-rate-input/currency-rate-input.component';
-import { DataGridComponent } from '@common/components/data-grid/data-grid.component';
-import { GridItemComponent } from '@common/components/data-grid/grid-item/grid-item.component';
 import { SelectComponent } from '@common/components/select/select.component';
 import { StackComponent } from '@common/components/stack/stack.component';
 import { ViewH1Component } from '@common/components/view-h1/view-h1.component';
-import { MapErrorPipe } from '@common/pipes/map-error.pipe';
 import { WrapInAbstractControl } from '@common/utils/form-types';
 import { CurrencyRatesService } from '@features/reckoning/services/currency-rates.service';
 import { TransactionsService } from '@features/reckoning/services/transactions.service';
@@ -31,17 +22,15 @@ import { startWith } from 'rxjs';
     ArdiumNumberInputModule,
     ArdiumSelectModule,
     ReactiveFormsModule,
-    MapErrorPipe,
     StackComponent,
     CardWithHeadingComponent,
     ViewH1Component,
     SelectComponent,
-    DataGridComponent,
-    GridItemComponent,
     ArdiumDateInputModule,
     CurrencyRateInputComponent,
     PayersAdderComponent,
-  ],
+    ArdiumGridModule
+],
   templateUrl: './create-transaction.view.html',
   styleUrl: './create-transaction.view.scss',
 })
@@ -82,7 +71,7 @@ export class CreateTransactionView {
       if (!wasInitialCurrencySet && mainCurrency) {
         // wait for the select options to be initialized before setting the value to avoid warnings
         setTimeout(() => {
-          this.form.controls.transaction.controls.currencyCode.setValue(mainCurrency, { emitEvent: false });
+          this.form.controls.transaction.controls.currencyCode.setValue(mainCurrency);
         }, 0);
         wasInitialCurrencySet = true;
       }
@@ -92,14 +81,14 @@ export class CreateTransactionView {
       const isMoreThanOneCurrency = this._currencyRatesService.isMoreThanOneCurrency();
 
       if (!isMoreThanOneCurrency) {
-        this.form.controls.transaction.controls.currencyCode.disable({ emitEvent: false });
-        this.form.controls.transaction.controls.currencyRate.disable({ emitEvent: false });
-        this.form.controls.transaction.controls.isCurrencyRateFromApi.disable({ emitEvent: false });
+        this.form.controls.transaction.controls.currencyCode.disable();
+        this.form.controls.transaction.controls.currencyRate.disable();
+        this.form.controls.transaction.controls.isCurrencyRateFromApi.disable();
 
         this.form.controls.transaction.controls.currencyRate.setValue(null);
         this.form.controls.transaction.controls.isCurrencyRateFromApi.setValue(null);
       } else {
-        this.form.controls.transaction.controls.currencyCode.enable({ emitEvent: false });
+        this.form.controls.transaction.controls.currencyCode.enable();
       }
     });
     // fetch currency rate when currency code or transaction date changes, but only if the user hasn't manually edited the rate

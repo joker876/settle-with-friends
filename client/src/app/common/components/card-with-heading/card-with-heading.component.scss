@@ -1,3 +1,5 @@
+@use '../../../../breakpoints.scss' as *;
+
 .heading {
   font-size: 1rem;
   font-weight: bold;
@@ -10,12 +12,16 @@
   flex-wrap: wrap;
 }
 app-card {
-  padding: 1.5rem;
+  padding: 1rem;
   margin-bottom: 0.75rem;
 
   &.danger-zone {
     .heading {
       color: var(--red);
     }
+  }
+
+  @media (width >= $bp-sm) {
+  padding: 1.5rem;
   }
 }

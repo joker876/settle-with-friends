@@ -1,7 +1,18 @@
-import { DecimalPipe } from '@angular/common';
-import { Component, computed, effect, forwardRef, inject, input, OnDestroy, viewChildren } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  forwardRef,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  signal,
+  viewChildren,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
+  AbstractControl,
   ControlValueAccessor,
   FormArray,
   FormControl,
@@ -11,14 +22,20 @@ import {
   Validators,
 } from '@angular/forms';
 import {
+  ArdiumButtonModule,
+  ArdiumDialogModule,
   ArdiumFormFieldModule,
+  ArdiumGridModule,
   ArdiumIconButtonModule,
   ArdiumNumberInputComponent,
   ArdiumNumberInputModule,
 } from '@ardium-ui/ui';
+import { CardComponent } from '@common/components/card/card.component';
+import { MoneyComponent } from '@common/components/money/money.component';
 import { SelectComponent } from '@common/components/select/select.component';
-import { ArdIconTrashCan_2 } from '@common/icons/trash-can-2.icon';
-import { MapErrorPipe } from '@common/pipes/map-error.pipe';
+import { StackComponent } from '@common/components/stack/stack.component';
+import { ArdIconX_2 } from '@common/icons/x-2.icon';
+import { DeviceService } from '@common/services/device.service';
 import { WrapInAbstractControl } from '@common/utils/form-types';
 import { SelectableOption } from '@common/utils/options';
 import { UsersService } from '@features/reckoning/services/users.service';
@@ -32,9 +49,13 @@ import { map, startWith, Subscription } from 'rxjs';
     ArdiumNumberInputModule,
     ArdiumIconButtonModule,
     SelectComponent,
-    ArdIconTrashCan_2,
-    MapErrorPipe,
-    DecimalPipe,
+    ArdiumGridModule,
+    CardComponent,
+    ArdiumButtonModule,
+    ArdiumDialogModule,
+    StackComponent,
+    ArdIconX_2,
+    MoneyComponent,
   ],
   templateUrl: './payers-adder.component.html',
   styleUrl: './payers-adder.component.scss',
@@ -46,32 +67,32 @@ import { map, startWith, Subscription } from 'rxjs';
     },
   ],
 })
-export class PayersAdderComponent implements ControlValueAccessor, OnDestroy {
+export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, OnInit {
+  readonly deviceService = inject(DeviceService);
   private readonly _usersService = inject(UsersService);
 
   readonly totalAmount = input<number | null>(null);
   readonly currencyCode = input<string | null>(null);
-  readonly PayerAmountType = PayerAmountType;
 
   readonly payers = new FormArray<FormGroup<WrapInAbstractControl<PayerFormValue>>>([]);
   readonly newUserIdControl = new FormControl<number | null>(null);
 
   readonly usersOptions = this._usersService.usersOptions;
   readonly userMap = this._usersService.userMap;
+
+  readonly PayerAmountType = PayerAmountType;
   readonly amountTypeOptions: SelectableOption<PayerAmountType>[] = [
     // labels are handled by amountTypeLabelMap
     { label: '', value: PayerAmountType.Amount },
     { label: '', value: PayerAmountType.Remaining },
   ];
-  readonly amountTypeLabelMap = computed<Record<PayerAmountType, string>>(() => {
-    const isOnlyOnePerson = this.remainingUsersOptions().length === this.usersOptions().length - 1;
-    return {
-      [PayerAmountType.Amount]: $localize`:@@common.amount-ellipsis:Kwota...`,
-      [PayerAmountType.Remaining]: isOnlyOnePerson
-        ? $localize`:@@common.everything-titlecase:Całość`
-        : $localize`:@@common.remaining-titlecase:Reszta`,
-    };
-  });
+  readonly isOnlyOnePerson = computed(() => this.remainingUsersOptions().length === this.usersOptions().length - 1);
+  readonly amountTypeLabelMap = computed<Record<PayerAmountType, string>>(() => ({
+    [PayerAmountType.Amount]: $localize`:@@common.amount-ellipsis:Kwota...`,
+    [PayerAmountType.Remaining]: !this.isOnlyOnePerson()
+      ? $localize`:@@common.everything-titlecase:Całość`
+      : $localize`:@@common.remaining-titlecase:Reszta`,
+  }));
 
   readonly amountFields = viewChildren<ArdiumNumberInputComponent>('amountField');
 
@@ -144,12 +165,19 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy {
     });
   }
 
-  addPayer(userId: number): void {
+  addPayer(userId: number, fullValue?: PayerFormValue): void {
     if (this.payers.controls.some(control => control.controls.userId.getRawValue() === userId)) return;
-    this.payers.push(this._createPayerGroup({ userId, amount: null }));
+
+    const group = this._createPayerGroup({ userId, amount: null });
+    if (fullValue) {
+      group.setValue(fullValue);
+    }
+
+    this.payers.push(group);
   }
 
-  removePayer(index: number): void {
+  removePayer(payerId: number | null): void {
+    const index = this.payers.controls.findIndex(control => control.value.userId === payerId);
     const group = this.payers.at(index);
     const sub = this._typeSubs.get(group);
     if (sub) {
@@ -162,7 +190,6 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy {
   focusAmountField(index: number): void {
     setTimeout(() => {
       this.amountFields().at(index)?.focus();
-      console.log(this.amountFields());
     }, 0);
   }
 
@@ -196,9 +223,12 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy {
     this._typeSubs.clear();
   }
 
-  private _createPayerGroup(payer: PayerValue): FormGroup<WrapInAbstractControl<PayerFormValue>> {
+  private _createPayerGroup(
+    payer: PayerValue,
+    fullForm: boolean = false,
+  ): FormGroup<WrapInAbstractControl<PayerFormValue>> {
     const userIdControl = new FormControl<number | null>(
-      { value: payer.userId, disabled: true },
+      { value: payer.userId, disabled: !fullForm },
       { validators: [Validators.required] },
     );
     const amountControl = new FormControl<number | null>(payer.amount ?? null, {
@@ -260,6 +290,63 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy {
       userId: payer.userId,
       amount: payer.type === PayerAmountType.Remaining ? null : payer.amount,
     }));
+  }
+
+  //! mobile-only
+  readonly isEditDialogOpen = signal<boolean>(false);
+
+  readonly editDialogForm = this._createPayerGroup({ userId: null, amount: null }, true);
+  readonly editedUserId = signal<number | null>(null);
+
+  readonly remainingUsersOptionsWithEditedUser = computed(() => {
+    const usedIds = new Set(this._payersValue().map(payer => payer.userId));
+    return this.usersOptions().filter(option => !usedIds.has(option.value) || this.editedUserId() === option.value);
+  });
+
+  readonly sortedPayerValue = computed<PayerFormValue[]>(() =>
+    [...this._payersValue()].sort((a, b) => {
+      if (a.type === PayerAmountType.Remaining && b.type !== PayerAmountType.Remaining) return 1;
+      if (b.type === PayerAmountType.Remaining && a.type !== PayerAmountType.Remaining) return -1;
+
+      return b.amount! - a.amount!;
+    }),
+  );
+
+  ngOnInit(): void {
+    this.editDialogForm.controls.type.addValidators((control: AbstractControl) => {
+      if (!control.value || control.value === PayerAmountType.Amount) return null;
+
+      for (const otherControl of this.payers.controls) {
+        const otherValue = otherControl.getRawValue();
+        if (otherValue.userId === this.editDialogForm.getRawValue().userId) continue;
+        if (otherValue.type === PayerAmountType.Remaining) {
+          return { payerAmountType: { isOnlyOnePerson: this.isOnlyOnePerson() } };
+        }
+      }
+      return null;
+    });
+  }
+
+  clickAddPayer() {
+    this.editDialogForm.reset();
+    if (this.remainingUsersOptionsWithEditedUser().length === 1) {
+      this.editDialogForm.controls.userId.setValue(this.remainingUsersOptionsWithEditedUser()[0].value);
+    }
+    if (this._payersValue().some(v => v.type === PayerAmountType.Remaining)) {
+      this.editDialogForm.controls.type.setValue(PayerAmountType.Amount);
+    }
+    this.isEditDialogOpen.set(true);
+  }
+  clickEditPayer(rawValue: PayerFormValue) {
+    this.isEditDialogOpen.set(true);
+    this.editedUserId.set(rawValue.userId);
+    // wait for options to update
+    setTimeout(() => {
+      this.editDialogForm.setValue(rawValue);
+    }, 0);
+  }
+  savePayer() {
+    this.addPayer(this.editDialogForm.getRawValue().userId!, this.editDialogForm.getRawValue());
   }
 }
 

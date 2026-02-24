@@ -11,9 +11,11 @@ import {
   DropdownPanelAppearance,
   FormElementAppearance,
   OneAxisAlignment,
+  provideBreakpoints,
   provideButtonDefaults,
   provideDateInputDefaults,
   provideDialogDefaults,
+  provideErrorMap,
   provideIconButtonDefaults,
   provideInputDefaults,
   provideNumberInputDefaults,
@@ -29,6 +31,7 @@ import {
 import { PreventAndStopPlugin } from '@common/plugins/prevent-default-event-manager';
 import { AuthService } from '@common/services/auth.service';
 import { DATE_DESERIALIZATION_FN, DATE_SERIALIZATION_FN } from '@common/utils/date-serialization';
+import { ERROR_MAP } from '@common/utils/errors';
 import { TimeagoCustomFormatter, TimeagoFormatter, TimeagoIntl, TimeagoModule } from 'ngx-timeago';
 import { routes } from './app.routes';
 
@@ -99,5 +102,7 @@ export const appConfig: ApplicationConfig = {
       fixedDecimalPlaces: true,
     }),
     provideSpinnerDefaults({ color: ComponentColor.None }),
+    provideErrorMap(ERROR_MAP),
+    provideBreakpoints(),
   ],
 };

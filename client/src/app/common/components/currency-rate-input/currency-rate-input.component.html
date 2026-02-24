@@ -14,5 +14,5 @@
   [canConfirm]="tempValue() !== null"
   (confirm)="onConfirmDialog()"
 >
-  <ard-number-input [(value)]="tempValue" />
+  <ard-number-input [(value)]="tempValue" maxDecimalPlaces="4" />
 </ard-dialog>

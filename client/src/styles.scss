@@ -159,6 +159,7 @@ body {
   -webkit-font-smoothing: antialiased;
   position: relative;
   font-family: var(--font-family);
+  background-color: var(--bg2);
 }
 
 img,
@@ -485,6 +486,9 @@ ard-button.icon-only-g .ard-button {
   .ard-label {
     font-size: 0.875rem;
     font-weight: 600;
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 1.25rem;
 
     .ard-label__required .ard-label__required-optional-text {
       font: inherit;
@@ -495,7 +499,7 @@ ard-button.icon-only-g .ard-button {
   .ard-form-field__hints {
     padding: 0;
 
-    &:not(:has(.ard-hint, .ard-error, .ard-hint-error)) {
+    &:not(:has(.ard-hint, .ard-error:not(.ard-auto-error), .ard-hint-error)) {
       display: none;
     }
   }
@@ -628,4 +632,8 @@ ard-radio-group {
 // modal
 .ard-modal-panel {
   max-height: calc(100vh - 3rem);
+
+  &.full-width-g {
+    width: 100%;
+  }
 }
