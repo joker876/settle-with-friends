@@ -114,6 +114,7 @@
   --ard-select-dropdown-max-height: 15.5rem;
   --ard-select-placeholder-color: var(--text3);
   --ard-input-padding: 0 0.375rem;
+  --ard-checkbox-list-padding: 0;
   // --ard-date-input-padding: 0.375rem;
 
   //! Colors derived from Ardium UI
@@ -421,6 +422,14 @@ ard-button {
   }
   &.ard-appearance-flat {
     border: 1px solid var(--ard-cmpcl--bg-colored);
+  }
+  &.ard-appearance-outlined {
+    border-color: var(--ard-cmpcl--bg-colored);
+    color: var(--ard-cmpcl--bg-colored);
+
+    &.ard-color-none {
+      border-color: var(--border);
+    }
   }
 }
 .ard-button-content {

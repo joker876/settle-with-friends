@@ -37,8 +37,8 @@ import { StackComponent } from '@common/components/stack/stack.component';
 import { ArdIconX_2 } from '@common/icons/x-2.icon';
 import { DeviceService } from '@common/services/device.service';
 import { WrapInAbstractControl } from '@common/utils/form-types';
-import { SelectableOption } from '@common/utils/options';
 import { UsersService } from '@features/reckoning/services/users.service';
+import { AmountType, amountTypeOptions, createAmountTypeLabelMap } from '@features/reckoning/utils/amount-type';
 import { map, startWith, Subscription } from 'rxjs';
 
 @Component({
@@ -80,12 +80,8 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
   readonly usersOptions = this._usersService.usersOptions;
   readonly userMap = this._usersService.userMap;
 
-  readonly PayerAmountType = PayerAmountType;
-  readonly amountTypeOptions: SelectableOption<PayerAmountType>[] = [
-    // labels are handled by amountTypeLabelMap
-    { label: '', value: PayerAmountType.Amount },
-    { label: '', value: PayerAmountType.Remaining },
-  ];
+  readonly AmountType = AmountType;
+  readonly amountTypeOptions = amountTypeOptions;
   readonly isOnlyOnePerson = computed(() => this._payersValue().length <= 1);
   readonly isNoPayers = computed(() => this._payersValue().length === 0);
   readonly showEverythingLabel = computed<boolean>(() =>
@@ -93,12 +89,9 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
       ? this.isOnlyOnePerson()
       : this.isNoPayers() || (this.isOnlyOnePerson() && !!this.editedUserId()),
   );
-  readonly amountTypeLabelMap = computed<Record<PayerAmountType, string>>(() => ({
-    [PayerAmountType.Amount]: $localize`:@@common.amount-ellipsis:Kwota...`,
-    [PayerAmountType.Remaining]: this.showEverythingLabel()
-      ? $localize`:@@common.everything-titlecase:Całość`
-      : $localize`:@@common.remaining-titlecase:Reszta`,
-  }));
+  readonly amountTypeLabelMap = computed<Record<AmountType, string>>(() =>
+    createAmountTypeLabelMap(this.showEverythingLabel()),
+  );
 
   readonly amountFields = viewChildren<ArdiumNumberInputComponent>('amountField');
 
@@ -119,7 +112,7 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
     if (total === null || total === undefined) return null;
     const sum = this._payersValue().reduce((acc, v) => {
       const type = v.type;
-      if (type === PayerAmountType.Remaining) return acc;
+      if (type === AmountType.Remaining) return acc;
       const amount = v.amount ?? 0;
       return acc + amount;
     }, 0);
@@ -128,12 +121,12 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
   readonly hasUnassignedRemainingAmount = computed<boolean>(() => {
     const remaining = this.remainingAmount();
     if (remaining === null || remaining === 0) return false;
-    return !this._payersValue().some(v => v.type === PayerAmountType.Remaining);
+    return !this._payersValue().some(v => v.type === AmountType.Remaining);
   });
   readonly hasFilledAllAmountsAndNoUsersLeft = computed<boolean>(() => {
     return (
       this.remainingUsersOptions().length === 0 &&
-      this._payersValue().every(v => v.type === PayerAmountType.Remaining || v.amount !== null)
+      this._payersValue().every(v => v.type === AmountType.Remaining || v.amount !== null)
     );
   });
 
@@ -238,13 +231,13 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
       { validators: [Validators.required] },
     );
     const amountControl = new FormControl<number | null>(payer.amount ?? null, {
-      validators: [Validators.required, Validators.min(0)],
+      validators: [Validators.required, Validators.min(0.01)],
     });
     const shouldBeRemaining =
       payer.amount === null &&
-      !this.payers.controls.some(control => control.controls.type.getRawValue() === PayerAmountType.Remaining);
-    const typeControl = new FormControl<PayerAmountType>(
-      shouldBeRemaining ? PayerAmountType.Remaining : PayerAmountType.Amount,
+      !this.payers.controls.some(control => control.controls.type.getRawValue() === AmountType.Remaining);
+    const typeControl = new FormControl<AmountType>(
+      shouldBeRemaining ? AmountType.Remaining : AmountType.Amount,
       {
         nonNullable: true,
       },
@@ -260,23 +253,23 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
       group,
       typeControl.valueChanges.subscribe(type => this._onTypeChange(group, type)),
     );
-    if (typeControl.value === PayerAmountType.Remaining) {
-      this._onTypeChange(group, PayerAmountType.Remaining);
+    if (typeControl.value === AmountType.Remaining) {
+      this._onTypeChange(group, AmountType.Remaining);
     }
 
     return group;
   }
 
-  private _onTypeChange(group: FormGroup<WrapInAbstractControl<PayerFormValue>>, type: PayerAmountType): void {
+  private _onTypeChange(group: FormGroup<WrapInAbstractControl<PayerFormValue>>, type: AmountType): void {
     const amountControl = group.controls.amount;
 
-    if (type === PayerAmountType.Remaining) {
+    if (type === AmountType.Remaining) {
       this.payers.controls.forEach(control => {
         if (control === group) return;
-        if (control.controls.type.getRawValue() === PayerAmountType.Remaining) {
-          control.controls.type.setValue(PayerAmountType.Amount, { emitEvent: false });
+        if (control.controls.type.getRawValue() === AmountType.Remaining) {
+          control.controls.type.setValue(AmountType.Amount, { emitEvent: false });
           control.controls.amount.setValue(null, { emitEvent: false });
-          control.controls.amount.setValidators([Validators.required, Validators.min(0)]);
+          control.controls.amount.setValidators([Validators.required, Validators.min(0.01)]);
           control.controls.amount.updateValueAndValidity({ emitEvent: false });
         }
       });
@@ -287,14 +280,14 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
       return;
     }
 
-    amountControl.setValidators([Validators.required, Validators.min(0)]);
+    amountControl.setValidators([Validators.required, Validators.min(0.01)]);
     amountControl.updateValueAndValidity({ emitEvent: false });
   }
 
   private _mapToOutput(): PayerValue[] {
     return this.payers.getRawValue().map(payer => ({
       userId: payer.userId,
-      amount: payer.type === PayerAmountType.Remaining ? null : payer.amount,
+      amount: payer.type === AmountType.Remaining ? null : payer.amount,
     }));
   }
 
@@ -311,8 +304,8 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
 
   readonly sortedPayerValue = computed<PayerFormValue[]>(() =>
     [...this._payersValue()].sort((a, b) => {
-      if (a.type === PayerAmountType.Remaining && b.type !== PayerAmountType.Remaining) return 1;
-      if (b.type === PayerAmountType.Remaining && a.type !== PayerAmountType.Remaining) return -1;
+      if (a.type === AmountType.Remaining && b.type !== AmountType.Remaining) return 1;
+      if (b.type === AmountType.Remaining && a.type !== AmountType.Remaining) return -1;
 
       return b.amount! - a.amount!;
     }),
@@ -320,13 +313,13 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
 
   ngOnInit(): void {
     this.editDialogForm.controls.type.addValidators((control: AbstractControl) => {
-      if (!control.value || control.value === PayerAmountType.Amount) return null;
+      if (!control.value || control.value === AmountType.Amount) return null;
 
       for (const otherControl of this.payers.controls) {
         const otherValue = otherControl.getRawValue();
         if (otherValue.userId === this.editDialogForm.getRawValue().userId) continue;
-        if (otherValue.type === PayerAmountType.Remaining) {
-          return { payerAmountType: { everything: this.showEverythingLabel() } };
+        if (otherValue.type === AmountType.Remaining) {
+          return { amountType: { everything: this.showEverythingLabel() } };
         }
       }
       return null;
@@ -338,8 +331,8 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
     if (this.remainingUsersOptionsWithEditedUser().length === 1) {
       this.editDialogForm.controls.userId.setValue(this.remainingUsersOptionsWithEditedUser()[0].value);
     }
-    if (this._payersValue().some(v => v.type === PayerAmountType.Remaining)) {
-      this.editDialogForm.controls.type.setValue(PayerAmountType.Amount);
+    if (this._payersValue().some(v => v.type === AmountType.Remaining)) {
+      this.editDialogForm.controls.type.setValue(AmountType.Amount);
     }
     this.isEditDialogOpen.set(true);
   }
@@ -368,11 +361,6 @@ type PayerValue = {
   amount: number | null;
 };
 
-enum PayerAmountType {
-  Amount = 'amount',
-  Remaining = 'remaining',
-}
-
 type PayerFormValue = PayerValue & {
-  type: PayerAmountType;
+  type: AmountType;
 };

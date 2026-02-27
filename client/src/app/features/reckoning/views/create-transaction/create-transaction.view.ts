@@ -13,6 +13,7 @@ import { TransactionsService } from '@features/reckoning/services/transactions.s
 import { PayersAdderComponent } from '@features/reckoning/views/create-transaction/components/payers-adder/payers-adder.component';
 import { ICreateTransactionRequestDto } from '@shared/contracts/transactions/create';
 import { startWith } from 'rxjs';
+import { SplitPartsAdderComponent } from "./components/split-parts-adder/split-parts-adder.component";
 
 @Component({
   selector: 'app-create-transaction',
@@ -29,7 +30,8 @@ import { startWith } from 'rxjs';
     ArdiumDateInputModule,
     CurrencyRateInputComponent,
     PayersAdderComponent,
-    ArdiumGridModule
+    ArdiumGridModule,
+    SplitPartsAdderComponent
 ],
   templateUrl: './create-transaction.view.html',
   styleUrl: './create-transaction.view.scss',

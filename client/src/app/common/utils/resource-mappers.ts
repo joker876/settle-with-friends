@@ -1,4 +1,4 @@
-import { Resource, Signal, computed } from '@angular/core';
+import { Resource, Signal, computed, isSignal } from '@angular/core';
 import { SelectableOption } from '@common/utils/options';
 
 export function mapResourceToSelectableIdOptions<T extends { id: number }, V = T['id']>(
@@ -16,11 +16,11 @@ export function mapResourceToSelectableIdOptions<T extends { id: number }, V = T
 }
 
 export function mapResourceToIdMap<T extends { id: number }>(
-  resource: Resource<T[] | null>,
+  resource: Resource<T[] | null> | Signal<T[] | null>,
   getKey: (item: T) => number = item => item.id,
 ): Signal<Map<number, T>> {
   return computed<Map<number, T>>(() => {
-    const values = resource.value() ?? [];
+    const values = (isSignal(resource) ? resource() : resource.value()) ?? [];
     const map = new Map<number, T>();
     values.forEach(item => {
       map.set(getKey(item), item);
