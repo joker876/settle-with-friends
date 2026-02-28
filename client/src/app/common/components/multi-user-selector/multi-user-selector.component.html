@@ -1,7 +1,11 @@
 <div class="value-container">
   @if (value().length > 0) {
     <div class="user-avatars" (click)="openDialog()">
-      <app-avatar-list [users]="value()" avatarLimit="4" />
+      @if (value().length === users().length) {
+        <span><strong i18n="@@common.everyone">Wszyscy</strong></span>
+      } @else {
+        <app-avatar-list [users]="value()" avatarLimit="4" />
+      }
     </div>
     <ard-icon-button (click)="openDialog()" title="Edytuj osoby" i18n-title="@@multi-user-selector.edit-people">
       <ard-icon-edit-line-2 class="edit-icon" />
@@ -47,12 +51,13 @@
       } @else {
         <span>
           <ng-container i18n="@@multi-user-selector.choosen">Wybrano</ng-container>
-          <strong
-            ><app-plural
+          <strong>
+            <app-plural
               [value]="dialogValue().length"
               forms="osobę,osoby,osób"
-              i18n-forms="@@multi-user-selector.person-forms"
-          /></strong>
+              i18n-forms="@@multi-user-selector.person-forms-accusative"
+            />
+          </strong>
         </span>
       }
     } @else {

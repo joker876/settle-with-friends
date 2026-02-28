@@ -75,11 +75,16 @@
           subheading="Podaj, kto i ile zapłacił za transakcję"
           i18n-subheading="@@create-transaction.payers.subheading"
         >
-          <app-payers-adder
-            [formControl]="form.controls.payers"
-            [totalAmount]="formValue()!.transaction!.amount!"
-            [currencyCode]="currencyCodeValue()"
-          />
+          <ard-form-field>
+            <app-payers-adder
+              [formControl]="form.controls.payers"
+              [totalAmount]="formValue()!.transaction!.amount!"
+              [currencyCode]="currencyCodeValue()"
+            />
+            @if (form.controls.payers.touched && form.controls.payers.invalid) {
+              <ard-error i18n="@@create-transaction.payers.error">Dodaj przynajmniej jednego płacącego</ard-error>
+            }
+          </ard-form-field>
         </app-card-with-heading>
         <app-card-with-heading
           heading="Podział kosztów"
@@ -87,11 +92,16 @@
           subheading="Podaj, do kogo należą poszczególne części rachunku"
           i18n-subheading="@@create-transaction.cost-splits.subheading"
         >
-          <app-split-parts-adder
-            [formControl]="form.controls.splitParts"
-            [totalAmount]="formValue()!.transaction!.amount!"
-            [currencyCode]="currencyCodeValue()"
-          />
+          <ard-form-field>
+            <app-split-parts-adder
+              [formControl]="form.controls.splitParts"
+              [totalAmount]="formValue()!.transaction!.amount!"
+              [currencyCode]="currencyCodeValue()"
+            />
+            @if (form.controls.splitParts.touched && form.controls.splitParts.invalid) {
+              <ard-error i18n="@@create-transaction.split-parts.error">Dodaj przynajmniej jeden podział kosztów</ard-error>
+            }
+          </ard-form-field>
         </app-card-with-heading>
       </app-stack>
     </form>

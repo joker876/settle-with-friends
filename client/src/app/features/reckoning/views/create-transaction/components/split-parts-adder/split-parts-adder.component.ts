@@ -11,6 +11,7 @@ import {
   Validators,
 } from '@angular/forms';
 import {
+  ArdFormFieldControl,
   ArdiumButtonModule,
   ArdiumDialogModule,
   ArdiumDividerModule,
@@ -20,18 +21,23 @@ import {
   ArdiumInputModule,
   ArdiumNumberInputComponent,
   ArdiumNumberInputModule,
+  trackFormControl,
 } from '@ardium-ui/ui';
 import { CardComponent } from '@common/components/card/card.component';
 import { MoneyComponent } from '@common/components/money/money.component';
 import { MultiUserSelectorComponent } from '@common/components/multi-user-selector/multi-user-selector.component';
+import { PluralComponent } from "@common/components/plural/plural.component";
 import { SelectComponent } from '@common/components/select/select.component';
 import { StackComponent } from '@common/components/stack/stack.component';
+import { StatisticWithIconComponent } from "@common/components/statistic-with-icon/statistic-with-icon.component";
+import { ArdIconUser_2 } from "@common/icons/user-2.icon";
 import { ArdIconX_2 } from '@common/icons/x-2.icon';
 import { DeviceService } from '@common/services/device.service';
 import { WrapInAbstractControl } from '@common/utils/form-types';
 import { UsersService } from '@features/reckoning/services/users.service';
 import { AmountType, amountTypeOptions, createAmountTypeLabelMap } from '@features/reckoning/utils/amount-type';
 import { map, startWith, Subscription, tap } from 'rxjs';
+import TakeChance from 'take-chance';
 
 @Component({
   selector: 'app-split-parts-adder',
@@ -51,7 +57,10 @@ import { map, startWith, Subscription, tap } from 'rxjs';
     ArdiumInputModule,
     MultiUserSelectorComponent,
     ArdiumDividerModule,
-  ],
+    StatisticWithIconComponent,
+    ArdIconUser_2,
+    PluralComponent
+],
   templateUrl: './split-parts-adder.component.html',
   styleUrl: './split-parts-adder.component.scss',
   providers: [
@@ -62,7 +71,7 @@ import { map, startWith, Subscription, tap } from 'rxjs';
     },
   ],
 })
-export class SplitPartsAdderComponent implements ControlValueAccessor, OnDestroy, OnInit {
+export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFieldControl, OnDestroy, OnInit {
   readonly deviceService = inject(DeviceService);
   private readonly _usersService = inject(UsersService);
 
@@ -133,10 +142,10 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, OnDestroy
     );
   }
 
-  addSplitPart(partName: string, fullValue?: SplitPartFormValue): void {
+  addSplitPart(partName: string, fullValue?: Omit<SplitPartFormValue, 'name'> & { name?: string | null }): void {
     const group = this._createSplitPartGroup({ name: partName, amount: null, userIds: [] });
     if (fullValue) {
-      group.setValue(fullValue);
+      group.patchValue(fullValue);
     }
 
     this.parts.push(group);
@@ -159,6 +168,14 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, OnDestroy
     }, 0);
   }
 
+  //! ard form field control
+  readonly control = trackFormControl(this);
+
+  readonly hasError = computed(() => this.control.invalid() && this.control.touched());
+  readonly disabled = this.control.disabled;
+  readonly htmlId = TakeChance.id();
+
+  //! control value accessor
   writeValue(value: SplitPartValue[] | null): void {
     this._isWritingValue = true;
     this.parts.clear({ emitEvent: false });
@@ -184,6 +201,7 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, OnDestroy
     this._typeSubs.clear();
   }
 
+  //! private methods
   private _createSplitPartGroup(part: SplitPartValue): FormGroup<WrapInAbstractControl<SplitPartFormValue>> {
     const nameControl = new FormControl<string | null>(part.name, { validators: [Validators.required] });
     const amountControl = new FormControl<number | null>(part.amount ?? null, {
@@ -290,6 +308,13 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, OnDestroy
       this.editDialogForm.controls.type.setValue(AmountType.Amount);
     }
     this.isEditDialogOpen.set(true);
+  }
+  clickAddEveryone() {
+    this.addSplitPart($localize`:@@create-transaction.split-parts.transaction-everyone:Po równo`, {
+      type: AmountType.Remaining,
+      amount: null,
+      userIds: this.users.value().map(v => v.id),
+    });
   }
   clickEditPayer(v: SplitPartFormValue) {
     this.isEditDialogOpen.set(true);

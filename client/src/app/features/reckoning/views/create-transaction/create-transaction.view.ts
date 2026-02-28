@@ -54,8 +54,8 @@ export class CreateTransactionView {
       isCurrencyRateFromApi: new FormControl<boolean | null>(null, { validators: [Validators.required] }),
       transactionDate: new FormControl(this.TODAY, { nonNullable: true, validators: [Validators.required] }),
     }),
-    payers: new FormControl<ICreateTransactionRequestDto['payers']>([], { nonNullable: true }),
-    splitParts: new FormControl<ICreateTransactionRequestDto['splitParts']>([], { nonNullable: true }),
+    payers: new FormControl<ICreateTransactionRequestDto['payers']>([], { nonNullable: true, validators: [Validators.required] }),
+    splitParts: new FormControl<ICreateTransactionRequestDto['splitParts']>([], { nonNullable: true, validators: [Validators.required] }),
   });
   readonly formValue = toSignal(this.form.valueChanges.pipe(startWith(this.form.value)));
   readonly currencyCodeValue = computed<string>(() => this.formValue()!.transaction!.currencyCode!);

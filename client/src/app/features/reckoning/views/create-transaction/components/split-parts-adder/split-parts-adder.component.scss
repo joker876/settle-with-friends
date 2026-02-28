@@ -2,9 +2,9 @@
   display: block;
 }
 
-.payers-grid {
+.split-parts-grid {
   display: grid;
-  grid-template-columns: minmax(max-content, 8rem) 6rem minmax(8rem, 12rem) minmax(1.75rem, 1fr);
+  grid-template-columns: minmax(max-content, 8rem) 6rem minmax(8rem, 12rem) minmax(5rem, max-content) minmax(1.75rem, 1fr);
   column-gap: 0.75rem;
   row-gap: 0.25rem;
   align-items: center;
@@ -21,6 +21,9 @@
 
 .cell {
   width: 100%;
+}
+.users-cell {
+  padding-left: 0.75rem;
 }
 
 .actions {
@@ -69,6 +72,15 @@
       font-size: 0.875rem;
       padding-right: 0.75rem;
 
+      .left {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+
+        .icon {
+          width: 1.125rem;
+        }
+      }
       .user-text {
         font-weight: 500;
       }
@@ -88,5 +100,9 @@
   }
   .info-row {
     font-size: 0.875rem;
+  }
+  .mobile-buttons {
+    display: flex;
+    gap: 0.5rem;
   }
 }

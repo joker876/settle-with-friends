@@ -8,7 +8,7 @@ import {
   OnDestroy,
   OnInit,
   signal,
-  viewChildren,
+  viewChildren
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -22,6 +22,7 @@ import {
   Validators,
 } from '@angular/forms';
 import {
+  ArdFormFieldControl,
   ArdiumButtonModule,
   ArdiumDialogModule,
   ArdiumFormFieldModule,
@@ -29,6 +30,7 @@ import {
   ArdiumIconButtonModule,
   ArdiumNumberInputComponent,
   ArdiumNumberInputModule,
+  trackFormControl,
 } from '@ardium-ui/ui';
 import { CardComponent } from '@common/components/card/card.component';
 import { MoneyComponent } from '@common/components/money/money.component';
@@ -40,6 +42,7 @@ import { WrapInAbstractControl } from '@common/utils/form-types';
 import { UsersService } from '@features/reckoning/services/users.service';
 import { AmountType, amountTypeOptions, createAmountTypeLabelMap } from '@features/reckoning/utils/amount-type';
 import { map, startWith, Subscription } from 'rxjs';
+import TakeChance from 'take-chance';
 
 @Component({
   selector: 'app-payers-adder',
@@ -67,7 +70,7 @@ import { map, startWith, Subscription } from 'rxjs';
     },
   ],
 })
-export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, OnInit {
+export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldControl, OnDestroy, OnInit {
   readonly deviceService = inject(DeviceService);
   private readonly _usersService = inject(UsersService);
 
@@ -197,6 +200,14 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
     return this.userMap().get(userId)?.displayName ?? '';
   }
 
+  //! ard form field control
+  readonly control = trackFormControl(this);
+
+  readonly hasError = computed(() => this.control.invalid() && this.control.touched());
+  readonly disabled = this.control.disabled;
+  readonly htmlId = TakeChance.id();
+
+  //! control value accessor
   writeValue(value: PayerValue[] | null): void {
     this._isWritingValue = true;
     this.payers.clear({ emitEvent: false });
@@ -222,6 +233,7 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
     this._typeSubs.clear();
   }
 
+  //! private methods
   private _createPayerGroup(
     payer: PayerValue,
     fullForm: boolean = false,
@@ -236,12 +248,9 @@ export class PayersAdderComponent implements ControlValueAccessor, OnDestroy, On
     const shouldBeRemaining =
       payer.amount === null &&
       !this.payers.controls.some(control => control.controls.type.getRawValue() === AmountType.Remaining);
-    const typeControl = new FormControl<AmountType>(
-      shouldBeRemaining ? AmountType.Remaining : AmountType.Amount,
-      {
-        nonNullable: true,
-      },
-    );
+    const typeControl = new FormControl<AmountType>(shouldBeRemaining ? AmountType.Remaining : AmountType.Amount, {
+      nonNullable: true,
+    });
 
     const group = new FormGroup<WrapInAbstractControl<PayerFormValue>>({
       userId: userIdControl,
