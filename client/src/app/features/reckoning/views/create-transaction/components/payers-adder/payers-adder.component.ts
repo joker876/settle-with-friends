@@ -1,15 +1,4 @@
-import {
-  Component,
-  computed,
-  effect,
-  forwardRef,
-  inject,
-  input,
-  OnDestroy,
-  OnInit,
-  signal,
-  viewChildren
-} from '@angular/core';
+import { Component, computed, forwardRef, inject, input, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
@@ -22,6 +11,7 @@ import {
   Validators,
 } from '@angular/forms';
 import {
+  ARD_FORM_FIELD_CONTROL,
   ArdFormFieldControl,
   ArdiumButtonModule,
   ArdiumDialogModule,
@@ -37,7 +27,6 @@ import { MoneyComponent } from '@common/components/money/money.component';
 import { SelectComponent } from '@common/components/select/select.component';
 import { StackComponent } from '@common/components/stack/stack.component';
 import { ArdIconX_2 } from '@common/icons/x-2.icon';
-import { DeviceService } from '@common/services/device.service';
 import { WrapInAbstractControl } from '@common/utils/form-types';
 import { UsersService } from '@features/reckoning/services/users.service';
 import { AmountType, amountTypeOptions, createAmountTypeLabelMap } from '@features/reckoning/utils/amount-type';
@@ -68,17 +57,19 @@ import TakeChance from 'take-chance';
       useExisting: forwardRef(() => PayersAdderComponent),
       multi: true,
     },
+    {
+      provide: ARD_FORM_FIELD_CONTROL,
+      useExisting: forwardRef(() => PayersAdderComponent),
+    },
   ],
 })
 export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldControl, OnDestroy, OnInit {
-  readonly deviceService = inject(DeviceService);
   private readonly _usersService = inject(UsersService);
 
   readonly totalAmount = input<number | null>(null);
   readonly currencyCode = input<string | null>(null);
 
   readonly payers = new FormArray<FormGroup<WrapInAbstractControl<PayerFormValue>>>([]);
-  readonly newUserIdControl = new FormControl<number | null>(null);
 
   readonly usersOptions = this._usersService.usersOptions;
   readonly userMap = this._usersService.userMap;
@@ -87,16 +78,14 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
   readonly amountTypeOptions = amountTypeOptions;
   readonly isOnlyOnePerson = computed(() => this._payersValue().length <= 1);
   readonly isNoPayers = computed(() => this._payersValue().length === 0);
-  readonly showEverythingLabel = computed<boolean>(() =>
-    this.deviceService.isWeb()
-      ? this.isOnlyOnePerson()
-      : this.isNoPayers() || (this.isOnlyOnePerson() && !!this.editedUserId()),
+  readonly showEverythingLabel = computed<boolean>(
+    () => this.isNoPayers() || (this.isOnlyOnePerson() && !!this.editedUserId()),
   );
   readonly amountTypeLabelMap = computed<Record<AmountType, string>>(() =>
     createAmountTypeLabelMap(this.showEverythingLabel()),
   );
 
-  readonly amountFields = viewChildren<ArdiumNumberInputComponent>('amountField');
+  readonly amountField = viewChild<ArdiumNumberInputComponent>('amountField');
 
   private readonly _payersValue = toSignal(
     this.payers.valueChanges.pipe(
@@ -105,11 +94,24 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
     ),
     { initialValue: [] as PayerFormValue[] },
   );
+  readonly sortedPayerValue = computed<PayerFormValue[]>(() =>
+    [...this._payersValue()].sort((a, b) => {
+      if (a.type === AmountType.Remaining && b.type !== AmountType.Remaining) return 1;
+      if (b.type === AmountType.Remaining && a.type !== AmountType.Remaining) return -1;
+
+      return b.amount! - a.amount!;
+    }),
+  );
 
   readonly remainingUsersOptions = computed(() => {
     const usedIds = new Set(this._payersValue().map(payer => payer.userId));
     return this.usersOptions().filter(option => !usedIds.has(option.value));
   });
+  readonly remainingUsersOptionsWithEditedUser = computed(() => {
+    const usedIds = new Set(this._payersValue().map(payer => payer.userId));
+    return this.usersOptions().filter(option => !usedIds.has(option.value) || this.editedUserId() === option.value);
+  });
+
   readonly remainingAmount = computed(() => {
     const total = this.totalAmount();
     if (total === null || total === undefined) return null;
@@ -132,11 +134,6 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
       this._payersValue().every(v => v.type === AmountType.Remaining || v.amount !== null)
     );
   });
-
-  private _onChange: (value: PayerValue[]) => void = () => {};
-  private _onTouched: () => void = () => {};
-
-  private _isWritingValue = false;
   private readonly _subs = new Subscription();
   private readonly _typeSubs = new Map<FormGroup<WrapInAbstractControl<PayerFormValue>>, Subscription>();
 
@@ -148,23 +145,6 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
         this._onTouched();
       }),
     );
-    this._subs.add(
-      this.newUserIdControl.valueChanges.subscribe(userId => {
-        if (userId === null || userId === undefined) return;
-        this.addPayer(userId);
-        this.newUserIdControl.setValue(null, { emitEvent: false });
-        this._onTouched();
-      }),
-    );
-
-    effect(() => {
-      const shouldDisable = this.remainingUsersOptions().length === 0;
-      if (shouldDisable) {
-        this.newUserIdControl.disable({ emitEvent: false });
-      } else {
-        this.newUserIdControl.enable({ emitEvent: false });
-      }
-    });
   }
 
   addPayer(userId: number, fullValue?: PayerFormValue): void {
@@ -189,9 +169,9 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
     this.payers.removeAt(index);
   }
 
-  focusAmountField(index: number): void {
+  focusAmountField(): void {
     setTimeout(() => {
-      this.amountFields().at(index)?.focus();
+      this.amountField()?.focus();
     }, 0);
   }
 
@@ -208,6 +188,7 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
   readonly htmlId = TakeChance.id();
 
   //! control value accessor
+  private _isWritingValue = false;
   writeValue(value: PayerValue[] | null): void {
     this._isWritingValue = true;
     this.payers.clear({ emitEvent: false });
@@ -218,6 +199,9 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
     });
     this._isWritingValue = false;
   }
+
+  private _onChange: (value: PayerValue[]) => void = () => {};
+  private _onTouched: () => void = () => {};
 
   registerOnChange(fn: (value: PayerValue[]) => void): void {
     this._onChange = fn;
@@ -258,39 +242,7 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
       amount: amountControl,
     });
 
-    this._typeSubs.set(
-      group,
-      typeControl.valueChanges.subscribe(type => this._onTypeChange(group, type)),
-    );
-    if (typeControl.value === AmountType.Remaining) {
-      this._onTypeChange(group, AmountType.Remaining);
-    }
-
     return group;
-  }
-
-  private _onTypeChange(group: FormGroup<WrapInAbstractControl<PayerFormValue>>, type: AmountType): void {
-    const amountControl = group.controls.amount;
-
-    if (type === AmountType.Remaining) {
-      this.payers.controls.forEach(control => {
-        if (control === group) return;
-        if (control.controls.type.getRawValue() === AmountType.Remaining) {
-          control.controls.type.setValue(AmountType.Amount, { emitEvent: false });
-          control.controls.amount.setValue(null, { emitEvent: false });
-          control.controls.amount.setValidators([Validators.required, Validators.min(0.01)]);
-          control.controls.amount.updateValueAndValidity({ emitEvent: false });
-        }
-      });
-
-      amountControl.setValue(null, { emitEvent: false });
-      amountControl.clearValidators();
-      amountControl.updateValueAndValidity({ emitEvent: false });
-      return;
-    }
-
-    amountControl.setValidators([Validators.required, Validators.min(0.01)]);
-    amountControl.updateValueAndValidity({ emitEvent: false });
   }
 
   private _mapToOutput(): PayerValue[] {
@@ -300,25 +252,11 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
     }));
   }
 
-  //! mobile-only
+  //! edit dialog
   readonly isEditDialogOpen = signal<boolean>(false);
 
   readonly editDialogForm = this._createPayerGroup({ userId: null, amount: null }, true);
   readonly editedUserId = signal<number | null>(null);
-
-  readonly remainingUsersOptionsWithEditedUser = computed(() => {
-    const usedIds = new Set(this._payersValue().map(payer => payer.userId));
-    return this.usersOptions().filter(option => !usedIds.has(option.value) || this.editedUserId() === option.value);
-  });
-
-  readonly sortedPayerValue = computed<PayerFormValue[]>(() =>
-    [...this._payersValue()].sort((a, b) => {
-      if (a.type === AmountType.Remaining && b.type !== AmountType.Remaining) return 1;
-      if (b.type === AmountType.Remaining && a.type !== AmountType.Remaining) return -1;
-
-      return b.amount! - a.amount!;
-    }),
-  );
 
   ngOnInit(): void {
     this.editDialogForm.controls.type.addValidators((control: AbstractControl) => {
@@ -362,6 +300,14 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
   }
   onDialogClose() {
     this.editedUserId.set(null);
+  }
+
+  onAmountTypeChange(currentType: AmountType): void {
+    if (currentType === AmountType.Remaining) {
+      this.editDialogForm.controls.amount.disable();
+    } else {
+      this.editDialogForm.controls.amount.enable();
+    }
   }
 }
 

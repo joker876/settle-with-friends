@@ -48,6 +48,7 @@ export class SelectComponent implements ArdFormFieldControl {
   readonly htmlId = input<string>(TakeChance.id());
 
   readonly close = output<void>();
+  readonly change = output<any>();
 
   readonly disabled = (): boolean => this.control().disabled;
   readonly hasError = (): boolean => this.control().invalid && this.control().touched;

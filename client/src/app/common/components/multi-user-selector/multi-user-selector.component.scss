@@ -14,6 +14,8 @@ app-multi-user-selector {
 }
 
 .multi-user-selector-dialog {
+  --ard-modal-min-width: 20rem;
+
   .select-all {
     display: flex;
     align-items: center;

@@ -1,29 +1,7 @@
+@use '../../../../../../../breakpoints.scss' as *;
+
 :host {
   display: block;
-}
-
-.split-parts-grid {
-  display: grid;
-  grid-template-columns: minmax(max-content, 8rem) 6rem minmax(8rem, 12rem) minmax(5rem, max-content) minmax(1.75rem, 1fr);
-  column-gap: 0.75rem;
-  row-gap: 0.25rem;
-  align-items: center;
-  font-size: var(--ard-form-field-font-size);
-}
-
-.header {
-  font-size: 0.75rem;
-  color: var(--ard-text2);
-  font-weight: bold;
-  text-transform: uppercase;
-  margin-bottom: -0.25rem;
-}
-
-.cell {
-  width: 100%;
-}
-.users-cell {
-  padding-left: 0.75rem;
 }
 
 .actions {
@@ -44,65 +22,62 @@
   display: flex;
   align-items: center;
   color: var(--ard-text3);
+  font-size: 0.875rem;
+  padding-top: 1.5rem;
+  line-height: var(--ard-form-field-height);
+  padding-left: 0.5rem;
 }
-
-.message-cell {
-  padding-top: 0.5rem;
-  grid-column: 1 / span 4;
+p {
+  padding-top: 0;
+  color: var(--text3);
 }
+app-card {
+  min-width: max-content;
+  width: 15rem;
 
-.mobile {
-  .remaining-text {
+  .card-item {
+    height: 3.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: stretch;
+    gap: 0.75rem;
     font-size: 0.875rem;
-    padding-top: 1.5rem;
-    line-height: var(--ard-form-field-height);
-    padding-left: 0.5rem;
-  }
-  p {
-    padding-top: 0;
-    color: var(--text3);
-  }
-  app-card {
-    .card-item {
-      height: 3.25rem;
-      display: grid;
-      grid-template-columns: max-content 1fr max-content;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.875rem;
-      padding-right: 0.75rem;
+    padding: 0;
 
-      .left {
-        display: flex;
-        align-items: center;
-        gap: 1.25rem;
-
-        .icon {
-          width: 1.125rem;
-        }
-      }
-      .user-text {
-        font-weight: 500;
-      }
-      .middle {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-      }
-      .card-remaining-text {
-        font-weight: 600;
-      }
-      .amount-type {
-        font-size: 0.75rem;
-        color: var(--text3);
-      }
+    .icon {
+      width: 1.125rem;
+    }
+    .user-text {
+      font-weight: 500;
+    }
+    .amount-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      padding-left: 2rem;
+    }
+    .card-remaining-text {
+      font-weight: 600;
+    }
+    .amount-type {
+      font-size: 0.75rem;
+      color: var(--text3);
+    }
+    table {
+      width: 100%;
+    }
+    td {
+      padding: 0 0.75rem;
+    }
+    .delete-cell {
+      padding-left: 0;
     }
   }
-  .info-row {
-    font-size: 0.875rem;
-  }
-  .mobile-buttons {
-    display: flex;
-    gap: 0.5rem;
-  }
+}
+.info-row {
+  font-size: 0.875rem;
+}
+.buttons {
+  display: flex;
+  gap: 0.5rem;
 }

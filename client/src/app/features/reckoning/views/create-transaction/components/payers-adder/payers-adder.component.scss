@@ -2,91 +2,50 @@
   display: block;
 }
 
-.payers-grid {
-  display: grid;
-  grid-template-columns: minmax(max-content, 8rem) 6rem minmax(8rem, 12rem) minmax(1.75rem, 1fr);
-  column-gap: 0.75rem;
-  row-gap: 0.25rem;
-  align-items: center;
-  font-size: var(--ard-form-field-font-size);
-}
-
-.header {
-  font-size: 0.75rem;
-  color: var(--ard-text2);
-  font-weight: bold;
-  text-transform: uppercase;
-  margin-bottom: -0.25rem;
-}
-
-.cell {
-  width: 100%;
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-start;
-}
-
 .icon {
   width: 1.25rem;
-}
-
-.user-text {
-  display: flex;
-  align-items: center;
 }
 
 .remaining-text {
   display: flex;
   align-items: center;
   color: var(--ard-text3);
+  font-size: 0.875rem;
+  padding-top: 1.5rem;
+  line-height: var(--ard-form-field-height);
+  padding-left: 0.5rem;
 }
-
-.message-cell {
-  padding-top: 0.5rem;
-  grid-column: 1 / span 4;
+p {
+  padding-top: 0;
+  color: var(--text3);
 }
-
-.mobile {
-  .remaining-text {
+app-card {
+  .card-item {
+    height: 3.25rem;
+    display: grid;
+    grid-template-columns: max-content 1fr max-content;
+    align-items: center;
+    gap: 0.75rem;
     font-size: 0.875rem;
-    padding-top: 1.5rem;
-    line-height: var(--ard-form-field-height);
-    padding-left: 0.5rem;
-  }
-  p {
-    padding-top: 0;
-    color: var(--text3);
-  }
-  app-card {
-    .card-item {
-      height: 3.25rem;
-      display: grid;
-      grid-template-columns: max-content 1fr max-content;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.875rem;
-      padding-right: 0.75rem;
+    padding-right: 0.75rem;
 
-      .user-text {
-        font-weight: 500;
-      }
-      .middle {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-      }
-      .card-remaining-text {
-        font-weight: 600;
-      }
-      .amount-type {
-        font-size: 0.75rem;
-        color: var(--text3);
-      }
+    .user-text {
+      font-weight: 500;
+    }
+    .middle {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .card-remaining-text {
+      font-weight: 600;
+    }
+    .amount-type {
+      font-size: 0.75rem;
+      color: var(--text3);
     }
   }
-  .info-row {
-    font-size: 0.875rem;
-  }
+}
+.info-row {
+  font-size: 0.875rem;
 }

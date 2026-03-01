@@ -11,6 +11,7 @@
   [compareWith]="compareWithFn()"
   [appearance]="appearance()"
   (close)="close.emit()"
+  (valueChange)="change.emit($event)"
 >
   @if (withPrefix()) {
     <ng-template ard-prefix-tmp>
