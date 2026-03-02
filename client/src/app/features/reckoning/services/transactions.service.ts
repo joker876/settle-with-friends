@@ -50,35 +50,29 @@ export class TransactionsService {
   private readonly _createTransactionStatus = signal<ResourceStatus>('idle');
   public readonly createTransactionStatus = this._createTransactionStatus.asReadonly();
 
-  public createTransaction() {
+  public createTransaction(data: ICreateTransactionRequestDto) {
     if (this._createTransactionStatus() === 'loading') return;
 
     this._createTransactionStatus.set('loading');
 
-    this._http
-      .post<ITransaction, ICreateTransactionRequestDto>(
-        ['reckonings', this._reckoningService.reckoningId()!, 'transactions'],
-        {
-          transaction: {
-            name: 'Test transaction',
-            amount: 100,
-            currencyCode: 'PLN',
-            currencyRate: 1,
-            isCurrencyRateFromApi: true,
-            transactionDate: new Date(),
+    return new Promise<boolean>(resolve =>
+      this._http
+        .post<ITransaction, ICreateTransactionRequestDto>(
+          ['reckonings', this._reckoningService.reckoningId()!, 'transactions'],
+          data,
+        )
+        .pipe(setResourceStatusAfterLoaded(this._createTransactionStatus))
+        .subscribe({
+          next: () => {
+            this._snackbarController.openSuccess('Dodano transakcję');
+            
+            resolve(true);
           },
-          payers: [{ userId: 1, amount: 100 }],
-          splitParts: [{ name: 'Test split part', amount: 100, includees: [1, 2] }],
-        },
-      )
-      .pipe(setResourceStatusAfterLoaded(this._createTransactionStatus))
-      .subscribe({
-        next: () => {
-          this._snackbarController.openSuccess('');
-        },
-        error: () => {
-          this._snackbarController.openError('');
-        },
-      });
+          error: () => {
+            this._snackbarController.openError('Nie udało się dodać transakcji');
+            resolve(false);
+          },
+        }),
+    );
   }
 }

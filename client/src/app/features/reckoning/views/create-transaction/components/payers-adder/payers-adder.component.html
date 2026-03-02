@@ -49,7 +49,7 @@
     </app-card>
   }
   @if (remainingUsersOptions().length > 0) {
-    <ard-button compact (click)="clickAddPayer()">Dodaj osobę</ard-button>
+    <ard-button compact (click)="clickAddPayer()" [color]="hasError() ? 'danger' : 'none'">Dodaj osobę</ard-button>
   }
 
   @if (remainingAmount(); as amount) {

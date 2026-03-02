@@ -82,7 +82,7 @@
               [currencyCode]="currencyCodeValue()"
             />
             @if (form.controls.payers.touched && form.controls.payers.invalid) {
-              <ard-error i18n="@@create-transaction.payers.error">Dodaj przynajmniej jednego płacącego</ard-error>
+            <ard-error i18n="@@create-transaction.payers.error">Dodaj przynajmniej jednego płacącego</ard-error>
             }
           </ard-form-field>
         </app-card-with-heading>
@@ -99,10 +99,16 @@
               [currencyCode]="currencyCodeValue()"
             />
             @if (form.controls.splitParts.touched && form.controls.splitParts.invalid) {
-              <ard-error i18n="@@create-transaction.split-parts.error">Dodaj przynajmniej jeden podział kosztów</ard-error>
+            <ard-error i18n="@@create-transaction.split-parts.error"
+              >Dodaj przynajmniej jeden podział kosztów</ard-error
+            >
             }
           </ard-form-field>
         </app-card-with-heading>
+        <div class="actions">
+          <ard-button (click)="onCancelClick()" i18n="@@common.cancel">Anuluj</ard-button>
+          <ard-button (click)="onCreateClick()" appearance="flat" color="primary" i18n="@@common.add">Dodaj</ard-button>
+        </div>
       </app-stack>
     </form>
   </app-stack>

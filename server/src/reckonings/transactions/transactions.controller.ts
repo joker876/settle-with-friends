@@ -20,7 +20,7 @@ export class TransactionsController {
     @Req() req: Request,
     @Param('reckoningId', ParseIntPipe) reckoningId: number,
     @Body() transactionData: CreateTransactionRequestDto,
-  ): Promise<ITransaction | number> {
+  ): Promise<ITransaction> {
     const userId = req.user!.id;
 
     return this.transactionsService.createTransaction(reckoningId, userId, transactionData);

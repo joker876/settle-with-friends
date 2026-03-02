@@ -30,6 +30,7 @@ import { ArdIconX_2 } from '@common/icons/x-2.icon';
 import { WrapInAbstractControl } from '@common/utils/form-types';
 import { UsersService } from '@features/reckoning/services/users.service';
 import { AmountType, amountTypeOptions, createAmountTypeLabelMap } from '@features/reckoning/utils/amount-type';
+import { ICreateTransactionRequestPayerDto } from '@shared/contracts/transactions/create';
 import { map, startWith, Subscription } from 'rxjs';
 import TakeChance from 'take-chance';
 
@@ -189,7 +190,7 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
 
   //! control value accessor
   private _isWritingValue = false;
-  writeValue(value: PayerValue[] | null): void {
+  writeValue(value: ICreateTransactionRequestPayerDto[] | null): void {
     this._isWritingValue = true;
     this.payers.clear({ emitEvent: false });
     this._typeSubs.forEach(sub => sub.unsubscribe());
@@ -200,10 +201,10 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
     this._isWritingValue = false;
   }
 
-  private _onChange: (value: PayerValue[]) => void = () => {};
+  private _onChange: (value: ICreateTransactionRequestPayerDto[]) => void = () => {};
   private _onTouched: () => void = () => {};
 
-  registerOnChange(fn: (value: PayerValue[]) => void): void {
+  registerOnChange(fn: (value: ICreateTransactionRequestPayerDto[]) => void): void {
     this._onChange = fn;
   }
 
@@ -215,26 +216,33 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
     this._subs.unsubscribe();
     this._typeSubs.forEach(sub => sub.unsubscribe());
     this._typeSubs.clear();
+
+    this.control.destroy();
   }
 
   //! private methods
   private _createPayerGroup(
-    payer: PayerValue,
+    payer: ICreateTransactionRequestPayerDto,
     fullForm: boolean = false,
   ): FormGroup<WrapInAbstractControl<PayerFormValue>> {
-    const userIdControl = new FormControl<number | null>(
+    const userIdControl = new FormControl<number>(
       { value: payer.userId, disabled: !fullForm },
-      { validators: [Validators.required] },
+      { nonNullable: true, validators: [Validators.required] },
     );
-    const amountControl = new FormControl<number | null>(payer.amount ?? null, {
-      validators: [Validators.required, Validators.min(0.01)],
-    });
+
     const shouldBeRemaining =
       payer.amount === null &&
       !this.payers.controls.some(control => control.controls.type.getRawValue() === AmountType.Remaining);
+
     const typeControl = new FormControl<AmountType>(shouldBeRemaining ? AmountType.Remaining : AmountType.Amount, {
       nonNullable: true,
     });
+    const amountControl = new FormControl<number | null>(
+      { value: payer.amount ?? null, disabled: shouldBeRemaining },
+      {
+        validators: [Validators.required, Validators.min(0.01)],
+      },
+    );
 
     const group = new FormGroup<WrapInAbstractControl<PayerFormValue>>({
       userId: userIdControl,
@@ -245,7 +253,7 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
     return group;
   }
 
-  private _mapToOutput(): PayerValue[] {
+  private _mapToOutput(): ICreateTransactionRequestPayerDto[] {
     return this.payers.getRawValue().map(payer => ({
       userId: payer.userId,
       amount: payer.type === AmountType.Remaining ? null : payer.amount,
@@ -255,7 +263,7 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
   //! edit dialog
   readonly isEditDialogOpen = signal<boolean>(false);
 
-  readonly editDialogForm = this._createPayerGroup({ userId: null, amount: null }, true);
+  readonly editDialogForm = this._createPayerGroup({ userId: null as unknown as number, amount: null }, true);
   readonly editedUserId = signal<number | null>(null);
 
   ngOnInit(): void {
@@ -271,6 +279,8 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
       }
       return null;
     });
+
+    this.control.init();
   }
 
   clickAddPayer() {
@@ -280,6 +290,7 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
     }
     if (this._payersValue().some(v => v.type === AmountType.Remaining)) {
       this.editDialogForm.controls.type.setValue(AmountType.Amount);
+      this.onAmountTypeChange(AmountType.Amount);
     }
     this.isEditDialogOpen.set(true);
   }
@@ -311,11 +322,6 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
   }
 }
 
-type PayerValue = {
-  userId: number | null;
-  amount: number | null;
-};
-
-type PayerFormValue = PayerValue & {
+type PayerFormValue = ICreateTransactionRequestPayerDto & {
   type: AmountType;
 };

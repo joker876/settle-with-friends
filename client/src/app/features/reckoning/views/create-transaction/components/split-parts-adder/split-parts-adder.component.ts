@@ -36,6 +36,7 @@ import { ArdIconX_2 } from '@common/icons/x-2.icon';
 import { WrapInAbstractControl } from '@common/utils/form-types';
 import { UsersService } from '@features/reckoning/services/users.service';
 import { AmountType, amountTypeOptions, createAmountTypeLabelMap } from '@features/reckoning/utils/amount-type';
+import { ICreateTransactionRequestSplitPartDto } from '@shared/contracts/transactions/create';
 import { map, startWith, Subscription, tap } from 'rxjs';
 import TakeChance from 'take-chance';
 
@@ -86,6 +87,10 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
   readonly users = this._usersService.users;
   readonly usersOptions = this._usersService.usersOptions;
   readonly userMap = this._usersService.userMap;
+
+  mapUserIdsToUserNames(ids: number[]): string[] {
+    return ids.map(v => this.userMap().get(v)!.displayName);
+  }
 
   readonly AmountType = AmountType;
   readonly amountTypeOptions = amountTypeOptions;
@@ -176,7 +181,7 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
 
   //! control value accessor
   private _isWritingValue = false;
-  writeValue(value: SplitPartValue[] | null): void {
+  writeValue(value: ICreateTransactionRequestSplitPartDto[] | null): void {
     this._isWritingValue = true;
     this.parts.clear({ emitEvent: false });
     this._typeSubs.forEach(sub => sub.unsubscribe());
@@ -187,10 +192,10 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
     this._isWritingValue = false;
   }
 
-  private _onChange: (value: SplitPartValue[]) => void = () => {};
+  private _onChange: (value: ICreateTransactionRequestSplitPartDto[]) => void = () => {};
   private _onTouched: () => void = () => {};
 
-  registerOnChange(fn: (value: SplitPartValue[]) => void): void {
+  registerOnChange(fn: (value: ICreateTransactionRequestSplitPartDto[]) => void): void {
     this._onChange = fn;
   }
 
@@ -202,21 +207,28 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
     this._subs.unsubscribe();
     this._typeSubs.forEach(sub => sub.unsubscribe());
     this._typeSubs.clear();
+
+    this.control.destroy();
   }
 
   //! private methods
-  private _createSplitPartGroup(part: SplitPartValue): FormGroup<WrapInAbstractControl<SplitPartFormValue>> {
-    const nameControl = new FormControl<string | null>(part.name, { validators: [Validators.required] });
-    const amountControl = new FormControl<number | null>(part.amount ?? null, {
-      validators: [Validators.required, Validators.min(0.01)],
-    });
+  private _createSplitPartGroup(
+    part: ICreateTransactionRequestSplitPartDto,
+  ): FormGroup<WrapInAbstractControl<SplitPartFormValue>> {
+    const nameControl = new FormControl<string>(part.name, { nonNullable: true, validators: [Validators.required] });
     const shouldBeRemaining =
       part.amount === null &&
       !this.parts.controls.some(control => control.controls.type.getRawValue() === AmountType.Remaining);
     const typeControl = new FormControl<AmountType>(shouldBeRemaining ? AmountType.Remaining : AmountType.Amount, {
       nonNullable: true,
     });
-    const userIdsControl = new FormControl<number[]>([...part.userIds], {
+    const amountControl = new FormControl<number | null>(
+      { value: part.amount ?? null, disabled: shouldBeRemaining },
+      {
+        validators: [Validators.required, Validators.min(0.01)],
+      },
+    );
+    const includeesControl = new FormControl<number[]>([...part.includees], {
       nonNullable: true,
       validators: [Validators.required, Validators.minLength(1)],
     });
@@ -225,7 +237,7 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
       name: nameControl,
       type: typeControl,
       amount: amountControl,
-      userIds: userIdsControl,
+      includees: includeesControl,
     });
 
     this._typeSubs.set(
@@ -258,26 +270,26 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
     }
   }
 
-  private _mapToOutput(): SplitPartValue[] {
+  private _mapToOutput(): ICreateTransactionRequestSplitPartDto[] {
     return this.parts.getRawValue().map(part => ({
       name: part.name,
       amount: part.type === AmountType.Remaining ? null : part.amount,
-      userIds: [...part.userIds],
+      includees: [...part.includees],
     }));
   }
 
   //! edit form
   readonly isEditDialogOpen = signal<boolean>(false);
 
-  readonly editDialogForm = this._createSplitPartGroup({ name: null, amount: null, userIds: [] });
+  readonly editDialogForm = this._createSplitPartGroup({ name: '', amount: null, includees: [] });
   readonly editDialogAmount = toSignal(this.editDialogForm.controls.amount.valueChanges, {
     initialValue: this.editDialogForm.controls.amount.value,
   });
   readonly editDialogType = toSignal(this.editDialogForm.controls.type.valueChanges, {
     initialValue: this.editDialogForm.controls.type.value,
   });
-  readonly editDialogUserIds = toSignal(this.editDialogForm.controls.userIds.valueChanges, {
-    initialValue: this.editDialogForm.controls.userIds.value,
+  readonly editDialogIncludees = toSignal(this.editDialogForm.controls.includees.valueChanges, {
+    initialValue: this.editDialogForm.controls.includees.value,
   });
   readonly editedPartName = signal<string | null>(null);
 
@@ -294,12 +306,15 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
       }
       return null;
     });
+
+    this.control.init();
   }
 
   clickAddSplitPart() {
     this.editDialogForm.reset();
     if (this._partsValue().some(v => v.type === AmountType.Remaining)) {
       this.editDialogForm.controls.type.setValue(AmountType.Amount);
+      this.onAmountTypeChange(AmountType.Amount);
     }
     this.isEditDialogOpen.set(true);
   }
@@ -308,7 +323,7 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
       name: $localize`:@@create-transaction.split-parts.transaction-everyone:Po równo`,
       type: AmountType.Remaining,
       amount: null,
-      userIds: this.users.value().map(v => v.id),
+      includees: this.users.value().map(v => v.id),
     });
   }
   clickEditPayer(v: SplitPartFormValue) {
@@ -340,22 +355,16 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
 
   readonly shouldShowAmountPerPerson = computed<boolean>(
     () =>
-      this.editDialogUserIds().length > 1 &&
+      this.editDialogIncludees().length > 1 &&
       (this.editDialogType() === AmountType.Remaining || !!this.editDialogAmount()),
   );
   readonly amountPerPerson = computed<number>(
     () =>
       ((this.editDialogType() === AmountType.Remaining ? this.remainingAmount() : this.editDialogAmount()) ?? 0) /
-      this.editDialogUserIds().length,
+      this.editDialogIncludees().length,
   );
 }
 
-type SplitPartValue = {
-  name: string | null;
-  amount: number | null;
-  userIds: number[];
-};
-
-type SplitPartFormValue = SplitPartValue & {
+type SplitPartFormValue = ICreateTransactionRequestSplitPartDto & {
   type: AmountType;
 };

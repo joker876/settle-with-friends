@@ -4,7 +4,7 @@ import {
   ICreateTransactionRequestSplitPartDto,
 } from '@shared/contracts/transactions/create';
 import { ITransactionBasicData } from '@shared/entities/transaction';
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Nested, NestedArray } from '../../../utils/validation.decorators';
 
 export class CreateTransactionBasicDataDto implements ITransactionBasicData {
@@ -21,9 +21,11 @@ export class CreateTransactionBasicDataDto implements ITransactionBasicData {
   currencyCode: string;
 
   @IsNumber()
+  @IsOptional()
   currencyRate: number | null;
 
   @IsBoolean()
+  @IsOptional()
   isCurrencyRateFromApi: boolean | null;
 
   @IsNotEmpty()
@@ -37,8 +39,8 @@ export class CreateTransactionRequestPayerDto implements ICreateTransactionReque
   userId: number;
 
   @IsNumber()
-  @IsNotEmpty()
-  amount: number;
+  @IsOptional()
+  amount: number | null;
 }
 
 export class CreateTransactionRequestSplitPartDto implements ICreateTransactionRequestSplitPartDto {
@@ -47,8 +49,8 @@ export class CreateTransactionRequestSplitPartDto implements ICreateTransactionR
   name: string;
 
   @IsNumber()
-  @IsNotEmpty()
-  amount: number;
+  @IsOptional()
+  amount: number | null;
 
   @IsNotEmpty({ each: true })
   @IsNumber({}, { each: true })

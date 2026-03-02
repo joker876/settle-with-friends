@@ -24,7 +24,7 @@ export const ERROR_MAP: Record<string, string | ((errorValue: any) => string)> =
     }
     return $localize`:@@errors.invalid-format:Nieprawidłowy format`;
   },
-  payerAmountType: (errorData: { everything: boolean }) =>
+  amountType: (errorData: { everything: boolean }) =>
     errorData.everything
       ? $localize`:@@errors.payer-amount-type.one-person:Opcja "Całość" jest już wybrana dla innej osoby`
       : $localize`:@@errors.payer-amount-type.not-one-person:Opcja "Reszta" jest już wybrana dla innej osoby`,

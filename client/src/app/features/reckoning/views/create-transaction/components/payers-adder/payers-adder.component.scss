@@ -20,6 +20,9 @@ p {
   color: var(--text3);
 }
 app-card {
+  min-width: max-content;
+  width: 25rem;
+
   .card-item {
     height: 3.25rem;
     display: grid;

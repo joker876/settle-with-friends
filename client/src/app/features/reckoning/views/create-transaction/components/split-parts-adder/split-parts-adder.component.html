@@ -1,83 +1,89 @@
 <app-stack>
   @if (sortedSplitPartsValue().length > 0) {
     <app-card>
-      @for (part of sortedSplitPartsValue(); track part) {
-        <button type="button" class="card-item" (click)="clickEditPayer(part)">
-          <table>
-            <tbody>
-              <tr>
-                <td aria-label="Podział kwoty" i18n-aria-label="@@create-transaction.split-parts.split-part-name">
-                  <div class="user-text">
-                    {{ part.name }}
-                  </div>
-                </td>
-                <td>
-                  <app-statistic-with-icon>
-                    <ng-container ngProjectAs="icon">
-                      <ard-icon-user-2 class="icon" />
-                    </ng-container>
-                    <ng-container ngProjectAs="value">
-                      @if (part.userIds.length === users.value().length) {
-                        <span i18n="@@common.everyone">Wszyscy</span>
-                      } @else {
+      <table>
+        <tbody>
+          @for (part of sortedSplitPartsValue(); track part) {
+            <tr (click)="clickEditPayer(part)">
+              <td aria-label="Podział kwoty" i18n-aria-label="@@create-transaction.split-parts.split-part-name">
+                <div class="user-text">
+                  {{ part.name }}
+                </div>
+              </td>
+              <td>
+                <app-statistic-with-icon>
+                  <ng-container ngProjectAs="icon">
+                    <ard-icon-user-2 class="icon" />
+                  </ng-container>
+                  <ng-container ngProjectAs="value">
+                    @if (part.includees.length === users.value().length) {
+                      <span i18n="@@common.everyone">Wszyscy</span>
+                    } @else if (part.includees.length === 1) {
+                      <span>{{ mapUserIdsToUserNames(part.includees)[0] }}</span>
+                    } @else {
+                      <abbr [title]="mapUserIdsToUserNames(part.includees).join(', ')">
                         <app-plural
-                          [value]="part.userIds.length"
+                          [value]="part.includees.length"
                           forms="osoba,osoby,osób"
                           i18n-forms="@@multi-user-selector.person-forms-nominative"
                         />
-                      }
-                    </ng-container>
-                  </app-statistic-with-icon>
-                </td>
-                <td>
-                  <div class="amount-container">
-                    <div class="card-remaining-text">
-                      @if (part.amount || remainingAmount()) {
-                        <app-money [amount]="part.amount || remainingAmount()!" [currency]="currencyCode()" />
-                      } @else {
-                        <abbr
-                          title="Wpisz kwotę transakcji w sekcji powyżej"
-                          i18n-title="@@create-transaction.split-parts.part-row.remaining-text.abbr"
-                        >
-                          <app-money amount="???" [currency]="currencyCode()" />
-                        </abbr>
-                      }
-                    </div>
-                    <div class="amount-type">
-                      @if (part.type === AmountType.Amount) {
-                        <ng-container i18n="@@common.amount">kwota</ng-container>
-                      } @else {
-                        @if (isOnlyOnePerson()) {
-                          <ng-container i18n="@@common.everything">całość</ng-container>
-                        } @else {
-                          <ng-container i18n="@@common.remaining">reszta</ng-container>
-                        }
-                      }
-                    </div>
+                      </abbr>
+                    }
+                  </ng-container>
+                </app-statistic-with-icon>
+              </td>
+              <td>
+                <div class="amount-container">
+                  <div class="card-remaining-text">
+                    @if (part.amount || remainingAmount()) {
+                      <app-money [amount]="part.amount || remainingAmount()!" [currency]="currencyCode()" />
+                    } @else {
+                      <abbr
+                        title="Wpisz kwotę transakcji w sekcji powyżej"
+                        i18n-title="@@create-transaction.split-parts.part-row.remaining-text.abbr"
+                      >
+                        <app-money amount="???" [currency]="currencyCode()" />
+                      </abbr>
+                    }
                   </div>
-                </td>
-                <td class="delete-cell">
-                  <ard-icon-button
-                    (click)="onClickRemoveRow($event, part.name)"
-                    title="Usuń kwotę podziału"
-                    i18n-title="@@create-transaction.split-parts.remove"
-                    aria-label="Usuń kwotę podziału"
-                    i18n-aria-label="@@create-transaction.split-parts.remove"
-                  >
-                    <ard-icon-x-2 class="icon" />
-                  </ard-icon-button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </button>
-      }
+                  <div class="amount-type">
+                    @if (part.type === AmountType.Amount) {
+                      <ng-container i18n="@@common.amount">kwota</ng-container>
+                    } @else {
+                      @if (isOnlyOnePerson()) {
+                        <ng-container i18n="@@common.everything">całość</ng-container>
+                      } @else {
+                        <ng-container i18n="@@common.remaining">reszta</ng-container>
+                      }
+                    }
+                  </div>
+                </div>
+              </td>
+              <td class="delete-cell">
+                <ard-icon-button
+                  (click)="onClickRemoveRow($event, part.name)"
+                  title="Usuń kwotę podziału"
+                  i18n-title="@@create-transaction.split-parts.remove"
+                  aria-label="Usuń kwotę podziału"
+                  i18n-aria-label="@@create-transaction.split-parts.remove"
+                >
+                  <ard-icon-x-2 class="icon" />
+                </ard-icon-button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </app-card>
   }
   <div class="buttons">
-    <ard-button compact (click)="clickAddSplitPart()">Dodaj podział</ard-button>
+    <ard-button compact (click)="clickAddSplitPart()" [color]="hasError() ? 'danger' : 'none'"
+      >Dodaj podział</ard-button
+    >
     @if (sortedSplitPartsValue().length === 0) {
-      <ard-button compact (click)="clickAddEveryone()">Podziel po równo</ard-button>
+      <ard-button compact (click)="clickAddEveryone()" [color]="hasError() ? 'danger' : 'none'"
+        >Podziel po równo</ard-button
+      >
     }
   </div>
 
@@ -183,8 +189,8 @@
     <ard-divider />
     <ard-form-field>
       <ard-label required>Wliczane osoby</ard-label>
-      <app-multi-user-selector [users]="users.value()" [formControl]="editDialogForm.controls.userIds" />
-      <ard-auto-error [control]="editDialogForm.controls.userIds" />
+      <app-multi-user-selector [users]="users.value()" [formControl]="editDialogForm.controls.includees" />
+      <ard-auto-error [control]="editDialogForm.controls.includees" />
     </ard-form-field>
     @if (shouldShowAmountPerPerson()) {
       <div i18n="@@create-transaction.split-parts.per-person-text">

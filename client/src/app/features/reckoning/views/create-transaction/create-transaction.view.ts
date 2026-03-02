@@ -1,7 +1,8 @@
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ArdiumDateInputModule, ArdiumFormFieldModule, ArdiumGridModule, ArdiumInputModule, ArdiumNumberInputModule, ArdiumSelectModule } from '@ardium-ui/ui';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ArdiumButtonModule, ArdiumDateInputModule, ArdiumFormFieldModule, ArdiumGridModule, ArdiumInputModule, ArdiumNumberInputModule, ArdiumSelectModule } from '@ardium-ui/ui';
 import { CardWithHeadingComponent } from '@common/components/card-with-heading/card-with-heading.component';
 import { CurrencyRateInputComponent } from '@common/components/currency-rate-input/currency-rate-input.component';
 import { SelectComponent } from '@common/components/select/select.component';
@@ -31,12 +32,15 @@ import { SplitPartsAdderComponent } from "./components/split-parts-adder/split-p
     CurrencyRateInputComponent,
     PayersAdderComponent,
     ArdiumGridModule,
-    SplitPartsAdderComponent
+    SplitPartsAdderComponent,
+    ArdiumButtonModule
 ],
   templateUrl: './create-transaction.view.html',
   styleUrl: './create-transaction.view.scss',
 })
 export class CreateTransactionView {
+  private readonly _router = inject(Router);
+  private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _currencyRatesService = inject(CurrencyRatesService);
   private readonly _transactionService = inject(TransactionsService);
 
@@ -125,5 +129,25 @@ export class CreateTransactionView {
         this.form.controls.transaction.controls.currencyRate.markAsUntouched({ emitEvent: false });
       }
     });
+  }
+
+  private _navigateToTransactionList() {
+    this._router.navigate(['../'], { relativeTo: this._activatedRoute });
+  }
+
+  onCancelClick() {
+    this._navigateToTransactionList();
+  }
+  async onCreateClick() {
+    console.log(this.form.errors);
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const success = await this._transactionService.createTransaction(this.form.getRawValue());
+    if (!success) return;
+    
+    this._navigateToTransactionList();
   }
 }
