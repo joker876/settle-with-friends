@@ -2,16 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ICreateTransactionRequestDto } from '@shared/contracts/transactions/create';
 import { Repository } from 'typeorm';
-import {
-  Transaction,
-  TransactionPayer,
-  TransactionSplitPart,
-  TransactionSplitPartIncludee
-} from '../../typeorm/entities';
+import { Transaction } from '../../typeorm/entities';
+import { TransactionPayersService } from './transaction-payers.service';
+import { TransactionSplitPartsService } from './transaction-split-parts.service';
 
 @Injectable()
 export class TransactionsService {
-  constructor(@InjectRepository(Transaction) private readonly transactionRepo: Repository<Transaction>) {}
+  constructor(
+    @InjectRepository(Transaction) private readonly transactionRepo: Repository<Transaction>,
+    private readonly payerService: TransactionPayersService,
+    private readonly splitPartService: TransactionSplitPartsService,
+  ) {}
 
   async getAllForReckoning(id: number): Promise<Transaction[]> {
     return this.transactionRepo.find({
@@ -32,51 +33,28 @@ export class TransactionsService {
   ): Promise<Transaction> {
     const { transaction: txBasic, payers, splitParts } = transactionData;
 
-    return this.transactionRepo.manager.transaction(async manager => {
-      const tx = manager.create(Transaction, {
-        ...txBasic,
-        createdByUserId: userId,
-        updatedByUserId: userId,
-        reckoning: { id: reckoningId } as any,
-      });
-
-      const savedTx = await manager.save(Transaction, tx);
-
-      if (payers && payers.length) {
-        const payerEntities = payers.map(p =>
-          manager.create(TransactionPayer, { userId: p.userId, amount: p.amount ?? null, transaction: savedTx }),
-        );
-
-        await manager.save(TransactionPayer, payerEntities);
-      }
-
-      if (splitParts && splitParts.length) {
-        const partEntities = splitParts.map(p =>
-          manager.create(TransactionSplitPart, { name: p.name, amount: p.amount ?? null, transaction: savedTx }),
-        );
-
-        const savedParts = await manager.save(TransactionSplitPart, partEntities);
-
-        const includeeEntities: TransactionSplitPartIncludee[] = [];
-
-        for (let i = 0; i < savedParts.length; i++) {
-          const includeeIds = splitParts[i].includees || [];
-          for (const includeeUserId of includeeIds) {
-            includeeEntities.push(
-              manager.create(TransactionSplitPartIncludee, { userId: includeeUserId, splitPart: savedParts[i] }),
-            );
-          }
-        }
-
-        if (includeeEntities.length) {
-          await manager.save(TransactionSplitPartIncludee, includeeEntities);
-        }
-      }
-
-      return (await manager.findOne(Transaction, {
-        relations: { payers: {}, splitParts: { includees: {} } },
-        where: { id: savedTx.id },
-      })) as Transaction;
+    // create base transaction record
+    const tx = this.transactionRepo.create({
+      ...txBasic,
+      createdByUserId: userId,
+      updatedByUserId: userId,
+      reckoning: { id: reckoningId } as any,
     });
+
+    const savedTx = await this.transactionRepo.save(tx);
+
+    // delegate creation of related entities to dedicated services
+    if (payers && payers.length) {
+      await this.payerService.createForTransaction(savedTx, payers);
+    }
+
+    if (splitParts && splitParts.length) {
+      await this.splitPartService.createForTransaction(savedTx, splitParts);
+    }
+
+    return this.transactionRepo.findOne({
+      relations: { payers: {}, splitParts: { includees: {} } },
+      where: { id: savedTx.id },
+    }) as Promise<Transaction>;
   }
 }

@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TransactionPayer, TransactionSplitPart, TransactionSplitPartIncludee, User } from '../../typeorm/entities';
 import { Transaction } from '../../typeorm/entities/Transaction';
 import { ReckoningAccessService } from '../reckoning-access.service';
+import { TransactionPayersService } from './transaction-payers.service';
+import { TransactionSplitPartsService } from './transaction-split-parts.service';
 import { TransactionsController } from './transactions.controller';
 import { TransactionsService } from './transactions.service';
 
@@ -11,6 +13,6 @@ import { TransactionsService } from './transactions.service';
     TypeOrmModule.forFeature([User, Transaction, TransactionPayer, TransactionSplitPart, TransactionSplitPartIncludee]),
   ],
   controllers: [TransactionsController],
-  providers: [TransactionsService, ReckoningAccessService],
+  providers: [TransactionsService, ReckoningAccessService, TransactionPayersService, TransactionSplitPartsService],
 })
 export class TransactionsModule {}

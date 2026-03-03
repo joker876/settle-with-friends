@@ -77,6 +77,7 @@ export const appConfig: ApplicationConfig = {
     provideInputDefaults({
       placeholder: '',
       appearance: FormElementAppearance.Filled,
+      autoTrim: true,
     }),
     provideSelectDefaults({
       placeholder: '',

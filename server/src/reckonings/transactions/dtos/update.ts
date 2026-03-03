@@ -1,14 +1,14 @@
 import {
-  ICreateTransactionRequestDto,
-  ICreateTransactionRequestPayerDto,
-  ICreateTransactionRequestSplitPartDto,
-} from '@shared/contracts/transactions/create';
+  IUpdateTransactionRequestDto,
+  IUpdateTransactionRequestPayerDto,
+  IUpdateTransactionRequestSplitPartDto,
+} from '@shared/contracts/transactions/update';
 import { ITransactionBasicData } from '@shared/entities/transaction';
 import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TrimString } from '../../../utils/trim-string.transform';
 import { Nested, NestedArray } from '../../../utils/validation.decorators';
 
-export class CreateTransactionBasicDataDto implements ITransactionBasicData {
+export class UpdateTransactionBasicDataDto implements ITransactionBasicData {
   @IsString()
   @IsNotEmpty()
   @TrimString()
@@ -36,7 +36,11 @@ export class CreateTransactionBasicDataDto implements ITransactionBasicData {
   transactionDate: Date;
 }
 
-export class CreateTransactionRequestPayerDto implements ICreateTransactionRequestPayerDto {
+export class UpdateTransactionRequestPayerDto implements IUpdateTransactionRequestPayerDto {
+  @IsNumber()
+  @IsNotEmpty()
+  id: number;
+
   @IsNumber()
   @IsNotEmpty()
   userId: number;
@@ -46,7 +50,11 @@ export class CreateTransactionRequestPayerDto implements ICreateTransactionReque
   amount: number | null;
 }
 
-export class CreateTransactionRequestSplitPartDto implements ICreateTransactionRequestSplitPartDto {
+export class UpdateTransactionRequestSplitPartDto implements IUpdateTransactionRequestSplitPartDto {
+  @IsNumber()
+  @IsNotEmpty()
+  id: number;
+  
   @IsString()
   @IsNotEmpty()
   @TrimString()
@@ -61,16 +69,16 @@ export class CreateTransactionRequestSplitPartDto implements ICreateTransactionR
   includees: number[];
 }
 
-export class CreateTransactionRequestDto implements ICreateTransactionRequestDto {
+export class UpdateTransactionRequestDto implements IUpdateTransactionRequestDto {
   @IsNotEmpty()
-  @Nested(() => CreateTransactionBasicDataDto)
-  transaction: CreateTransactionBasicDataDto;
+  @Nested(() => UpdateTransactionBasicDataDto)
+  transaction: UpdateTransactionBasicDataDto;
 
   @IsNotEmpty()
-  @NestedArray(() => CreateTransactionRequestPayerDto)
-  payers: CreateTransactionRequestPayerDto[];
+  @NestedArray(() => UpdateTransactionRequestPayerDto)
+  payers: UpdateTransactionRequestPayerDto[];
 
   @IsNotEmpty()
-  @NestedArray(() => CreateTransactionRequestSplitPartDto)
-  splitParts: CreateTransactionRequestSplitPartDto[];
+  @NestedArray(() => UpdateTransactionRequestSplitPartDto)
+  splitParts: UpdateTransactionRequestSplitPartDto[];
 }
