@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ICreateTransactionRequestDto } from '@shared/contracts/transactions/create';
 import { Repository } from 'typeorm';
@@ -6,20 +6,12 @@ import {
   Transaction,
   TransactionPayer,
   TransactionSplitPart,
-  TransactionSplitPartIncludee,
-  User,
+  TransactionSplitPartIncludee
 } from '../../typeorm/entities';
 
 @Injectable()
 export class TransactionsService {
-  constructor(
-    @InjectRepository(User) private readonly userRepo: Repository<User>,
-    @InjectRepository(Transaction) private readonly transactionRepo: Repository<Transaction>,
-    @InjectRepository(TransactionPayer) private readonly transactionPayerRepo: Repository<TransactionPayer>,
-    @InjectRepository(TransactionSplitPart) private readonly transactionSplitPartRepo: Repository<TransactionSplitPart>,
-    @InjectRepository(TransactionSplitPartIncludee)
-    private readonly transactionSplitPartIncludeeRepo: Repository<TransactionSplitPartIncludee>,
-  ) {}
+  constructor(@InjectRepository(Transaction) private readonly transactionRepo: Repository<Transaction>) {}
 
   async getAllForReckoning(id: number): Promise<Transaction[]> {
     return this.transactionRepo.find({
@@ -38,68 +30,53 @@ export class TransactionsService {
     userId: number,
     transactionData: ICreateTransactionRequestDto,
   ): Promise<Transaction> {
-    const payersRemainingAmount =
-      transactionData.transaction.amount - transactionData.payers.reduce((acc, v) => acc + (v.amount ?? 0), 0);
-    const payersNumberOfNullAmounts = transactionData.payers.reduce((acc, v) => (v.amount === null ? acc + 1 : acc), 0);
-    if (payersRemainingAmount > 0) {
-      if (payersNumberOfNullAmounts === 0) {
-        throw new BadRequestException(`payers amounts must sum to the transaction amount`);
-      }
-      if (payersNumberOfNullAmounts > 1) {
-        throw new BadRequestException(`payers can only have one null amount`);
-      }
-    }
+    const { transaction: txBasic, payers, splitParts } = transactionData;
 
-    const splitPartsRemainingAmount =
-      transactionData.transaction.amount - transactionData.splitParts.reduce((acc, v) => acc + (v.amount ?? 0), 0);
-    const splitPartsNumberOfNullAmounts = transactionData.splitParts.reduce(
-      (acc, v) => (v.amount === null ? acc + 1 : acc),
-      0,
-    );
-    if (splitPartsRemainingAmount > 0) {
-      if (splitPartsNumberOfNullAmounts === 0) {
-        throw new BadRequestException(`splitParts amounts must sum to the transaction amount`);
-      }
-      if (splitPartsNumberOfNullAmounts > 1) {
-        throw new BadRequestException(`splitParts can only have one null amount`);
-      }
-    }
+    return this.transactionRepo.manager.transaction(async manager => {
+      const tx = manager.create(Transaction, {
+        ...txBasic,
+        createdByUserId: userId,
+        updatedByUserId: userId,
+        reckoning: { id: reckoningId } as any,
+      });
 
-    const payers = await Promise.all(
-      transactionData.payers.map(p => {
-        const payer = this.transactionPayerRepo.create({
-          user: { id: p.userId },
-          amount: p.amount,
-        });
-        return this.transactionPayerRepo.save(payer);
-      }),
-    );
-    const splitParts = await Promise.all(
-      transactionData.splitParts.map(async sp => {
-        const includees = await Promise.all(
-          sp.includees.map(incl => {
-            const includee = this.transactionSplitPartIncludeeRepo.create({
-              user: { id: incl },
-            });
-            return this.transactionSplitPartIncludeeRepo.save(includee);
-          }),
+      const savedTx = await manager.save(Transaction, tx);
+
+      if (payers && payers.length) {
+        const payerEntities = payers.map(p =>
+          manager.create(TransactionPayer, { userId: p.userId, amount: p.amount ?? null, transaction: savedTx }),
         );
-        const splitPart = this.transactionSplitPartRepo.create({
-          ...sp,
-          includees,
-        });
-        return this.transactionSplitPartRepo.save(splitPart);
-      }),
-    );
 
-    const transaction = this.transactionRepo.create({
-      ...transactionData.transaction,
-      createdBy: { id: userId },
-      updatedBy: { id: userId },
-      reckoning: { id: reckoningId },
-      payers,
-      splitParts,
+        await manager.save(TransactionPayer, payerEntities);
+      }
+
+      if (splitParts && splitParts.length) {
+        const partEntities = splitParts.map(p =>
+          manager.create(TransactionSplitPart, { name: p.name, amount: p.amount ?? null, transaction: savedTx }),
+        );
+
+        const savedParts = await manager.save(TransactionSplitPart, partEntities);
+
+        const includeeEntities: TransactionSplitPartIncludee[] = [];
+
+        for (let i = 0; i < savedParts.length; i++) {
+          const includeeIds = splitParts[i].includees || [];
+          for (const includeeUserId of includeeIds) {
+            includeeEntities.push(
+              manager.create(TransactionSplitPartIncludee, { userId: includeeUserId, splitPart: savedParts[i] }),
+            );
+          }
+        }
+
+        if (includeeEntities.length) {
+          await manager.save(TransactionSplitPartIncludee, includeeEntities);
+        }
+      }
+
+      return (await manager.findOne(Transaction, {
+        relations: { payers: {}, splitParts: { includees: {} } },
+        where: { id: savedTx.id },
+      })) as Transaction;
     });
-    return this.transactionRepo.save(transaction);
   }
 }

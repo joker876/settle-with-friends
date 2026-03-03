@@ -41,7 +41,9 @@ export class TransactionsService {
               ]),
             ),
           ),
+        [],
       ),
+    defaultValue: [],
   });
 
   public readonly transactions = this._transactions.asReadonly();
@@ -63,9 +65,9 @@ export class TransactionsService {
         )
         .pipe(setResourceStatusAfterLoaded(this._createTransactionStatus))
         .subscribe({
-          next: () => {
+          next: transaction => {
             this._snackbarController.openSuccess('Dodano transakcję');
-            
+            this._transactions.update(v => [...v, transaction]);
             resolve(true);
           },
           error: () => {
