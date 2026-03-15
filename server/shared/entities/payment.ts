@@ -1,16 +1,22 @@
 import { IUser } from "./user";
 
-export interface IPayment {
-  id: number;
+export interface IPaymentBasicData {
   name: string;
-  paidBy: IUser;
+  paidByUserId: number;
   amount: number;
   currencyCode: string;
   currencyRate: number | null;
   isCurrencyRateFromApi: boolean | null;
   paymentDate: Date;
+}
+
+export interface IPayment extends IPaymentBasicData {
+  id: number;
+  paidBy: IUser;
   createdBy: IUser;
+  createdByUserId: number;
   createdDate: Date;
   updatedBy: IUser;
+  updatedByUserId: number;
   updatedDate: Date;
 }
