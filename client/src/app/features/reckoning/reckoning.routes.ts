@@ -10,5 +10,13 @@ export const reckoningRoutes: Routes = [
     path: 'create-transaction',
     loadComponent: () =>
       import('./views/create-transaction/create-transaction.view').then(m => m.CreateTransactionView),
+    data: {
+      isCreateMode: true,
+    },
+  },
+  {
+    path: 'transaction/:transactionId',
+    loadComponent: () =>
+      import('./views/create-transaction/create-transaction.view').then(m => m.CreateTransactionView),
   },
 ];

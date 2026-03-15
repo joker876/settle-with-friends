@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, input, model } from '@angular/core';
-import { ArdiumIconButtonModule } from '@ardium-ui/ui';
+import { Component, computed, input, model, output } from '@angular/core';
+import { ArdiumButtonModule, ArdiumIconButtonModule } from '@ardium-ui/ui';
 import { BalanceComponent } from '@common/components/balance/balance.component';
 import { CardComponent } from '@common/components/card/card.component';
 import { StatisticRowComponent } from '@common/components/statistic-row/statistic-row.component';
@@ -19,7 +19,7 @@ import {
   transactionSplitPartsToUserIncludeeData,
 } from '@features/reckoning/utils/split-parts-to-users';
 import { ITransaction } from '@shared/entities/transaction';
-import { PluralizePLPipe } from 'ngx-polish-number-to-words';
+import { PluralizePlComponent } from 'ngx-polish-number-to-words';
 
 @Component({
   selector: 'app-transaction-list-item',
@@ -28,7 +28,6 @@ import { PluralizePLPipe } from 'ngx-polish-number-to-words';
     BalanceComponent,
     ArdiumIconButtonModule,
     ArdIconChevron,
-    PluralizePLPipe,
     DatePipe,
     ArdIconUserArrowRightOut_2,
     ArdIconUserArrowLeftIn_2,
@@ -37,15 +36,25 @@ import { PluralizePLPipe } from 'ngx-polish-number-to-words';
     StatisticWithValueComponent,
     StatisticRowComponent,
     UserBalanceGridComponent,
-  ],
+    ArdiumButtonModule,
+    PluralizePlComponent,
+],
   templateUrl: './transaction-list-item.component.html',
   styleUrl: './transaction-list-item.component.scss',
 })
 export class TransactionListItemComponent {
-  readonly data = input.required<ITransaction>();
+  readonly data = input.required<ITransaction, ITransaction>({ transform: v => {
+    console.log('data', v);
+    return v;
+  }});
   readonly mainCurrency = input.required<string>();
 
   readonly isDetailsOpen = model<boolean>(false);
+
+  readonly isDeleteLoading = input.required<boolean>();
+
+  readonly editClick = output<void>();
+  readonly deleteClick = output<void>();
 
   onShowDetailsClick() {
     this.isDetailsOpen.update(v => !v);
@@ -84,12 +93,4 @@ export class TransactionListItemComponent {
       isRemaining: v.isRemaining,
     })),
   );
-
-  readonly PAYERS1 = $localize`:@@payers.plural.1:płacący`;
-  readonly PAYERS2 = $localize`:@@payers.plural.2:płacących`;
-  readonly PAYERS5 = $localize`:@@payers.plural.5:płacących`;
-
-  readonly INCLUDEES1 = $localize`:@@includees.plural.1:wliczany`;
-  readonly INCLUDEES2 = $localize`:@@includees.plural.2:wliczanych`;
-  readonly INCLUDEES5 = $localize`:@@includees.plural.5:wliczanych`;
 }

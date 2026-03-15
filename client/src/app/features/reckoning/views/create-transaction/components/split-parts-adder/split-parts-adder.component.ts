@@ -10,6 +10,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { trackFormControl } from '@ardium-ui/devkit';
 import {
   ARD_FORM_FIELD_CONTROL,
   ArdFormFieldControl,
@@ -22,7 +23,6 @@ import {
   ArdiumInputModule,
   ArdiumNumberInputComponent,
   ArdiumNumberInputModule,
-  trackFormControl,
 } from '@ardium-ui/ui';
 import { CardComponent } from '@common/components/card/card.component';
 import { MoneyComponent } from '@common/components/money/money.component';
@@ -37,6 +37,7 @@ import { WrapInAbstractControl } from '@common/utils/form-types';
 import { UsersService } from '@features/reckoning/services/users.service';
 import { AmountType, amountTypeOptions, createAmountTypeLabelMap } from '@features/reckoning/utils/amount-type';
 import { ICreateTransactionRequestSplitPartDto } from '@shared/contracts/transactions/create';
+import { IUpdateTransactionRequestSplitPartDto } from '@shared/contracts/transactions/update';
 import { map, startWith, Subscription, tap } from 'rxjs';
 import TakeChance from 'take-chance';
 
@@ -187,7 +188,7 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
     this._typeSubs.forEach(sub => sub.unsubscribe());
     this._typeSubs.clear();
     (value ?? []).forEach(payer => {
-      this.parts.push(this._createSplitPartGroup(payer), { emitEvent: false });
+      this.parts.push(this._createSplitPartGroup(payer));
     });
     this._isWritingValue = false;
   }
@@ -213,7 +214,7 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
 
   //! private methods
   private _createSplitPartGroup(
-    part: ICreateTransactionRequestSplitPartDto,
+    part: IUpdateTransactionRequestSplitPartDto | ICreateTransactionRequestSplitPartDto,
   ): FormGroup<WrapInAbstractControl<SplitPartFormValue>> {
     const nameControl = new FormControl<string>(part.name, { nonNullable: true, validators: [Validators.required] });
     const shouldBeRemaining =
@@ -232,8 +233,10 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
       nonNullable: true,
       validators: [Validators.required, Validators.minLength(1)],
     });
+    const partId = 'id' in part ? part.id : -1;
 
     const group = new FormGroup<WrapInAbstractControl<SplitPartFormValue>>({
+      id: new FormControl<number>(partId, { nonNullable: true }),
       name: nameControl,
       type: typeControl,
       amount: amountControl,
@@ -272,6 +275,7 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
 
   private _mapToOutput(): ICreateTransactionRequestSplitPartDto[] {
     return this.parts.getRawValue().map(part => ({
+      id: part.id,
       name: part.name,
       amount: part.type === AmountType.Remaining ? null : part.amount,
       includees: [...part.includees],
@@ -320,6 +324,7 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
   }
   clickAddEveryone() {
     this.addSplitPart({
+      id: -1,
       name: $localize`:@@create-transaction.split-parts.transaction-everyone:Po równo`,
       type: AmountType.Remaining,
       amount: null,
@@ -365,6 +370,6 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
   );
 }
 
-type SplitPartFormValue = ICreateTransactionRequestSplitPartDto & {
+type SplitPartFormValue = IUpdateTransactionRequestSplitPartDto & {
   type: AmountType;
 };

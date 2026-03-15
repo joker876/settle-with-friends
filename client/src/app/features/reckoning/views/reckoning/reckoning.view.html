@@ -101,9 +101,12 @@
 
   <section>
     <app-transactions-section
-      [transactions]="transactionsService.transactions.value() ?? []"
+      [transactions]="transactionsService.transactions.value()"
       [mainCurrency]="reckoningService.reckoning.value()?.mainCurrency ?? ''"
+      [isDeleteLoading]="transactionsService.deleteTransactionStatus() === 'loading'"
       (createTransactionClick)="navigateToCreateTransaction()"
+      (editTransactionClick)="navigateToEditTransaction($event)"
+      (deleteTransactionConfirm)="deleteTransaction($event)"
     />
   </section>
 </div>

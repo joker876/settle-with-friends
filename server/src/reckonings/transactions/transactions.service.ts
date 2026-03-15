@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ICreateTransactionRequestDto } from '@shared/contracts/transactions/create';
+import { IUpdateTransactionRequestDto } from '@shared/contracts/transactions/update';
 import { Repository } from 'typeorm';
 import { Transaction } from '../../typeorm/entities';
 import { TransactionPayersService } from './transaction-payers.service';
@@ -52,9 +53,48 @@ export class TransactionsService {
       await this.splitPartService.createForTransaction(savedTx, splitParts);
     }
 
-    return this.transactionRepo.findOne({
+    return (await this.transactionRepo.findOne({
       relations: { payers: {}, splitParts: { includees: {} } },
       where: { id: savedTx.id },
-    }) as Promise<Transaction>;
+    }))!;
+  }
+
+  async updateTransaction(
+    reckoningId: number,
+    transactionId: number,
+    userId: number,
+    transactionData: IUpdateTransactionRequestDto,
+  ): Promise<Transaction> {
+    const tx = await this.transactionRepo.findOne({
+      where: { id: transactionId, reckoning: { id: reckoningId } },
+    });
+    if (!tx) {
+      throw new NotFoundException('Transaction not found');
+    }
+
+    // update basic fields
+    Object.assign(tx, transactionData.transaction);
+    tx.updatedByUserId = userId;
+    const savedTx = await this.transactionRepo.save(tx);
+
+    // sync related entities
+    await this.payerService.syncForTransaction(savedTx, transactionData.payers);
+    await this.splitPartService.syncForTransaction(savedTx, transactionData.splitParts);
+
+    return (await this.transactionRepo.findOne({
+      relations: { payers: {}, splitParts: { includees: {} } },
+      where: { id: savedTx.id },
+    }))!;
+  }
+
+  async deleteTransaction(reckoningId: number, transactionId: number): Promise<void> {
+    const tx = await this.transactionRepo.findOne({
+      where: { id: transactionId, reckoning: { id: reckoningId } },
+    });
+    if (!tx) {
+      throw new NotFoundException('Transaction not found');
+    }
+
+    await this.transactionRepo.remove(tx);
   }
 }

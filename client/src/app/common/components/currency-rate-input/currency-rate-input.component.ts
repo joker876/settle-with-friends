@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Component, forwardRef, input, signal } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ArdiumDialogModule, ArdiumIconButtonModule, ArdiumNumberInputModule } from '@ardium-ui/ui';
@@ -14,6 +15,7 @@ import { StatisticWithValueComponent } from '../statistic-with-value/statistic-w
     BalanceComponent,
     ArdiumIconButtonModule,
     ArdiumNumberInputModule,
+    DatePipe,
   ],
   templateUrl: './currency-rate-input.component.html',
   styleUrl: './currency-rate-input.component.scss',
@@ -22,14 +24,16 @@ import { StatisticWithValueComponent } from '../statistic-with-value/statistic-w
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => CurrencyRateInputComponent),
       multi: true,
-    }
-  ]
+    },
+  ],
 })
 export class CurrencyRateInputComponent implements ControlValueAccessor {
   readonly currencyCode = input.required<string>();
   readonly mainCurrency = input.required<string>();
   readonly isValueLoading = input.required<boolean>();
 
+  readonly selectedTransactionDate = input.required<Date>();
+  readonly currencyRateFromApi = input.required<number | null>();
   readonly isCurrencyRateFromApiControl = input.required<FormControl<boolean | null>>();
 
   readonly value = signal<number | null>(null);
@@ -46,7 +50,7 @@ export class CurrencyRateInputComponent implements ControlValueAccessor {
     this._onChange(this.value());
     this._onTouched();
     this.isDialogOpen.set(false);
-    this.isCurrencyRateFromApiControl().setValue(true, { emitEvent: false });
+    this.isCurrencyRateFromApiControl().setValue(this.currencyRateFromApi() === this.tempValue());
   }
 
   writeValue(value: number | null): void {

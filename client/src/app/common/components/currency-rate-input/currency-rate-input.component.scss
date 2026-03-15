@@ -9,3 +9,13 @@
 .disabled {
   opacity: 50%;
 }
+.dialog-content {
+  width: 28rem;
+  max-width: 100%;
+}
+ard-number-input {
+  --ard-number-input-width: 15ch;
+}
+.text3 {
+  color: var(--text3);
+}

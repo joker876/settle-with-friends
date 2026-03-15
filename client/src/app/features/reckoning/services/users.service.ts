@@ -28,19 +28,30 @@ export class UsersService {
 
   public readonly userMap = mapResourceToIdMap(this.users);
 
-  waitForUsersLoaded<T extends Record<string, any>>(): OperatorFunction<T[], T[]> {
-    return bufferLastUntil<T[]>(this._usersResolved$);
+  waitForUsersLoaded<T extends Record<string, any> | Record<string, any>[]>(): OperatorFunction<T, T> {
+    return bufferLastUntil<T>(this._usersResolved$);
+  }
+
+  hydrateUsersSingle<T extends Record<string, any>>(mappingTokens: MappingToken<T>[]): (objects: T) => T {
+    return hydrateSingleProp<T, IUser>(mappingTokens, this.userMap) as (objects: T) => T;
   }
 
   hydrateUsers<T extends Record<string, any>>(mappingTokens: MappingToken<T>[]): (objects: T[]) => T[] {
-    return hydrateSingleProp<T, IUser>(mappingTokens, this.userMap);
+    return hydrateSingleProp<T, IUser>(mappingTokens, this.userMap) as (objects: T[]) => T[];
+  }
+
+  hydrateUsersInArraySingle<T extends Record<string, any>, A extends Record<string, any>>(
+    arrayProp: keyof T,
+    mappingTokens: MappingToken<A>[],
+  ): (objects: T) => T {
+    return hydrateAllInArray<T, A, IUser>(arrayProp, mappingTokens, this.userMap) as (objects: T) => T;
   }
 
   hydrateUsersInArray<T extends Record<string, any>, A extends Record<string, any>>(
     arrayProp: keyof T,
     mappingTokens: MappingToken<A>[],
   ): (objects: T[]) => T[] {
-    return hydrateAllInArray<T, A, IUser>(arrayProp, mappingTokens, this.userMap);
+    return hydrateAllInArray<T, A, IUser>(arrayProp, mappingTokens, this.userMap) as (objects: T[]) => T[];
   }
 }
 

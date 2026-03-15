@@ -32,6 +32,7 @@ import { PreventAndStopPlugin } from '@common/plugins/prevent-default-event-mana
 import { AuthService } from '@common/services/auth.service';
 import { DATE_DESERIALIZATION_FN, DATE_SERIALIZATION_FN } from '@common/utils/date-serialization';
 import { ERROR_MAP } from '@common/utils/errors';
+import { PLURALIZE_PL_WITH_NUMBERS_DEFAULT } from 'ngx-polish-number-to-words';
 import { TimeagoCustomFormatter, TimeagoFormatter, TimeagoIntl, TimeagoModule } from 'ngx-timeago';
 import { routes } from './app.routes';
 
@@ -57,6 +58,7 @@ export const appConfig: ApplicationConfig = {
       multi: true,
     },
     { provide: EVENT_MANAGER_PLUGINS, useClass: PreventAndStopPlugin, multi: true },
+    { provide: PLURALIZE_PL_WITH_NUMBERS_DEFAULT, useValue: true },
     provideMappingInterceptor(isIsoDateString, convertStringToDate),
     AuthService,
     provideButtonDefaults({ appearance: ButtonAppearance.Outlined, color: ComponentColor.None }),
@@ -82,15 +84,15 @@ export const appConfig: ApplicationConfig = {
     provideSelectDefaults({
       placeholder: '',
       appearance: FormElementAppearance.Filled,
-      clearButtonTitle: 'Wyczyść',
+      clearButtonTitle: $localize`:@@common.clear:Wyczyść`,
       clearable: false,
       searchable: true,
       hideSelected: false,
       multiselectable: false,
       dropdownAppearance: DropdownPanelAppearance.Outlined,
-      loadingPlaceholderText: 'Ładowanie...',
-      noItemsFoundText: 'Nie znaleziono',
-      addCustomOptionText: 'Utwórz',
+      loadingPlaceholderText: $localize`:@@common.loading...:Ładowanie...`,
+      noItemsFoundText: $localize`:@@common.not-found:Nie znaleziono`,
+      addCustomOptionText: $localize`:@@common.create:Utwórz`,
     }),
     provideNumberInputDefaults({
       placeholder: '',

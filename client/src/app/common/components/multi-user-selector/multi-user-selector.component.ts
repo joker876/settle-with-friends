@@ -1,5 +1,6 @@
 import { Component, computed, inject, input, OnDestroy, OnInit, signal, ViewEncapsulation } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import { trackFormControl } from '@ardium-ui/devkit';
 import {
   ARD_FORM_FIELD_CONTROL,
   ArdFormFieldControl,
@@ -9,7 +10,6 @@ import {
   ArdiumDialogModule,
   ArdiumIconButtonModule,
   ArdiumSelectModule,
-  trackFormControl,
 } from '@ardium-ui/ui';
 import { ArdIconCheckboxEmpty } from '@common/icons/checkbox-empty.icon';
 import { ArdIconCheckboxFilled } from '@common/icons/checkbox.icon copy';
@@ -67,10 +67,8 @@ export class MultiUserSelectorComponent implements ArdFormFieldControl, ControlV
   onDialogClose() {
     this.isDialogOpen.set(false);
     this._onTouched();
-    console.log('closed');
   }
   saveSelected() {
-    console.log('saved');
     this.value.set(
       this.dialogValue()
         .map(id => this.usersMap().get(id))

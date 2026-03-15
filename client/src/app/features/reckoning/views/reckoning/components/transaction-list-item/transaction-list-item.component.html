@@ -12,7 +12,11 @@
             @if (data().payers.length === 1) {
               {{ data().payers[0].user.displayName }}
             } @else {
-              {{ data().payers.length | pluralizePL: PAYERS1 : PAYERS2 : PAYERS5 : true }}
+              <pl-plural
+                [value]="data().payers.length"
+                forms="płacący,płacących,płacących"
+                i18n-forms="@@payers.plural-forms"
+              />
             }
           </ng-container>
         </app-statistic-with-icon>
@@ -22,7 +26,11 @@
             @if (numberOfIncludees() === 1) {
               {{ data().splitParts[0].includees[0].user.displayName }}
             } @else {
-              {{ numberOfIncludees() | pluralizePL: INCLUDEES1 : INCLUDEES2 : INCLUDEES5 : true }}
+              <pl-plural
+                [value]="numberOfIncludees()"
+                forms="wliczany,wliczanych,wliczanych"
+                i18n-forms="@@includees.plural-forms"
+              />
             }
           </ng-container>
         </app-statistic-with-icon>
@@ -53,10 +61,7 @@
           >
             <app-balance [balance]="data().amount" [currency]="data().currencyCode" />
           </app-statistic-with-value>
-          <app-statistic-with-value
-            text="Kurs wymiany"
-            i18n-text="@@common.currency-rate"
-          >
+          <app-statistic-with-value text="Kurs wymiany" i18n-text="@@common.currency-rate">
             1 {{ data().currencyCode }}
             =
             <app-balance [balance]="data().currencyRate!" [currency]="mainCurrency()" places="4-4" />
@@ -83,6 +88,21 @@
           [mainCurrency]="mainCurrency()"
         />
       </div>
+    </div>
+    <div class="actions">
+      <ard-button compact color="none" (click)="editClick.emit()" [disabled]="isDeleteLoading()" i18n="@@common.edit">
+        Edytuj
+      </ard-button>
+      <ard-button
+        compact
+        color="danger"
+        appearance="outlined-strong"
+        [disabled]="isDeleteLoading()"
+        (click)="deleteClick.emit()"
+        i18n="@@common.delete"
+      >
+        Usuń
+      </ard-button>
     </div>
   }
 </app-card>

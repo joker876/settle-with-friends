@@ -21,4 +21,10 @@ export class ReckoningView {
   navigateToCreateTransaction() {
     this._router.navigate(['create-transaction'], { relativeTo: this._activatedRoute });
   }
+  navigateToEditTransaction(transactionId: number) {
+    this._router.navigate(['transaction', transactionId], { relativeTo: this._activatedRoute });
+  }
+  deleteTransaction(transactionId: number) {
+    this.transactionsService.deleteTransaction(transactionId);
+  }
 }

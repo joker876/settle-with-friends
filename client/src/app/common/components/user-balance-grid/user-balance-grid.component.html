@@ -7,7 +7,7 @@
   }
 </div>
 <div class="user-grid">
-  @for (userValue of usersAndValuesWithSelectedCurrency(); track userValue.amount) {
+  @for (userValue of usersAndValuesWithSelectedCurrency(); track userValue.user.id) {
   <app-avatar [name]="userValue.user.displayName" [photo]="userValue.user.photo" showName />
   <div class="value">
     @if (userValue.isRemaining) {

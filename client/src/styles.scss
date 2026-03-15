@@ -233,6 +233,9 @@ abbr {
   text-decoration: underline dotted;
   cursor: help;
 }
+small {
+  font-size: 0.8125rem;
+}
 
 //! Global scrollbar styles
 ::-webkit-scrollbar {
@@ -521,6 +524,9 @@ ard-error, .ard-error {
   border: 1px solid var(--ard-border-light);
 }
 // number input
+ard-number-input {
+  display: block;
+}
 .ard-number-input {
   .ard-input-container,
   .ard-placeholder {

@@ -10,6 +10,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { trackFormControl } from '@ardium-ui/devkit';
 import {
   ARD_FORM_FIELD_CONTROL,
   ArdFormFieldControl,
@@ -20,7 +21,6 @@ import {
   ArdiumIconButtonModule,
   ArdiumNumberInputComponent,
   ArdiumNumberInputModule,
-  trackFormControl,
 } from '@ardium-ui/ui';
 import { CardComponent } from '@common/components/card/card.component';
 import { MoneyComponent } from '@common/components/money/money.component';
@@ -31,6 +31,7 @@ import { WrapInAbstractControl } from '@common/utils/form-types';
 import { UsersService } from '@features/reckoning/services/users.service';
 import { AmountType, amountTypeOptions, createAmountTypeLabelMap } from '@features/reckoning/utils/amount-type';
 import { ICreateTransactionRequestPayerDto } from '@shared/contracts/transactions/create';
+import { IUpdateTransactionRequestPayerDto } from '@shared/contracts/transactions/update';
 import { map, startWith, Subscription } from 'rxjs';
 import TakeChance from 'take-chance';
 
@@ -196,7 +197,7 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
     this._typeSubs.forEach(sub => sub.unsubscribe());
     this._typeSubs.clear();
     (value ?? []).forEach(payer => {
-      this.payers.push(this._createPayerGroup(payer), { emitEvent: false });
+      this.payers.push(this._createPayerGroup(payer));
     });
     this._isWritingValue = false;
   }
@@ -222,7 +223,7 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
 
   //! private methods
   private _createPayerGroup(
-    payer: ICreateTransactionRequestPayerDto,
+    payer: IUpdateTransactionRequestPayerDto | ICreateTransactionRequestPayerDto,
     fullForm: boolean = false,
   ): FormGroup<WrapInAbstractControl<PayerFormValue>> {
     const userIdControl = new FormControl<number>(
@@ -243,8 +244,10 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
         validators: [Validators.required, Validators.min(0.01)],
       },
     );
+    const payerId = 'id' in payer ? payer.id : -1;
 
     const group = new FormGroup<WrapInAbstractControl<PayerFormValue>>({
+      id: new FormControl<number>(payerId, { nonNullable: true }),
       userId: userIdControl,
       type: typeControl,
       amount: amountControl,
@@ -255,6 +258,7 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
 
   private _mapToOutput(): ICreateTransactionRequestPayerDto[] {
     return this.payers.getRawValue().map(payer => ({
+      id: payer.id,
       userId: payer.userId,
       amount: payer.type === AmountType.Remaining ? null : payer.amount,
     }));
@@ -322,6 +326,6 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
   }
 }
 
-type PayerFormValue = ICreateTransactionRequestPayerDto & {
+type PayerFormValue = IUpdateTransactionRequestPayerDto & {
   type: AmountType;
 };

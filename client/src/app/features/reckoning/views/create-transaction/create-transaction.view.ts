@@ -2,7 +2,15 @@ import { Component, computed, effect, inject, signal, untracked } from '@angular
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArdiumButtonModule, ArdiumDateInputModule, ArdiumFormFieldModule, ArdiumGridModule, ArdiumInputModule, ArdiumNumberInputModule, ArdiumSelectModule } from '@ardium-ui/ui';
+import {
+  ArdiumButtonModule,
+  ArdiumDateInputModule,
+  ArdiumFormFieldModule,
+  ArdiumGridModule,
+  ArdiumInputModule,
+  ArdiumNumberInputModule,
+  ArdiumSelectModule,
+} from '@ardium-ui/ui';
 import { CardWithHeadingComponent } from '@common/components/card-with-heading/card-with-heading.component';
 import { CurrencyRateInputComponent } from '@common/components/currency-rate-input/currency-rate-input.component';
 import { SelectComponent } from '@common/components/select/select.component';
@@ -13,8 +21,9 @@ import { CurrencyRatesService } from '@features/reckoning/services/currency-rate
 import { TransactionsService } from '@features/reckoning/services/transactions.service';
 import { PayersAdderComponent } from '@features/reckoning/views/create-transaction/components/payers-adder/payers-adder.component';
 import { ICreateTransactionRequestDto } from '@shared/contracts/transactions/create';
-import { startWith } from 'rxjs';
-import { SplitPartsAdderComponent } from "./components/split-parts-adder/split-parts-adder.component";
+import { IUpdateTransactionRequestDto } from '@shared/contracts/transactions/update';
+import { map, startWith } from 'rxjs';
+import { SplitPartsAdderComponent } from './components/split-parts-adder/split-parts-adder.component';
 
 @Component({
   selector: 'app-create-transaction',
@@ -33,8 +42,8 @@ import { SplitPartsAdderComponent } from "./components/split-parts-adder/split-p
     PayersAdderComponent,
     ArdiumGridModule,
     SplitPartsAdderComponent,
-    ArdiumButtonModule
-],
+    ArdiumButtonModule,
+  ],
   templateUrl: './create-transaction.view.html',
   styleUrl: './create-transaction.view.scss',
 })
@@ -43,8 +52,20 @@ export class CreateTransactionView {
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _currencyRatesService = inject(CurrencyRatesService);
   private readonly _transactionService = inject(TransactionsService);
+  private readonly _route = inject(ActivatedRoute);
 
   readonly TODAY = new Date();
+
+  private readonly _editedTransactionId = toSignal(
+    this._route.paramMap.pipe(
+      map(p => p.get('transactionId')),
+      map(id => (typeof id === 'string' ? Number(id) : null)),
+    ),
+    { initialValue: null },
+  );
+  readonly isCreateMode = toSignal(this._route.data.pipe(map(v => v['isCreateMode'] === true)), {
+    initialValue: null,
+  });
 
   readonly form = new FormGroup({
     transaction: new FormGroup<WrapInAbstractControl<ICreateTransactionRequestDto['transaction']>>({
@@ -58,8 +79,14 @@ export class CreateTransactionView {
       isCurrencyRateFromApi: new FormControl<boolean | null>(null, { validators: [Validators.required] }),
       transactionDate: new FormControl(this.TODAY, { nonNullable: true, validators: [Validators.required] }),
     }),
-    payers: new FormControl<ICreateTransactionRequestDto['payers']>([], { nonNullable: true, validators: [Validators.required] }),
-    splitParts: new FormControl<ICreateTransactionRequestDto['splitParts']>([], { nonNullable: true, validators: [Validators.required] }),
+    payers: new FormControl<IUpdateTransactionRequestDto['payers']>([], {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    splitParts: new FormControl<IUpdateTransactionRequestDto['splitParts']>([], {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
   });
   readonly formValue = toSignal(this.form.valueChanges.pipe(startWith(this.form.value)));
   readonly currencyCodeValue = computed<string>(() => this.formValue()!.transaction!.currencyCode!);
@@ -67,19 +94,46 @@ export class CreateTransactionView {
 
   readonly currencies = this._currencyRatesService.currencies;
   readonly isCurrencyRateLoading = signal<boolean>(false);
+  readonly currencyRateFromApi = computed<number | null>(() =>
+    this._currencyRatesService.getCurrencyRate(this.currencyCodeValue(), this.transactionDateValue()),
+  );
 
   constructor() {
+    // set value if is editing transaction
+    effect(() => {
+      const id = this._editedTransactionId();
+      if (!id) return;
+      const v = this._transactionService.getTransaction(id);
+      if (!v) return;
+
+      untracked(() => {
+        this.form.setValue({
+          transaction: {
+            name: v.name,
+            amount: v.amount,
+            currencyCode: v.currencyCode,
+            currencyRate: v.currencyRate,
+            isCurrencyRateFromApi: v.isCurrencyRateFromApi,
+            transactionDate: v.transactionDate,
+          },
+          payers: v.payers,
+          splitParts: v.splitParts.map(part => ({
+            id: part.id,
+            name: part.name,
+            amount: part.amount,
+            includees: part.includees.map(inc => inc.userId),
+          })),
+        });
+        this.form.markAllAsTouched();
+      });
+    });
     // set initial currency code to main currency if available
-    let wasInitialCurrencySet = false;
     effect(() => {
       const mainCurrency = this._currencyRatesService.mainCurrency();
 
-      if (!wasInitialCurrencySet && mainCurrency) {
+      if (this.form.controls.transaction.controls.currencyCode.getRawValue() === null && mainCurrency) {
         // wait for the select options to be initialized before setting the value to avoid warnings
-        setTimeout(() => {
-          this.form.controls.transaction.controls.currencyCode.setValue(mainCurrency);
-        }, 0);
-        wasInitialCurrencySet = true;
+        untracked(() => this.form.controls.transaction.controls.currencyCode.setValue(mainCurrency));
       }
     });
     // disable currency code and rate if there's only one currency available
@@ -106,40 +160,47 @@ export class CreateTransactionView {
         return;
       }
 
+      const transxControls = this.form.controls.transaction.controls;
+      const currencyRateTouched = transxControls.currencyRate.touched;
+      // fetch currency rate for selected date
       const date = this.transactionDateValue();
       this.isCurrencyRateLoading.set(true);
       await untracked(() => this._currencyRatesService.fetchAndStoreCurrencyRate(currencyCode, date));
       this.isCurrencyRateLoading.set(false);
 
-      if (this.form.controls.transaction.controls.currencyRate.touched) {
-        return;
-      }
+      // don't use currency rate if main currency is selected
       if (this.currencyCodeValue() === mainCurrency) {
-        this.form.controls.transaction.controls.currencyRate.setValue(null, { emitEvent: false });
-        this.form.controls.transaction.controls.isCurrencyRateFromApi.setValue(null, { emitEvent: false });
+        transxControls.currencyRate.disable();
+        transxControls.isCurrencyRateFromApi.disable();
         return;
       }
-      const rate = untracked(() => this._currencyRatesService.getCurrencyRate(currencyCode, date));
-      this.form.controls.transaction.controls.currencyRate.setValue(rate, { emitEvent: false });
-      this.form.controls.transaction.controls.isCurrencyRateFromApi.setValue(rate !== null, { emitEvent: false });
+      // get the fetched currency rate & set the values
+      transxControls.currencyRate.enable();
+      transxControls.isCurrencyRateFromApi.enable();
+      // only set the value if it wasn't already set or wasn't touched
+      if (!currencyRateTouched || transxControls.currencyRate.getRawValue() === null) {
+        const rate = untracked(() => this._currencyRatesService.getCurrencyRate(currencyCode, date));
+        transxControls.currencyRate.setValue(rate, { emitEvent: false });
+        transxControls.isCurrencyRateFromApi.setValue(rate !== null, { emitEvent: false });
+      }
     });
+    // every time the user changes the currency code, mark the currency rate as untouched
     effect(() => {
-      const currencyCode = this.currencyCodeValue();
-      if (currencyCode) {
+      const code = this.currencyCodeValue();
+      if (code) {
         this.form.controls.transaction.controls.currencyRate.markAsUntouched({ emitEvent: false });
       }
     });
   }
 
   private _navigateToTransactionList() {
-    this._router.navigate(['../'], { relativeTo: this._activatedRoute });
+    this._router.navigate([this.isCreateMode() ? '../' : '../../'], { relativeTo: this._activatedRoute });
   }
 
   onCancelClick() {
     this._navigateToTransactionList();
   }
   async onCreateClick() {
-    console.log(this.form.errors);
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -147,7 +208,21 @@ export class CreateTransactionView {
 
     const success = await this._transactionService.createTransaction(this.form.getRawValue());
     if (!success) return;
-    
+
+    this._navigateToTransactionList();
+  }
+  async onUpdateClick() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const success = await this._transactionService.updateTransaction(
+      this._editedTransactionId()!,
+      this.form.getRawValue(),
+    );
+    if (!success) return;
+
     this._navigateToTransactionList();
   }
 }

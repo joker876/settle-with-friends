@@ -1,7 +1,7 @@
 <app-stack>
   @if (sortedPayerValue().length > 0) {
     <app-card>
-      @for (payer of sortedPayerValue(); track payer) {
+      @for (payer of sortedPayerValue(); track payer.userId) {
         <button type="button" class="card-item" (click)="clickEditPayer(payer)">
           <div class="left">
             <div class="user-text" aria-label="Osoba" i18n-aria-label="@@common.person">
