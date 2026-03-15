@@ -1,6 +1,6 @@
 import { IPaymentBasicData } from '@shared/entities/payment';
 import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { TrimString } from '../../../utils/trim-string.transform';
+import { TrimString } from '../../utils/trim-string.transform';
 
 export class CreatePaymentRequestDto implements IPaymentBasicData {
   @IsString()

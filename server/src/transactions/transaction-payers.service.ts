@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ICreateTransactionRequestPayerDto } from '@shared/contracts/transactions/create';
 import { IUpdateTransactionRequestPayerDto } from '@shared/contracts/transactions/update';
 import { Repository } from 'typeorm';
-import { Transaction, TransactionPayer } from '../../typeorm/entities';
+import { Transaction, TransactionPayer } from '../typeorm/entities';
 
 @Injectable()
 export class TransactionPayersService {

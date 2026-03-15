@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Req } from '@nestjs/common';
 import { IPayment } from '@shared/entities/payment';
 import { Request } from 'express';
-import { ReckoningAccess } from '../reckoning-access.guard';
+import { ReckoningAccess } from '../reckonings/reckoning-access.guard';
 import { CreatePaymentRequestDto } from './dtos/create';
 import { UpdatePaymentRequestDto } from './dtos/update';
 import { PaymentsService } from './payments.service';

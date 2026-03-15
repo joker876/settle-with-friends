@@ -4,10 +4,10 @@ import { ICreateTransactionRequestSplitPartDto } from '@shared/contracts/transac
 import { IUpdateTransactionRequestSplitPartDto } from '@shared/contracts/transactions/update';
 import { Repository } from 'typeorm';
 import {
-  Transaction,
-  TransactionSplitPart,
-  TransactionSplitPartIncludee,
-} from '../../typeorm/entities';
+    Transaction,
+    TransactionSplitPart,
+    TransactionSplitPartIncludee,
+} from '../typeorm/entities';
 
 @Injectable()
 export class TransactionSplitPartsService {

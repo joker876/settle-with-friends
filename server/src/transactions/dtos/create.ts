@@ -1,12 +1,12 @@
 import {
-  ICreateTransactionRequestDto,
-  ICreateTransactionRequestPayerDto,
-  ICreateTransactionRequestSplitPartDto,
+    ICreateTransactionRequestDto,
+    ICreateTransactionRequestPayerDto,
+    ICreateTransactionRequestSplitPartDto,
 } from '@shared/contracts/transactions/create';
 import { ITransactionBasicData } from '@shared/entities/transaction';
 import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { TrimString } from '../../../utils/trim-string.transform';
-import { Nested, NestedArray } from '../../../utils/validation.decorators';
+import { TrimString } from '../../utils/trim-string.transform';
+import { Nested, NestedArray } from '../../utils/validation.decorators';
 
 export class CreateTransactionBasicDataDto implements ITransactionBasicData {
   @IsString()

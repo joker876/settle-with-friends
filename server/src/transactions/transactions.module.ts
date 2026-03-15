@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TransactionPayer, TransactionSplitPart, TransactionSplitPartIncludee, User } from '../../typeorm/entities';
-import { Transaction } from '../../typeorm/entities/Transaction';
-import { ReckoningAccessService } from '../reckoning-access.service';
+import { ReckoningAccessService } from '../reckonings/reckoning-access.service';
+import { TransactionPayer, TransactionSplitPart, TransactionSplitPartIncludee, User } from '../typeorm/entities';
+import { Transaction } from '../typeorm/entities/Transaction';
 import { TransactionPayersService } from './transaction-payers.service';
 import { TransactionSplitPartsService } from './transaction-split-parts.service';
 import { TransactionsController } from './transactions.controller';

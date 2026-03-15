@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ICreateTransactionRequestDto } from '@shared/contracts/transactions/create';
 import { IUpdateTransactionRequestDto } from '@shared/contracts/transactions/update';
 import { Repository } from 'typeorm';
-import { Transaction } from '../../typeorm/entities';
+import { Transaction } from '../typeorm/entities';
 import { TransactionPayersService } from './transaction-payers.service';
 import { TransactionSplitPartsService } from './transaction-split-parts.service';
 
