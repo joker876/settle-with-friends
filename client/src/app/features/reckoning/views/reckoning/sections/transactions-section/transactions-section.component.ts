@@ -5,7 +5,7 @@ import { MoneyComponent } from "@common/components/money/money.component";
 import { SectionHeadingComponent } from '@common/components/section-heading/section-heading.component';
 import { ArdIconPlus } from '@common/icons/plus.icon';
 import { ITransaction } from '@shared/entities/transaction';
-import { TransactionListItemComponent } from '../../components/transaction-list-item/transaction-list-item.component';
+import { TransactionListItemComponent } from './components/transaction-list-item/transaction-list-item.component';
 
 @Component({
   selector: 'app-transactions-section',
