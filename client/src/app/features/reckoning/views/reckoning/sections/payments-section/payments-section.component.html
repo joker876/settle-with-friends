@@ -1,0 +1,44 @@
+<app-section-heading i18n-heading="@@reckoning-page.payments.heading" heading="Wpłaty">
+  <ard-button (click)="onCreatePaymentClick()" appearance="outlined" color="primary">
+    <ard-icon-plus class="icon" />
+    <span i18n="@@common.add">Dodaj</span>
+  </ard-button>
+</app-section-heading>
+<div class="payment-list">
+  @for (pmnt of payments.value(); track pmnt.id) {
+    <app-payment-list-item
+      [data]="pmnt"
+      [mainCurrency]="mainCurrency()"
+      [isDeleteLoading]="isDeleteLoading()"
+      (editClick)="onEditPaymentClick(pmnt)"
+      (deleteClick)="onDeletePaymentClick(pmnt)"
+    />
+  } @empty {
+    <p class="empty-placeholder" i18n="@@reckoning-page.payments.empty-placeholder">
+      Nie dodano jeszcze żadnych wpłat.
+    </p>
+  }
+</div>
+
+<app-payment-create-edit-dialog
+  [isOpen]="isCreateEditDialogOpen()"
+  [isSubmitting]="isCreateEditDialogSubmitting()"
+  [payment]="createEditDialogPaymentData()"
+  (submit)="onSubmitCreateEditDialog($event)"
+  (close)="isCreateEditDialogOpen.set(false)"
+/>
+
+@if (paymentToBeDeleted(); as pmnt) {
+  <app-confirmation-dialog
+    [open]="true"
+    heading="Usuwanie wpłaty"
+    i18n-heading="@@reckoning-page.payments.delete-confirmation.heading"
+    confirmButtonText="Usuń"
+    i18n-confirmButtonText="@@common.delete"
+    i18n="@@reckoning-page.payments.delete-confirmation.content"
+    (submit)="deletePayment()"
+  >
+    Czy na pewno chcesz usunąć wpłatę <strong>{{ pmnt.name }}</strong> na kwotę
+    <strong><app-money [amount]="pmnt.amount" [currency]="pmnt.currencyCode" /></strong>?
+  </app-confirmation-dialog>
+}

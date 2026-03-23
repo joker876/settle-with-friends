@@ -6,6 +6,7 @@ import { EVENT_MANAGER_PLUGINS } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import {
   ArdCalendarView,
+  ArdDialogActionType,
   ButtonAppearance,
   ComponentColor,
   DropdownPanelAppearance,
@@ -67,6 +68,7 @@ export const appConfig: ApplicationConfig = {
       rejectButtonAppearance: ButtonAppearance.Transparent,
       rejectButtonText: $localize`:@@common.cancel:Anuluj`,
       confirmButtonAppearance: ButtonAppearance.RaisedStrong,
+      buttonActionType: ArdDialogActionType.NoOp,
     }),
     provideDateInputDefaults({
       placeholder: '',
@@ -103,6 +105,7 @@ export const appConfig: ApplicationConfig = {
       allowFloat: true,
       maxDecimalPlaces: 2,
       fixedDecimalPlaces: true,
+      decimalSeparator: ',',
     }),
     provideSpinnerDefaults({ color: ComponentColor.None }),
     provideErrorMap(ERROR_MAP),

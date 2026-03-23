@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ICreatePaymentRequestDto } from '@shared/contracts/payments/create';
-import { IUpdatePaymentRequestDto } from '@shared/contracts/payments/update';
 import { Repository } from 'typeorm';
 import { Payment } from '../typeorm/entities';
+import { CreatePaymentRequestDto } from './dtos/create';
+import { UpdatePaymentRequestDto } from './dtos/update';
 
 @Injectable()
 export class PaymentsService {
@@ -20,7 +20,7 @@ export class PaymentsService {
     });
   }
 
-  async createPayment(reckoningId: number, userId: number, paymentData: ICreatePaymentRequestDto): Promise<Payment> {
+  async createPayment(reckoningId: number, userId: number, paymentData: CreatePaymentRequestDto): Promise<Payment> {
     const pmnt = this.paymentRepo.create({
       ...paymentData,
       createdByUserId: userId,
@@ -40,7 +40,7 @@ export class PaymentsService {
     reckoningId: number,
     paymentId: number,
     userId: number,
-    paymentData: IUpdatePaymentRequestDto,
+    paymentData: UpdatePaymentRequestDto,
   ): Promise<Payment> {
     const pmnt = await this.paymentRepo.findOne({
       where: { id: paymentId, reckoning: { id: reckoningId } },

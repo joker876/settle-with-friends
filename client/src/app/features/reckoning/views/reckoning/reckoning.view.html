@@ -109,4 +109,7 @@
       (deleteTransactionConfirm)="deleteTransaction($event)"
     />
   </section>
+  <section>
+    <app-payments-section [mainCurrency]="reckoningService.reckoning.value()?.mainCurrency ?? ''" />
+  </section>
 </div>

@@ -43,10 +43,7 @@ import { PluralizePlComponent } from 'ngx-polish-number-to-words';
   styleUrl: './transaction-list-item.component.scss',
 })
 export class TransactionListItemComponent {
-  readonly data = input.required<ITransaction, ITransaction>({ transform: v => {
-    console.log('data', v);
-    return v;
-  }});
+  readonly data = input.required<ITransaction>();
   readonly mainCurrency = input.required<string>();
 
   readonly isDetailsOpen = model<boolean>(false);

@@ -37,3 +37,8 @@ h2 {
     max-width: 25rem;
   }
 }
+section {
+  &:not(:first-of-type) {
+    margin-top: 2rem;
+  }
+}

@@ -3,11 +3,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
 import { TransactionsService } from '@features/reckoning/services/transactions.service';
 import { UsersService } from '@features/reckoning/services/users.service';
+import { PaymentsSectionComponent } from "./sections/payments-section/payments-section.component";
 import { TransactionsSectionComponent } from './sections/transactions-section/transactions-section.component';
 
 @Component({
   selector: 'app-reckoning',
-  imports: [TransactionsSectionComponent],
+  imports: [TransactionsSectionComponent, PaymentsSectionComponent],
   templateUrl: './reckoning.view.html',
   styleUrl: './reckoning.view.scss',
 })

@@ -13,6 +13,10 @@
       (editClick)="editTransactionClick.emit(transx.id)"
       (deleteClick)="onDeleteTransactionClick(transx)"
     />
+  } @empty {
+    <p class="empty-placeholder" i18n="@@reckoning-page.transactions.empty-placeholder">
+      Nie dodano jeszcze żadnych transakcji.
+    </p>
   }
 </div>
 

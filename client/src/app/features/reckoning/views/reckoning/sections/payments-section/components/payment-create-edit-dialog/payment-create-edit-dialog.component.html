@@ -1,0 +1,78 @@
+<ard-dialog
+  [open]="isOpen()"
+  [heading]="isCreatingPayment() ? 'Tworzenie wpłaty' : 'Edytowanie wpłaty'"
+  i18n-heading="@@reckoning-page.payments.create-edit-dialog.heading"
+  [confirmButtonText]="isCreatingPayment() ? 'Utwórz' : 'Zapisz'"
+  i18n-confirmButtonText="@@reckoning-page.payments.create-edit-dialog.confirm-button-text"
+  noCloseButton
+  disableBackdropClose
+  buttonActionType="no-op"
+  (confirm)="onSubmit()"
+  (reject)="close.emit()"
+>
+  <ard-grid container rowSpacing="6" class="base-grid">
+    <ard-grid size="12">
+      <ard-form-field>
+        <ard-label i18n="@@create-payment.field.name.label" required>Tytuł wpłaty</ard-label>
+        <ard-input
+          [formControl]="form.controls.name"
+          placeholder="np. Zwrot, Końcowy rozrachunek"
+          i18n-placeholder="@@create-payment.field.name.placeholder"
+          [inputAttrs]="{ autocomplete: 'one-time-code' }"
+          htmlId="payment-name-field"
+        />
+        <ard-auto-error [control]="form.controls.name" />
+      </ard-form-field>
+    </ard-grid>
+    <ard-grid size="12">
+      <ard-form-field>
+        <ard-label i18n="@@create-payment.field.paidBy.label" required>Osoba wpłacająca</ard-label>
+        <app-select [control]="form.controls.paidByUserId" [options]="userOptions()" />
+        <ard-auto-error [control]="form.controls.paidByUserId" />
+      </ard-form-field>
+    </ard-grid>
+    <ard-grid size="12">
+      <ard-form-field>
+        <ard-label i18n="@@create-payment.field.date.label" required>Data wpłaty</ard-label>
+        <ard-date-input
+          [formControl]="form.controls.paymentDate"
+          [max]="TODAY"
+          placeholder="DD.MM.YYYY"
+          i18n-placeholder="@@create-payment.field.date.placeholder"
+        />
+        <ard-auto-error [control]="form.controls.paymentDate" />
+      </ard-form-field>
+    </ard-grid>
+    <ard-grid size="12">
+      <div class="amount-row">
+        <ard-form-field>
+          <ard-label i18n="@@create-payment.field.amount.label" required>Kwota</ard-label>
+          <ard-number-input
+            [formControl]="form.controls.amount"
+            placeholder="np. 200,00"
+            i18n-placeholder="@@create-payment.field.amount.placeholder"
+          />
+          <ard-auto-error [control]="form.controls.amount" />
+        </ard-form-field>
+        <ard-form-field>
+          <ard-label>&nbsp;</ard-label>
+          <app-select [options]="currencies()" [control]="form.controls.currencyCode" />
+          <ard-auto-error [control]="form.controls.currencyCode" />
+        </ard-form-field>
+      </div>
+    </ard-grid>
+    @if (currencyCodeValue() && currencyCodeValue() !== currencies()[0].value) {
+      <ard-grid size="12">
+        <app-currency-rate-input
+          [mainCurrency]="currencies()[0].value"
+          [currencyCode]="currencyCodeValue()"
+          [formControl]="form.controls.currencyRate"
+          [isCurrencyRateFromApiControl]="form.controls.isCurrencyRateFromApi"
+          [isValueLoading]="isCurrencyRateLoading() && !form.controls.currencyRate.touched"
+          [selectedTransactionDate]="paymentDateValue()"
+          [currencyRateFromApi]="currencyRateFromApi()"
+        />
+      </ard-grid>
+    }
+  </ard-grid>
+</ard-dialog>

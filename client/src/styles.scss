@@ -140,69 +140,78 @@
 }
 
 //! CSS Reset
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-* {
-  margin: 0;
-  padding: 0;
-  min-width: 0;
-  min-height: 0;
-  letter-spacing: normal;
-}
-html {
-  scroll-behavior: smooth;
-}
-body {
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  position: relative;
-  font-family: var(--font-family);
-  background-color: var(--bg2);
-}
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  * {
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    min-height: 0;
+    letter-spacing: normal;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    font-family: var(--font-family);
+    background-color: var(--bg2);
+  }
 
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block;
-  max-width: 100%;
-}
-input,
-button,
-textarea,
-select {
-  font: inherit;
-}
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  overflow-wrap: break-word;
-}
-button,
-a {
-  cursor: pointer;
-}
-.hidden {
-  display: none !important;
-}
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-p {
-  padding-top: 0.75rem;
-}
-ul,
-ol {
-  padding: 0.5rem 0 0.5rem 1.75rem;
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+  }
+  button,
+  a {
+    cursor: pointer;
+  }
+  .hidden {
+    display: none !important;
+  }
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+  p {
+    padding-top: 0.75rem;
+  }
+  ul,
+  ol {
+    padding: 0.5rem 0 0.5rem 1.75rem;
+  }
+  abbr {
+    text-decoration: underline dotted;
+    cursor: help;
+  }
+  small {
+    font-size: 0.8125rem;
+  }
 }
 //! Global styles
 .page-wrapper-g {
@@ -228,13 +237,6 @@ hr {
     width: 0;
     height: 100%;
   }
-}
-abbr {
-  text-decoration: underline dotted;
-  cursor: help;
-}
-small {
-  font-size: 0.8125rem;
 }
 
 //! Global scrollbar styles
@@ -516,7 +518,8 @@ ard-button.icon-only-g .ard-button {
     }
   }
 }
-ard-error, .ard-error {
+ard-error,
+.ard-error {
   color: var(--ard-form-field-error-color);
 }
 // form field frame
@@ -544,12 +547,6 @@ ard-number-input {
 // select
 .ard-dropdown-panel-container {
   min-width: max-content;
-}
-// date input
-.ard-date-input {
-  .ard-date-input__value-container {
-    position: unset;
-  }
 }
 // radio group
 ard-radio-group {
