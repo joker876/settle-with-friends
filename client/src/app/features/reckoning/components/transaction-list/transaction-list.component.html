@@ -1,4 +1,9 @@
-<app-section-heading i18n-heading="@@reckoning-page.transactions.heading" heading="Transakcje">
+<app-section-heading
+  i18n-heading="@@reckoning-page.transactions.heading"
+  heading="Transakcje"
+  [showAllButton]="partialList()"
+  (showAllButtonClick)="showAllButtonClick.emit()"
+>
   <ard-button (click)="createTransactionClick.emit()" appearance="outlined" color="primary">
     <ard-icon-plus class="icon" />
     <span i18n="@@common.add">Dodaj</span>
@@ -8,7 +13,7 @@
   @for (transx of transactions(); track transx.id) {
     <app-transaction-list-item
       [data]="transx"
-      [mainCurrency]="mainCurrency()"
+      [mainCurrency]="mainCurrency() ?? ''"
       [isDeleteLoading]="isDeleteLoading()"
       (editClick)="editTransactionClick.emit(transx.id)"
       (deleteClick)="onDeleteTransactionClick(transx)"
@@ -28,7 +33,7 @@
     confirmButtonText="Usuń"
     i18n-confirmButtonText="@@common.delete"
     i18n="@@reckoning-page.transactions.delete-confirmation.content"
-    (submit)="deleteTransactionConfirm.emit(transx.id)"
+    (submit)="onDeleteTransactionSubmit(transx.id)"
   >
     Czy na pewno chcesz usunąć transakcję <strong>{{ transx.name }}</strong> na kwotę
     <strong><app-money [amount]="transx.amount" [currency]="transx.currencyCode" /></strong>?

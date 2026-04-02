@@ -1,5 +1,13 @@
 <div class="heading-container">
-  <h2>{{ heading() }}</h2>
+  <div class="heading-and-show-all">
+    <h2>{{ heading() }}</h2>
+    @if (showAllButton()) {
+      <app-text-btn (click)="showAllButtonClick.emit()">
+        Zobacz wszystkie
+        <ard-icon-chevron class="chevron" right />
+      </app-text-btn>
+    }
+  </div>
 
   <div class="actions">
     <ng-content />

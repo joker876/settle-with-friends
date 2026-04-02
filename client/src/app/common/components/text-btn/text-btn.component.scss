@@ -1,0 +1,17 @@
+:host {
+  display: inline-block;
+  width: max-content;
+}
+button {
+  all: unset;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 0.6ch;
+
+  &:hover, &:focus-visible {
+    text-decoration: underline;
+  }
+}

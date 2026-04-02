@@ -2,7 +2,11 @@
   <h1 i18n="@@main-page.reckoning-list.hello-user">Witaj, {{ authService.userData()?.displayName ?? '...' }}!</h1>
 
   <div class="list">
-    <app-section-heading i18n-heading="@@main-page.reckoning-list.active-reckonings" heading="Aktywne rozliczenia">
+    <app-section-heading
+      i18n-heading="@@main-page.reckoning-list.active-reckonings"
+      heading="Aktywne rozliczenia"
+      [showAllButton]="false"
+    >
       <ard-button (click)="onCreateReckoningClick()" appearance="outlined" color="primary">
         <ard-icon-plus class="icon" />
         <span i18n="@@common.create">Utwórz</span>

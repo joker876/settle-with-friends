@@ -17,7 +17,42 @@ export class PaymentsService {
       where: {
         reckoning: { id },
       },
+      order: {
+        paymentDate: 'ASC',
+        createdDate: 'ASC',
+      },
     });
+  }
+
+  async getRecentForReckoning(id: number): Promise<Payment[]> {
+    return this.paymentRepo.find({
+      relations: {
+        paidBy: {},
+      },
+      where: {
+        reckoning: { id },
+      },
+      order: {
+        updatedDate: 'DESC',
+      },
+      take: 5,
+    });
+  }
+
+  async getById(reckoningId: number, paymentId: number): Promise<Payment> {
+    const pmnt = await this.paymentRepo.findOne({
+      relations: {
+        paidBy: {},
+      },
+      where: {
+        id: paymentId,
+        reckoning: { id: reckoningId },
+      },
+    });
+    if (!pmnt) {
+      throw new NotFoundException('Payment not found');
+    }
+    return pmnt;
   }
 
   async createPayment(reckoningId: number, userId: number, paymentData: CreatePaymentRequestDto): Promise<Payment> {

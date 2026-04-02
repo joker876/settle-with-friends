@@ -16,6 +16,19 @@ export class PaymentsController {
     return this.paymentsService.getAllForReckoning(reckoningId);
   }
 
+  @Get('recent')
+  async getRecent(@Param('reckoningId', ParseIntPipe) reckoningId: number): Promise<IPayment[]> {
+    return this.paymentsService.getRecentForReckoning(reckoningId);
+  }
+
+  @Get(':paymentId')
+  async getById(
+    @Param('reckoningId', ParseIntPipe) reckoningId: number,
+    @Param('paymentId', ParseIntPipe) paymentId: number,
+  ): Promise<IPayment> {
+    return this.paymentsService.getById(reckoningId, paymentId);
+  }
+
   @Post()
   async createPayment(
     @Req() req: Request,

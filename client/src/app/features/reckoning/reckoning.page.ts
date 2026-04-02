@@ -1,10 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { PaymentsService } from './components/payment-list/payments.service';
+import { TransactionsService } from './components/transaction-list/transactions.service';
 import { CurrencyRatesService } from './services/currency-rates.service';
 import { ReckoningService } from './services/reckoning.service';
-import { TransactionsService } from './services/transactions.service';
 import { UsersService } from './services/users.service';
-import { PaymentsService } from './views/reckoning/sections/payments-section/payments.service';
 
 @Component({
   selector: 'app-reckoning',
@@ -15,6 +15,5 @@ import { PaymentsService } from './views/reckoning/sections/payments-section/pay
 })
 export class ReckoningPage {
   readonly reckoningService = inject(ReckoningService);
-  readonly transactionsService = inject(TransactionsService);
   readonly usersService = inject(UsersService);
 }

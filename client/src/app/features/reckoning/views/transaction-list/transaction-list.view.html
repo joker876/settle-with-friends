@@ -1,0 +1,10 @@
+<div class="page-wrapper-g">
+  <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
+
+  <app-transaction-list
+    [transactions]="transactionListService.transactions.value()"
+    (createTransactionClick)="navigateToCreateTransaction()"
+    (editTransactionClick)="navigateToEditTransaction($event)"
+    (deleteTransactionConfirm)="removeTransaction($event)"
+  />
+</div>

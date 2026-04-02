@@ -1,14 +1,19 @@
-<app-section-heading i18n-heading="@@reckoning-page.payments.heading" heading="Wpłaty">
+<app-section-heading
+  i18n-heading="@@reckoning-page.payments.heading"
+  heading="Wpłaty"
+  [showAllButton]="partialList()"
+  (showAllButtonClick)="showAllButtonClick.emit()"
+>
   <ard-button (click)="onCreatePaymentClick()" appearance="outlined" color="primary">
     <ard-icon-plus class="icon" />
     <span i18n="@@common.add">Dodaj</span>
   </ard-button>
 </app-section-heading>
 <div class="payment-list">
-  @for (pmnt of payments.value(); track pmnt.id) {
+  @for (pmnt of payments(); track pmnt.id) {
     <app-payment-list-item
       [data]="pmnt"
-      [mainCurrency]="mainCurrency()"
+      [mainCurrency]="mainCurrency() ?? ''"
       [isDeleteLoading]="isDeleteLoading()"
       (editClick)="onEditPaymentClick(pmnt)"
       (deleteClick)="onDeletePaymentClick(pmnt)"

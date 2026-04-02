@@ -1,16 +1,18 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { BooleanLike, coerceBooleanProperty } from '@ardium-ui/devkit';
 import { ArdiumButtonModule, ArdiumDialogModule, ArdiumIconButtonModule } from '@ardium-ui/ui';
 import { ConfirmationDialogComponent } from '@common/components/confirmation-dialog/confirmation-dialog.component';
 import { MoneyComponent } from '@common/components/money/money.component';
 import { SectionHeadingComponent } from '@common/components/section-heading/section-heading.component';
 import { ArdIconPlus } from '@common/icons/plus.icon';
+import { CurrencyRatesService } from '@features/reckoning/services/currency-rates.service';
 import { IPayment, IPaymentBasicData } from '@shared/entities/payment';
-import { PaymentCreateEditDialogComponent } from './components/payment-create-edit-dialog/payment-create-edit-dialog.component';
-import { PaymentListItemComponent } from './components/payment-list-item/payment-list-item.component';
+import { PaymentCreateEditDialogComponent } from './payment-create-edit-dialog/payment-create-edit-dialog.component';
+import { PaymentListItemComponent } from './payment-list-item/payment-list-item.component';
 import { PaymentsService } from './payments.service';
 
 @Component({
-  selector: 'app-payments-section',
+  selector: 'app-payment-list',
   imports: [
     ArdiumIconButtonModule,
     PaymentListItemComponent,
@@ -22,15 +24,22 @@ import { PaymentsService } from './payments.service';
     ArdiumDialogModule,
     PaymentCreateEditDialogComponent,
   ],
-  templateUrl: './payments-section.component.html',
-  styleUrl: './payments-section.component.scss',
+  templateUrl: './payment-list.component.html',
+  styleUrl: './payment-list.component.scss',
 })
-export class PaymentsSectionComponent {
+export class PaymentListComponent {
   private readonly _paymentsService = inject(PaymentsService);
+  private readonly _currencyRatesService = inject(CurrencyRatesService);
 
-  readonly mainCurrency = input.required<string>();
+  readonly payments = input.required<IPayment[]>();
+  readonly partialList = input<boolean, BooleanLike>(false, { transform: v => coerceBooleanProperty(v) });
 
-  readonly payments = this._paymentsService.payments;
+  readonly showAllButtonClick = output<void>();
+  readonly appendPayment = output<IPayment>();
+  readonly refreshPayment = output<IPayment>();
+  readonly removePayment = output<number>();
+
+  readonly mainCurrency = this._currencyRatesService.mainCurrency;
 
   //! creating/editing
   readonly isCreateEditDialogOpen = signal<boolean>(false);
@@ -58,7 +67,7 @@ export class PaymentsSectionComponent {
   async onSubmitCreateEditDialog(formData: IPaymentBasicData): Promise<void> {
     let success = false;
     if (this.isCreatingPayment()) {
-      success = await this._paymentsService.createPayment(formData)!;
+      success = await this._createPayment(formData);
     } else {
       const oldData = this.createEditDialogPaymentData()!;
       // only send update request if data has changed
@@ -67,7 +76,7 @@ export class PaymentsSectionComponent {
           ([key, value]) => value?.valueOf() !== oldData[key as keyof IPaymentBasicData]?.valueOf(),
         )
       ) {
-        success = await this._paymentsService.updatePayment(this.createEditDialogPaymentData()!.id, formData)!;
+        success = await this._updatePayment(oldData.id, formData);
       } else {
         success = true; // close dialog if no changes were made
       }
@@ -75,6 +84,30 @@ export class PaymentsSectionComponent {
     if (success) {
       this.isCreateEditDialogOpen.set(false);
     }
+  }
+  private _createPayment(formData: IPaymentBasicData): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      this._paymentsService.createPayment(formData)!.then(payment => {
+        if (payment) {
+          this.appendPayment.emit(payment);
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      });
+    });
+  }
+  private _updatePayment(paymentId: number, formData: IPaymentBasicData): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      this._paymentsService.updatePayment(paymentId, formData)!.then(updatedPayment => {
+        if (updatedPayment) {
+          this.refreshPayment.emit(updatedPayment);
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      });
+    });
   }
 
   //! deleting
@@ -85,10 +118,13 @@ export class PaymentsSectionComponent {
   onDeletePaymentClick(t: IPayment): void {
     this.paymentToBeDeleted.set(t);
   }
-  deletePayment(): void {
+  async deletePayment(): Promise<void> {
     const payment = this.paymentToBeDeleted();
     if (!payment) return;
 
-    this._paymentsService.deletePayment(payment.id);
+    const success = await this._paymentsService.deletePayment(payment.id);
+    if (success) {
+      this.removePayment.emit(payment.id);
+    }
   }
 }

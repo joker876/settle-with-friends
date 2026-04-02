@@ -16,6 +16,19 @@ export class TransactionsController {
     return this.transactionsService.getAllForReckoning(reckoningId);
   }
 
+  @Get('recent')
+  async getRecent(@Param('reckoningId', ParseIntPipe) reckoningId: number): Promise<ITransaction[]> {
+    return this.transactionsService.getRecentForReckoning(reckoningId);
+  }
+
+  @Get(':transactionId')
+  async getById(
+    @Param('reckoningId', ParseIntPipe) reckoningId: number,
+    @Param('transactionId', ParseIntPipe) transactionId: number,
+  ): Promise<ITransaction> {
+    return this.transactionsService.getById(reckoningId, transactionId);
+  }
+
   @Post()
   async createTransaction(
     @Req() req: Request,

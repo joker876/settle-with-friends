@@ -24,7 +24,44 @@ export class TransactionsService {
       where: {
         reckoning: { id },
       },
+      order: {
+        transactionDate: 'ASC',
+        createdDate: 'ASC',
+      },
     });
+  }
+
+  async getRecentForReckoning(id: number): Promise<Transaction[]> {
+    return this.transactionRepo.find({
+      relations: {
+        payers: {},
+        splitParts: { includees: {} },
+      },
+      where: {
+        reckoning: { id },
+      },
+      order: {
+        updatedDate: 'DESC',
+      },
+      take: 5,
+    });
+  }
+
+  async getById(reckoningId: number, transactionId: number): Promise<Transaction> {
+    const tx = await this.transactionRepo.findOne({
+      relations: {
+        payers: {},
+        splitParts: { includees: {} },
+      },
+      where: {
+        id: transactionId,
+        reckoning: { id: reckoningId },
+      },
+    });
+    if (!tx) {
+      throw new NotFoundException('Transaction not found');
+    }
+    return tx;
   }
 
   async createTransaction(

@@ -18,15 +18,15 @@ import { StackComponent } from '@common/components/stack/stack.component';
 import { ViewH1Component } from '@common/components/view-h1/view-h1.component';
 import { WrapInAbstractControl } from '@common/utils/form-types';
 import { CurrencyRatesService } from '@features/reckoning/services/currency-rates.service';
-import { TransactionsService } from '@features/reckoning/services/transactions.service';
 import { PayersAdderComponent } from '@features/reckoning/views/create-transaction/components/payers-adder/payers-adder.component';
 import { ICreateTransactionRequestDto } from '@shared/contracts/transactions/create';
 import { IUpdateTransactionRequestDto } from '@shared/contracts/transactions/update';
 import { map, startWith } from 'rxjs';
 import { SplitPartsAdderComponent } from './components/split-parts-adder/split-parts-adder.component';
+import { CreateTransactionService } from './create-transaction.service';
 
 @Component({
-  selector: 'app-create-transaction',
+  selector: 'app-create-transaction-view',
   imports: [
     ArdiumFormFieldModule,
     ArdiumInputModule,
@@ -46,12 +46,13 @@ import { SplitPartsAdderComponent } from './components/split-parts-adder/split-p
   ],
   templateUrl: './create-transaction.view.html',
   styleUrl: './create-transaction.view.scss',
+  providers: [CreateTransactionService],
 })
 export class CreateTransactionView {
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _currencyRatesService = inject(CurrencyRatesService);
-  private readonly _transactionService = inject(TransactionsService);
+  private readonly _createTransactionService = inject(CreateTransactionService);
   private readonly _route = inject(ActivatedRoute);
 
   readonly TODAY = new Date();
@@ -99,11 +100,14 @@ export class CreateTransactionView {
   );
 
   constructor() {
-    // set value if is editing transaction
+    // sync transaction id with service
     effect(() => {
       const id = this._editedTransactionId();
-      if (!id) return;
-      const v = this._transactionService.getTransaction(id);
+      this._createTransactionService.setTransactionId(id);
+    });
+    // set value if is editing transaction
+    effect(() => {
+      const v = this._createTransactionService.transactionData.value();
       if (!v) return;
 
       untracked(() => {
@@ -206,7 +210,7 @@ export class CreateTransactionView {
       return;
     }
 
-    const success = await this._transactionService.createTransaction(this.form.getRawValue());
+    const success = await this._createTransactionService.createTransaction(this.form.getRawValue());
     if (!success) return;
 
     this._navigateToTransactionList();
@@ -217,7 +221,7 @@ export class CreateTransactionView {
       return;
     }
 
-    const success = await this._transactionService.updateTransaction(
+    const success = await this._createTransactionService.updateTransaction(
       this._editedTransactionId()!,
       this.form.getRawValue(),
     );

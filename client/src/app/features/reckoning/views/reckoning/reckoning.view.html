@@ -1,115 +1,24 @@
 <div class="page-wrapper-g">
   <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
-  <!-- <section class="summary-section">
-    <h2 i18n="@@reckoning-page.summary-section.heading-totals">Podsumowanie całościowe</h2>
-    <div class="summary-row">
-      <app-summary-card
-        heading="Transakcje"
-        i18n-heading="@@reckoning-page.summary-card.transactions"
-        leftText="Liczba transakcji"
-        i18n-leftText="@@reckoning-page.summary-card.transactions.number-text"
-        rightText="Suma transakcji"
-        i18n-rightText="@@reckoning-page.summary-card.transactions.sum-text"
-      >
-        <span>14</span>
-        <app-balance [balance]="0" [currency]="'PLN'" />
-        <ard-icon-save class="icon" ngProjectAs="icon" />
-      </app-summary-card>
-      <app-summary-card
-        heading="Wpłaty"
-        i18n-heading="@@reckoning-page.summary-card.payments"
-        leftText="Liczba wpłat"
-        i18n-leftText="@@reckoning-page.summary-card.payments.number-text"
-        rightText="Suma wpłat"
-        i18n-rightText="@@reckoning-page.summary-card.payments.sum-text"
-      >
-        <span>3</span>
-        <app-balance [balance]="0" [currency]="'PLN'" />
-        <ard-icon-save class="icon" ngProjectAs="icon" />
-      </app-summary-card>
-      <app-summary-card
-        heading="Saldo"
-        i18n-heading="@@reckoning-page.summary-card.balance"
-        leftText="Łączne saldo"
-        i18n-leftText="@@reckoning-page.summary-card.balance.total-balance-text"
-      >
-        <app-balance [balance]="0" [currency]="'PLN'" coloringType="all" />
-        <ard-icon-save class="icon" ngProjectAs="icon" />
-      </app-summary-card>
-      <app-summary-card
-        heading="Liczba osób"
-        i18n-heading="@@reckoning-page.summary-card.number-of-users"
-        leftText="Liczba członków"
-        i18n-leftText="@@reckoning-page.summary-card.number-of-users.users-text"
-      >
-        <app-balance [balance]="0" [currency]="'PLN'" />
-        <ard-icon-save class="icon" ngProjectAs="icon" />
-      </app-summary-card>
-    </div>
-    <h2 i18n="@@reckoning-page.summary-section.heading-totals-personal">Podsumowanie Twoich wydatków</h2>
-    <div class="summary-row">
-      <app-summary-card
-        altColoring
-        heading="Twoje transakcje"
-        i18n-heading="@@reckoning-page.summary-card-personal.transactions"
-        leftText="Liczba transakcji"
-        i18n-leftText="@@reckoning-page.summary-card-personal.transactions.number-text"
-        rightText="Suma transakcji"
-        i18n-rightText="@@reckoning-page.summary-card-personal.transactions.sum-text"
-      >
-        <span>9</span>
-        <app-balance [balance]="0" [currency]="'PLN'" />
-        <ard-icon-save class="icon" ngProjectAs="icon" />
-      </app-summary-card>
-      <app-summary-card
-        altColoring
-        heading="Wydatki"
-        i18n-heading="@@reckoning-page.summary-card-personal.spendings"
-        leftText="Liczba wydatków"
-        i18n-leftText="@@reckoning-page.summary-card-personal.spendings.number-text"
-        rightText="Suma wydatków"
-        i18n-rightText="@@reckoning-page.summary-card-personal.spendings.sum-text"
-      >
-        <app-balance [balance]="0" [currency]="'PLN'" />
-        <ard-icon-save class="icon" ngProjectAs="icon" />
-      </app-summary-card>
-      <app-summary-card
-        altColoring
-        heading="Twoje wpłaty"
-        i18n-heading="@@reckoning-page.summary-card-personal.payments"
-        leftText="Liczba wpłat"
-        i18n-leftText="@@reckoning-page.summary-card-personal.payments.number-text"
-        rightText="Suma wpłat"
-        i18n-rightText="@@reckoning-page.summary-card-personal.payments.sum-text"
-      >
-        <span>3</span>
-        <app-balance [balance]="0" [currency]="'PLN'" />
-        <ard-icon-save class="icon" ngProjectAs="icon" />
-      </app-summary-card>
-      <app-summary-card
-        altColoring
-        heading="Twoje saldo"
-        i18n-heading="@@reckoning-page.summary-card-personal.balance"
-        leftText="Łączne saldo"
-        i18n-leftText="@@reckoning-page.summary-card-personal.balance.total-balance-text"
-      >
-        <app-balance [balance]="0" [currency]="'PLN'" coloringType="all" />
-        <ard-icon-save class="icon" ngProjectAs="icon" />
-      </app-summary-card>
-    </div>
-  </section> -->
 
   <section>
-    <app-transactions-section
-      [transactions]="transactionsService.transactions.value()"
-      [mainCurrency]="reckoningService.reckoning.value()?.mainCurrency ?? ''"
-      [isDeleteLoading]="transactionsService.deleteTransactionStatus() === 'loading'"
+    <app-transaction-list
+      [transactions]="transactionListService.transactions.value()"
+      partialList
+      (showAllButtonClick)="navigateToTransactions()"
       (createTransactionClick)="navigateToCreateTransaction()"
       (editTransactionClick)="navigateToEditTransaction($event)"
-      (deleteTransactionConfirm)="deleteTransaction($event)"
+      (deleteTransactionConfirm)="removeTransaction($event)"
     />
   </section>
   <section>
-    <app-payments-section [mainCurrency]="reckoningService.reckoning.value()?.mainCurrency ?? ''" />
+    <app-payment-list
+      [payments]="paymentListService.payments.value()"
+      partialList
+      (showAllButtonClick)="navigateToPayments()"
+      (appendPayment)="appendPayment($event)"
+      (refreshPayment)="refreshPayment($event)"
+      (removePayment)="removePayment($event)"
+    />
   </section>
 </div>

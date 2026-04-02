@@ -4,30 +4,37 @@ import { HttpService } from '@common/services/http-service';
 import { SnackbarController } from '@common/services/snackbar-controller.service';
 import { ensureParams } from '@common/utils/resource';
 import { setResourceStatusAfterLoaded } from '@common/utils/rxjs';
+import { ReckoningService } from '@features/reckoning/services/reckoning.service';
+import { multipleUsers, singleUser, UsersService } from '@features/reckoning/services/users.service';
 import { ICreateTransactionRequestDto } from '@shared/contracts/transactions/create';
 import { IUpdateTransactionRequestDto } from '@shared/contracts/transactions/update';
 import { ITransaction } from '@shared/entities/transaction';
 import { ITransactionSplitPart, ITransactionSplitPartIncludee } from '@shared/entities/transaction-includee';
 import { ITransactionPayer } from '@shared/entities/transaction-payer';
 import { map } from 'rxjs';
-import { ReckoningService } from './reckoning.service';
-import { multipleUsers, singleUser, UsersService } from './users.service';
 
 @Injectable()
-export class TransactionsService {
+export class CreateTransactionService {
+  private readonly _http = inject(HttpService);
   private readonly _reckoningService = inject(ReckoningService);
   private readonly _usersService = inject(UsersService);
-  private readonly _http = inject(HttpService);
   private readonly _snackbarController = inject(SnackbarController);
 
-  private readonly _transactions = rxResource({
-    params: () => ({ reckoningId: this._reckoningService.reckoningId() }),
+  private readonly _transactionId = signal<number | null>(null);
+
+  public setTransactionId(id: number | null) {
+    this._transactionId.set(id);
+  }
+
+  private readonly _transactionData = rxResource({
+    params: () => ({ reckoningId: this._reckoningService.reckoningId(), transactionId: this._transactionId() }),
     stream: ({ params }) =>
       ensureParams(
-        params.reckoningId,
+        params.reckoningId && params.transactionId,
         this._http
-          .get<ITransaction[]>(['reckonings', params.reckoningId!, 'transactions'])
+          .get<ITransaction>(['reckonings', params.reckoningId!, 'transactions', params.transactionId!.toString()])
           .pipe(
+            map(transaction => [transaction]),
             this._usersService.waitForUsersLoaded(),
             map(
               this._usersService.hydrateUsers<ITransaction>([
@@ -41,17 +48,13 @@ export class TransactionsService {
                 multipleUsers<ITransactionSplitPart, ITransactionSplitPartIncludee>('includees'),
               ]),
             ),
+            map(transactions => transactions[0]),
           ),
-        [],
+        null,
       ),
-    defaultValue: [],
+    defaultValue: null,
   });
-
-  public readonly transactions = this._transactions.asReadonly();
-
-  public getTransaction(id: number): ITransaction | null {
-    return this._transactions.value().find(v => v.id === id) ?? null;
-  }
+  public readonly transactionData = this._transactionData.asReadonly();
 
   //! create
   private readonly _createTransactionStatus = signal<ResourceStatus>('idle');
@@ -62,7 +65,7 @@ export class TransactionsService {
 
     this._createTransactionStatus.set('loading');
 
-    return new Promise<boolean>(resolve =>
+    return new Promise<ITransaction | null>(resolve =>
       this._http
         .post<ITransaction, ICreateTransactionRequestDto>(
           ['reckonings', this._reckoningService.reckoningId()!, 'transactions'],
@@ -86,14 +89,13 @@ export class TransactionsService {
         .subscribe({
           next: transaction => {
             this._snackbarController.openSuccess($localize`:@@transactions.created-transaction:Dodano transakcję`);
-            this._transactions.update(v => [...v, transaction]);
-            resolve(true);
+            resolve(transaction);
           },
           error: () => {
             this._snackbarController.openError(
               $localize`:@@transactions.created-transaction-error:Nie udało się dodać transakcji`,
             );
-            resolve(false);
+            resolve(null);
           },
         }),
     );
@@ -108,7 +110,7 @@ export class TransactionsService {
 
     this._updateTransactionStatus.set('loading');
 
-    return new Promise<boolean>(resolve =>
+    return new Promise<ITransaction | null>(resolve =>
       this._http
         .put<ITransaction, IUpdateTransactionRequestDto>(
           ['reckonings', this._reckoningService.reckoningId()!, 'transactions', String(transactionId)],
@@ -132,42 +134,15 @@ export class TransactionsService {
         .subscribe({
           next: transaction => {
             this._snackbarController.openSuccess($localize`:@@transactions.updated-transaction:Zapisano transakcję`);
-            this._transactions.update(v => v.map(t => (t.id !== transactionId ? t : transaction)));
-            resolve(true);
+            resolve(transaction);
           },
           error: () => {
             this._snackbarController.openError(
               $localize`:@@transactions.updated-transaction-error:Nie udało się zapisać transakcji`,
             );
-            resolve(false);
+            resolve(null);
           },
         }),
     );
-  }
-
-  //! delete
-  private readonly _deleteTransactionStatus = signal<ResourceStatus>('idle');
-  public readonly deleteTransactionStatus = this._deleteTransactionStatus.asReadonly();
-
-  public deleteTransaction(transactionId: number) {
-    if (this._deleteTransactionStatus() === 'loading') return;
-
-    this._deleteTransactionStatus.set('loading');
-
-    this._http
-      .delete(['reckonings', this._reckoningService.reckoningId()!, 'transactions', String(transactionId)])
-      .pipe(setResourceStatusAfterLoaded(this._deleteTransactionStatus))
-      .subscribe({
-        next: () => {
-          this._snackbarController.openSuccess($localize`:@@transactions.deleted-transaction:Usunięto transakcję`);
-
-          this._transactions.update(t => t.filter(v => v.id !== transactionId));
-        },
-        error: () => {
-          this._snackbarController.openError(
-            $localize`:@@transactions.deleted-transaction-error:Nie udało się usunąć transakcji`,
-          );
-        },
-      });
   }
 }

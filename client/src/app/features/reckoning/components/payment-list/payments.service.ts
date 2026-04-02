@@ -1,13 +1,11 @@
 import { inject, Injectable, ResourceStatus, signal } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
 import { HttpService } from '@common/services/http-service';
 import { SnackbarController } from '@common/services/snackbar-controller.service';
-import { ensureParams } from '@common/utils/resource';
 import { setResourceStatusAfterLoaded } from '@common/utils/rxjs';
+import { ReckoningService } from '@features/reckoning/services/reckoning.service';
+import { singleUser, UsersService } from '@features/reckoning/services/users.service';
 import { IPayment, IPaymentBasicData } from '@shared/entities/payment';
 import { map } from 'rxjs';
-import { ReckoningService } from '../../../../services/reckoning.service';
-import { singleUser, UsersService } from '../../../../services/users.service';
 
 @Injectable()
 export class PaymentsService {
@@ -15,34 +13,6 @@ export class PaymentsService {
   private readonly _usersService = inject(UsersService);
   private readonly _http = inject(HttpService);
   private readonly _snackbarController = inject(SnackbarController);
-
-  private readonly _payments = rxResource({
-    params: () => ({ reckoningId: this._reckoningService.reckoningId() }),
-    stream: ({ params }) =>
-      ensureParams(
-        params.reckoningId,
-        this._http
-          .get<IPayment[]>(['reckonings', params.reckoningId!, 'payments'])
-          .pipe(
-            this._usersService.waitForUsersLoaded(),
-            map(
-              this._usersService.hydrateUsers<IPayment>([
-                singleUser<IPayment>('createdBy', 'createdByUserId'),
-                singleUser<IPayment>('updatedBy', 'updatedByUserId'),
-                singleUser<IPayment>('paidBy', 'paidByUserId'),
-              ]),
-            ),
-          ),
-        [],
-      ),
-    defaultValue: [],
-  });
-
-  public readonly payments = this._payments.asReadonly();
-
-  public getPayment(id: number): IPayment | null {
-    return this._payments.value().find(v => v.id === id) ?? null;
-  }
 
   //! create
   private readonly _createPaymentStatus = signal<ResourceStatus>('idle');
@@ -53,12 +23,9 @@ export class PaymentsService {
 
     this._createPaymentStatus.set('loading');
 
-    return new Promise<boolean>(resolve =>
+    return new Promise<IPayment | null>(resolve =>
       this._http
-        .post<IPayment, IPaymentBasicData>(
-          ['reckonings', this._reckoningService.reckoningId()!, 'payments'],
-          data,
-        )
+        .post<IPayment, IPaymentBasicData>(['reckonings', this._reckoningService.reckoningId()!, 'payments'], data)
         .pipe(setResourceStatusAfterLoaded(this._createPaymentStatus))
         .pipe(
           map(
@@ -72,12 +39,11 @@ export class PaymentsService {
         .subscribe({
           next: payment => {
             this._snackbarController.openSuccess($localize`:@@payments.created-payment:Dodano wpłatę`);
-            this._payments.update(v => [...v, payment]);
-            resolve(true);
+            resolve(payment);
           },
           error: () => {
             this._snackbarController.openError($localize`:@@payments.created-payment-error:Nie udało się dodać wpłaty`);
-            resolve(false);
+            resolve(null);
           },
         }),
     );
@@ -92,7 +58,7 @@ export class PaymentsService {
 
     this._updatePaymentStatus.set('loading');
 
-    return new Promise<boolean>(resolve =>
+    return new Promise<IPayment | null>(resolve =>
       this._http
         .put<IPayment, IPaymentBasicData>(
           ['reckonings', this._reckoningService.reckoningId()!, 'payments', String(paymentId)],
@@ -111,14 +77,13 @@ export class PaymentsService {
         .subscribe({
           next: payment => {
             this._snackbarController.openSuccess($localize`:@@payments.updated-payment:Zapisano wpłatę`);
-            this._payments.update(v => v.map(t => (t.id !== paymentId ? t : payment)));
-            resolve(true);
+            resolve(payment);
           },
           error: () => {
             this._snackbarController.openError(
               $localize`:@@payments.updated-payment-error:Nie udało się zapisać wpłaty`,
             );
-            resolve(false);
+            resolve(null);
           },
         }),
     );
@@ -133,18 +98,22 @@ export class PaymentsService {
 
     this._deletePaymentStatus.set('loading');
 
-    this._http
-      .delete(['reckonings', this._reckoningService.reckoningId()!, 'payments', String(paymentId)])
-      .pipe(setResourceStatusAfterLoaded(this._deletePaymentStatus))
-      .subscribe({
-        next: () => {
-          this._snackbarController.openSuccess($localize`:@@payments.deleted-payment:Usunięto wpłatę`);
-
-          this._payments.update(t => t.filter(v => v.id !== paymentId));
-        },
-        error: () => {
-          this._snackbarController.openError($localize`:@@payments.deleted-payment-error:Nie udało się usunąć wpłaty`);
-        },
-      });
+    return new Promise<boolean>(resolve =>
+      this._http
+        .delete(['reckonings', this._reckoningService.reckoningId()!, 'payments', String(paymentId)])
+        .pipe(setResourceStatusAfterLoaded(this._deletePaymentStatus))
+        .subscribe({
+          next: () => {
+            this._snackbarController.openSuccess($localize`:@@payments.deleted-payment:Usunięto wpłatę`);
+            resolve(true);
+          },
+          error: () => {
+            this._snackbarController.openError(
+              $localize`:@@payments.deleted-payment-error:Nie udało się usunąć wpłaty`,
+            );
+            resolve(false);
+          },
+        }),
+    );
   }
 }
