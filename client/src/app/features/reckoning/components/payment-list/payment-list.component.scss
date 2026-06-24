@@ -1,0 +1,11 @@
+:host {
+  display: block;
+  padding-top: 1rem;
+}
+
+.payment-list {
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}

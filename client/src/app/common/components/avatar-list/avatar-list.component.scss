@@ -3,6 +3,8 @@
 }
 app-avatar {
   &:not(:first-child) {
-  margin-left: -0.75rem;
-}
+    margin-left: calc(
+      var(--avatar-size) * -1 * (1 - (1 / (1 + var(--_avatar-list-length) / var(--_avatar-list-max-length))))
+    );
+  }
 }

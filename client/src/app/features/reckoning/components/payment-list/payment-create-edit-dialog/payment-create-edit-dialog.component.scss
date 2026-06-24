@@ -1,0 +1,20 @@
+.base-grid {
+  width: 30rem;
+  padding-bottom: 0.75rem;
+}
+.amount-row {
+  display: grid;
+  gap: 0.375rem;
+  grid-template-columns: 1fr 8ch;
+}
+
+app-currency-rate-input {
+  margin-left: auto;
+  width: max-content;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}

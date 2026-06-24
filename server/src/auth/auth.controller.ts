@@ -22,9 +22,9 @@ export class AuthController {
   @Public()
   @UseGuards(GoogleAuthGuard)
   handleRedirect(@Req() req: Request, @Res() res: Response) {
-    const appUrl = process.env.CLIENT_URL;
+    const appUrl = process.env.FRONTEND_URL;
     if (!appUrl) {
-      throw new HttpException('CLIENT_URL is not set', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('FRONTEND_URL is not set', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     // registration is unavailable at this moment
     if (req.user?.id === -1) {

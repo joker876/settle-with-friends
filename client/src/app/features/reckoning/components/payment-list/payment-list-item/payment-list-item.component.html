@@ -1,0 +1,63 @@
+<app-card>
+  <div class="main-part">
+    <div class="left-side">
+      <div class="name">{{ data().name }}</div>
+      <app-statistic-row>
+        <app-statistic>
+          {{ data().paymentDate | date }}
+        </app-statistic>
+      </app-statistic-row>
+    </div>
+    <div class="right-side">
+      <div class="balance-container">
+        <app-balance [balance]="amountInMainCurrency()" [currency]="mainCurrency()" />
+        @if (data().currencyRate) {
+          <app-statistic>
+            <app-balance [balance]="data().amount" [currency]="data().currencyCode" />
+          </app-statistic>
+        }
+      </div>
+      <ard-icon-button (click)="onShowDetailsClick()">
+        <ard-icon-chevron class="chevron" [up]="isDetailsOpen()" [down]="!isDetailsOpen()" />
+      </ard-icon-button>
+    </div>
+  </div>
+  @if (isDetailsOpen()) {
+    <hr />
+    <div class="details-part">
+      @if (data().currencyRate) {
+        <app-statistic-row>
+          <app-statistic-with-value
+            text="Kwota oryginalna"
+            i18n-text="@@reckoning-page.payments.payment.original-amount"
+          >
+            <app-balance [balance]="data().amount" [currency]="data().currencyCode" />
+          </app-statistic-with-value>
+          <app-statistic-with-value text="Kurs wymiany" i18n-text="@@common.currency-rate">
+            1 {{ data().currencyCode }}
+            =
+            <app-balance [balance]="data().currencyRate!" [currency]="mainCurrency()" places="4-4" />
+          </app-statistic-with-value>
+          <app-statistic-with-value [text]="amountInMainCurrencyText()">
+            <app-balance [balance]="amountInMainCurrency()" [currency]="mainCurrency()" />
+          </app-statistic-with-value>
+        </app-statistic-row>
+      }
+    </div>
+    <div class="actions">
+      <ard-button compact color="none" (click)="editClick.emit()" [disabled]="isDeleteLoading()" i18n="@@common.edit">
+        Edytuj
+      </ard-button>
+      <ard-button
+        compact
+        color="danger"
+        appearance="outlined-strong"
+        [disabled]="isDeleteLoading()"
+        (click)="deleteClick.emit()"
+        i18n="@@common.delete"
+      >
+        Usuń
+      </ard-button>
+    </div>
+  }
+</app-card>

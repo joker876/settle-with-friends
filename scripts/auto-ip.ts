@@ -101,16 +101,29 @@ function modifyServerDotEnv(ip: string): string | null {
     return null;
   }
 
-  let port = content.match(/APP_PORT=(|")(\d+)\1/)?.[2];
+  let port = content.match(/PORT=(|")(\d+)\1/)?.[2];
   if (port) {
     console.log(`${ansis.bold.greenBright('✓')} Found server port: ${port}`);
   } else {
     port = '8080';
-    console.log(`${ansis.bold.greenBright('✓')} No server port found in .env file, using default port 8080.`);
+    console.log(`${ansis.bold.yellowBright('⚠')} No server port found in .env file, using default port 8080.`);
+  }
+
+  if (!/FRONTEND_URL=.*/.test(content)) {
+    console.error(
+      `${ansis.bold.redBright('✕')} .env file does not contain a FRONTEND_URL variable.`
+    );
+    return null;
+  }
+  if (!/APP_HOST=.*/.test(content)) {
+    console.error(
+      `${ansis.bold.redBright('✕')} .env file does not contain a APP_HOST variable.`
+    );
+    return null;
   }
 
   const newContent = content
-    .replace(/FRONTEND_URL=.*/, `FRONTEND_URL="http://${ip}:4200"`)
+    .replace(/FRONTEND_URL=.*/, `FRONTEND_URL="http://${ip}:5260"`)
     .replace(/APP_HOST=.*/, `APP_HOST="${ip}"`);
 
   fs.writeFileSync(envFilePath, newContent);
@@ -133,7 +146,7 @@ async function main() {
   const bestIp = chooseBestIp(ips);
 
   if (!bestIp) {
-    process.exit(1);
+    return;
   }
 
   console.log(

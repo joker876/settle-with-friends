@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { BooleanLike, coerceBooleanProperty } from '@ardium-ui/devkit';
 import {
@@ -30,6 +30,8 @@ export class SelectComponent implements ArdFormFieldControl {
   readonly areOptionsLoading = input<boolean>(false);
   readonly searchable = input<boolean, BooleanLike>(true, { transform: v => coerceBooleanProperty(v) });
 
+  readonly dynamicLabelMap = input<Record<string | number, string> | null>(null);
+
   readonly placeholder = input<string>('');
 
   readonly appearance = input<FormElementAppearance>(FormElementAppearance.Filled);
@@ -44,6 +46,9 @@ export class SelectComponent implements ArdFormFieldControl {
   readonly withPrefix = input<boolean, BooleanLike>(false, { transform: v => coerceBooleanProperty(v) });
 
   readonly htmlId = input<string>(TakeChance.id());
+
+  readonly close = output<void>();
+  readonly change = output<any>();
 
   readonly disabled = (): boolean => this.control().disabled;
   readonly hasError = (): boolean => this.control().invalid && this.control().touched;

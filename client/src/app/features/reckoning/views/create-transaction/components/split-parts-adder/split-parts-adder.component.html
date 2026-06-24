@@ -1,0 +1,202 @@
+<app-stack>
+  @if (sortedSplitPartsValue().length > 0) {
+    <app-card>
+      <table>
+        <tbody>
+          @for (part of sortedSplitPartsValue(); track part) {
+            <tr (click)="clickEditPayer(part)">
+              <td aria-label="Podział kwoty" i18n-aria-label="@@create-transaction.split-parts.split-part-name">
+                <div class="user-text">
+                  {{ part.name }}
+                </div>
+              </td>
+              <td>
+                <app-statistic-with-icon>
+                  <ng-container ngProjectAs="icon">
+                    <ard-icon-user-2 class="icon" />
+                  </ng-container>
+                  <ng-container ngProjectAs="value">
+                    @if (part.includees.length === users.value().length) {
+                      <span i18n="@@common.everyone">Wszyscy</span>
+                    } @else if (part.includees.length === 1) {
+                      <span>{{ mapUserIdsToUserNames(part.includees)[0] }}</span>
+                    } @else {
+                      <abbr [title]="mapUserIdsToUserNames(part.includees).join(', ')">
+                        <app-plural
+                          [value]="part.includees.length"
+                          forms="osoba,osoby,osób"
+                          i18n-forms="@@multi-user-selector.person-forms-nominative"
+                        />
+                      </abbr>
+                    }
+                  </ng-container>
+                </app-statistic-with-icon>
+              </td>
+              <td>
+                <div class="amount-container">
+                  <div class="card-remaining-text">
+                    @if (part.amount || remainingAmount()) {
+                      <app-money [amount]="part.amount || remainingAmount()!" [currency]="currencyCode()" />
+                    } @else {
+                      <abbr
+                        title="Wpisz kwotę transakcji w sekcji powyżej"
+                        i18n-title="@@create-transaction.split-parts.part-row.remaining-text.abbr"
+                      >
+                        <app-money amount="???" [currency]="currencyCode()" />
+                      </abbr>
+                    }
+                  </div>
+                  <div class="amount-type">
+                    @if (part.type === AmountType.Amount) {
+                      <ng-container i18n="@@common.amount">kwota</ng-container>
+                    } @else {
+                      @if (isOnlyOnePerson()) {
+                        <ng-container i18n="@@common.everything">całość</ng-container>
+                      } @else {
+                        <ng-container i18n="@@common.remaining">reszta</ng-container>
+                      }
+                    }
+                  </div>
+                </div>
+              </td>
+              <td class="delete-cell">
+                <ard-icon-button
+                  (click)="onClickRemoveRow($event, part.name)"
+                  title="Usuń kwotę podziału"
+                  i18n-title="@@create-transaction.split-parts.remove"
+                  aria-label="Usuń kwotę podziału"
+                  i18n-aria-label="@@create-transaction.split-parts.remove"
+                >
+                  <ard-icon-x-2 class="icon" />
+                </ard-icon-button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </app-card>
+  }
+  <div class="buttons">
+    <ard-button compact (click)="clickAddSplitPart()" [color]="hasError() ? 'danger' : 'none'"
+      >Dodaj podział</ard-button
+    >
+    @if (sortedSplitPartsValue().length === 0) {
+      <ard-button compact (click)="clickAddEveryone()" [color]="hasError() ? 'danger' : 'none'"
+        >Podziel po równo</ard-button
+      >
+    }
+  </div>
+
+  @if (remainingAmount(); as amount) {
+    <div class="info-row">
+      @if (amount < 0) {
+        <ard-error i18n="@@create-transaction.split-parts.overflow-text">
+          Łączna kwota zapłacona jest większa od kwoty transakcji (suma:
+          <app-money [amount]="totalAmount()! - amount" [currency]="currencyCode()" />)!
+        </ard-error>
+      } @else if (hasUnassignedRemainingAmount()) {
+        <ng-container i18n="@@create-transaction.split-parts.remaining-text">
+          Pozostała kwota: <app-money [amount]="amount" [currency]="currencyCode()" />
+        </ng-container>
+      }
+    </div>
+  }
+</app-stack>
+
+<ard-dialog
+  [(open)]="isEditDialogOpen"
+  [canConfirm]="editDialogForm.valid"
+  panelClass="full-width-g"
+  confirmButtonText="Dodaj"
+  i18n-confirmButtonText="@@common.add"
+  (confirm)="saveSplitPart()"
+  (close)="onDialogClose()"
+>
+  <app-stack class="mobile">
+    <ard-form-field>
+      <ard-label required i18n="@@create-transaction.split-parts.split-part-name">Kwota podziału</ard-label>
+      <ard-input
+        [formControl]="editDialogForm.controls.name"
+        placeholder="Wpisz nazwę podziału kwoty..."
+        i18n-placeholder="@@create-transaction.split-parts.add"
+      />
+      <ard-auto-error [control]="editDialogForm.controls.name" />
+    </ard-form-field>
+    <ard-grid container spacing="2">
+      <ard-grid size="6">
+        <ard-form-field>
+          <ard-label required i18n="@@common.amount">Kwota</ard-label>
+          <app-select
+            [options]="amountTypeOptions"
+            [dynamicLabelMap]="amountTypeLabelMap()"
+            [control]="editDialogForm.controls.type"
+            (close)="focusAmountField()"
+            (change)="onAmountTypeChange($event)"
+          />
+          <ard-auto-error [control]="editDialogForm.controls.type" />
+        </ard-form-field>
+      </ard-grid>
+      <ard-grid size="6">
+        @if (editDialogForm.controls.type.value === AmountType.Remaining) {
+          <div class="remaining-text">
+            <ng-container i18n="@@create-transaction.split-parts.part-row.remaining-text">Kwota:</ng-container>&nbsp;
+            @if (remainingAmount()) {
+              <app-money [amount]="remainingAmount()" [currency]="currencyCode()" />
+            } @else {
+              <abbr
+                title='Wpisz kwotę transakcji w sekcji "Informacje podstawowe".'
+                i18n-title="@@create-transaction.split-parts.part-row.remaining-text.hint"
+              >
+                <app-money amount="???" [currency]="currencyCode()" />
+              </abbr>
+            }
+          </div>
+        } @else {
+          <ard-form-field>
+            <ard-label>&nbsp;</ard-label>
+            <ard-number-input
+              #amountField
+              [formControl]="editDialogForm.controls.amount"
+              placeholder="Kwota"
+              i18n-placeholder="@@common.amount"
+            >
+              <ng-template ard-suffix-tmp>
+                <div>
+                  {{ currencyCode() ?? '' }}
+                </div>
+              </ng-template>
+            </ard-number-input>
+            <ard-auto-error [control]="editDialogForm.controls.amount" />
+          </ard-form-field>
+        }
+      </ard-grid>
+    </ard-grid>
+    @if (editDialogForm.controls.type.value === AmountType.Remaining && !remainingAmount()) {
+      <p>
+        <small i18n="@@create-transaction.split-parts.part-row.remaining-text.hint">
+          Wpisz kwotę transakcji w sekcji "Informacje podstawowe".
+        </small>
+      </p>
+    }
+    @if (remainingAmount(); as amount) {
+      @if (amount > 0 && hasUnassignedRemainingAmount()) {
+        <div i18n="@@create-transaction.split-parts.remaining-text">
+          Pozostała kwota:
+          <app-money [amount]="amount" [currency]="currencyCode()" />
+        </div>
+      }
+    }
+    <ard-divider />
+    <ard-form-field>
+      <ard-label required>Wliczane osoby</ard-label>
+      <app-multi-user-selector [users]="users.value()" [formControl]="editDialogForm.controls.includees" />
+      <ard-auto-error [control]="editDialogForm.controls.includees" />
+    </ard-form-field>
+    @if (shouldShowAmountPerPerson()) {
+      <div i18n="@@create-transaction.split-parts.per-person-text">
+        Kwota na osobę:
+        <app-money [amount]="amountPerPerson()" [currency]="currencyCode()" />
+      </div>
+    }
+  </app-stack>
+</ard-dialog>

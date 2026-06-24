@@ -14,5 +14,28 @@
   [canConfirm]="tempValue() !== null"
   (confirm)="onConfirmDialog()"
 >
-  <ard-number-input [(value)]="tempValue" />
+  <div class="dialog-content">
+    <ard-number-input [(value)]="tempValue" maxDecimalPlaces="4">
+      <ng-template ard-prefix-tmp>
+        <div class="text3">1 {{ currencyCode() }} =&nbsp;</div>
+      </ng-template>
+      <ng-template ard-suffix-tmp>
+        <div class="text3">{{ mainCurrency() }}</div>
+      </ng-template>
+    </ard-number-input>
+    <p>
+      <small>
+        <ng-container i18n="@@common.currency-rate-for-date"
+          >Kurs wymiany według NBP na dzień {{ selectedTransactionDate() | date: 'd MMM yyyy' }}:</ng-container
+        >
+        1 {{ currencyCode() }}
+        =
+        @if (currencyRateFromApi(); as rate) {
+          <app-balance [balance]="rate" [currency]="mainCurrency()" places="4-4" [class.disabled]="isValueLoading()" />
+        } @else {
+          <ng-container i18n="@@common.loading...">Ładowanie...</ng-container>
+        }
+      </small>
+    </p>
+  </div>
 </ard-dialog>

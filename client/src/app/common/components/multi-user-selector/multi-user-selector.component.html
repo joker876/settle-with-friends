@@ -1,0 +1,75 @@
+<div class="value-container">
+  @if (value().length > 0) {
+    <div class="user-avatars" (click)="openDialog()">
+      @if (value().length === users().length) {
+        <span><strong i18n="@@common.everyone">Wszyscy</strong></span>
+      } @else {
+        <app-avatar-list [users]="value()" avatarLimit="4" />
+      }
+    </div>
+    <ard-icon-button (click)="openDialog()" title="Edytuj osoby" i18n-title="@@multi-user-selector.edit-people">
+      <ard-icon-edit-line-2 class="edit-icon" />
+    </ard-icon-button>
+  } @else {
+    <ard-button
+      compact
+      (click)="openDialog()"
+      [color]="hasError() ? 'danger' : 'none'"
+      i18n="@@multi-user-selector.choose-people"
+    >
+      Wybierz osoby
+    </ard-button>
+  }
+</div>
+
+<ard-dialog
+  [(open)]="isDialogOpen"
+  heading="Wybierz osoby"
+  i18n-heading="@@multi-user-selector.choose-people"
+  [panelClass]="deviceService.isMobile() ? 'multi-user-selector-dialog full-width-g' : 'multi-user-selector-dialog'"
+  confirmButtonText="Wybierz"
+  i18n-confirmButtonText="@@common.choose"
+  (confirm)="saveSelected()"
+  (close)="onDialogClose()"
+>
+  <label class="select-all">
+    <ard-checkbox
+      [selected]="isAllSelected()"
+      (select)="selectAll()"
+      id="multi-user-adder-select-all"
+      color="primary"
+      (unselect)="unselectAll()"
+    >
+      <ng-template ard-checkbox-tmp>
+        <ard-icon-checkbox-filled class="icon icon-selected" />
+        <ard-icon-checkbox-empty class="icon icon-unselected" />
+      </ng-template>
+    </ard-checkbox>
+    @if (dialogValue().length > 0) {
+      @if (isAllSelected()) {
+        <span><strong i18n="@@multi-user-selector.unselect-all">Odznacz wszystkich</strong></span>
+      } @else {
+        <span>
+          <ng-container i18n="@@multi-user-selector.choosen">Wybrano</ng-container>&nbsp;
+          <strong>
+            <app-plural
+              [value]="dialogValue().length"
+              forms="osobę,osoby,osób"
+              i18n-forms="@@multi-user-selector.person-forms-accusative"
+            />
+          </strong>
+        </span>
+      }
+    } @else {
+      <span><strong i18n="@@multi-user-selector.select-all">Zaznacz wszystkich</strong></span>
+    }
+  </label>
+  <div class="checkbox-list-wrapper">
+    <ard-checkbox-list [(value)]="dialogValue" [items]="users()" labelFrom="displayName" valueFrom="id">
+      <ng-template ard-checkbox-tmp>
+        <ard-icon-checkbox-filled class="icon icon-selected" />
+        <ard-icon-checkbox-empty class="icon icon-unselected" />
+      </ng-template>
+    </ard-checkbox-list>
+  </div>
+</ard-dialog>

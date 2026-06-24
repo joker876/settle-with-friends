@@ -13,6 +13,12 @@ app-currency-rate-input {
   @media (width >= $bp-md) {
     margin-left: 0;
     position: relative;
-    top: 1.875rem;
+    top: 1.5rem;
   }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
 }

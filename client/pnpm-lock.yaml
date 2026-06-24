@@ -50,6 +50,9 @@ importers:
       '@ardium-ui/ui':
         specifier: 5.0.0-alpha.102
         version: 5.0.0-alpha.102(@angular/cdk@21.0.2(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(@angular/platform-browser@21.0.3(@angular/animations@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)))(@types/node@22.7.5)
+      '@date-fns/utc':
+        specifier: ^2.1.1
+        version: 2.1.1
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -60,8 +63,8 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0
       ngx-polish-number-to-words:
-        specifier: ^1.1.0
-        version: 1.1.0(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))
+        specifier: ^1.2.1
+        version: 1.2.1(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))
       ngx-polish-validators:
         specifier: ^1.0.1
         version: 1.0.1(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))
@@ -504,6 +507,9 @@ packages:
   '@csstools/css-tokenizer@3.0.4':
     resolution: {integrity: sha512-Vd/9EVDiu6PPJt9yAh6roZP6El1xHrdvIVGjyBsHR0RYwNHgL7FJPyIIW4fANJNG6FtyZfvlRPpFI4ZM/lubvw==}
     engines: {node: '>=18'}
+
+  '@date-fns/utc@2.1.1':
+    resolution: {integrity: sha512-SlJDfG6RPeEX8wEVv6ZB3kak4MmbtyiI2qX/5zuKdordbrhB/iaJ58GVMZgJ6P1sJaM1gMgENFYYeg1JWrCFrA==}
 
   '@emnapi/core@1.7.1':
     resolution: {integrity: sha512-o1uhUASyo921r2XtHYOHy7gdkGLge8ghBEQHMWmyJFoXlpU58kIrhhN3w26lpQb6dspetweapMn2CSNwQ8I4wg==}
@@ -2965,8 +2971,8 @@ packages:
       tailwindcss:
         optional: true
 
-  ngx-polish-number-to-words@1.1.0:
-    resolution: {integrity: sha512-L3zuposNRAlsI5MHIX4YPpUICpcPJ+/YJBA4mJ9mqJn/GeGo8LMP1MOC0WDLQI+Gy/5jhAWPrRFkIUtnQaySkA==}
+  ngx-polish-number-to-words@1.2.1:
+    resolution: {integrity: sha512-bHg10MF/CT7/WqTJ5MoJcUaawL5R1lsXcI18+sFgP46KZE5WGuru938mWR30ChNqpDs/pwJPBHn11SPmsVVtHg==}
     peerDependencies:
       '@angular/common': '>=17.0.0'
       '@angular/core': '>=17.0.0'
@@ -4339,6 +4345,8 @@ snapshots:
   '@csstools/css-syntax-patches-for-csstree@1.0.20': {}
 
   '@csstools/css-tokenizer@3.0.4': {}
+
+  '@date-fns/utc@2.1.1': {}
 
   '@emnapi/core@1.7.1':
     dependencies:
@@ -6652,7 +6660,7 @@ snapshots:
     optionalDependencies:
       rollup: 4.30.1
 
-  ngx-polish-number-to-words@1.1.0(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)):
+  ngx-polish-number-to-words@1.2.1(@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)):
     dependencies:
       '@angular/common': 21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
       '@angular/core': 21.0.3(@angular/compiler@21.0.3)(rxjs@7.8.1)(zone.js@0.15.0)

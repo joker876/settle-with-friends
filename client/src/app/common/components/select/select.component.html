@@ -10,6 +10,8 @@
   [addCustom]="addCustomFn()"
   [compareWith]="compareWithFn()"
   [appearance]="appearance()"
+  (close)="close.emit()"
+  (valueChange)="change.emit($event)"
 >
   @if (withPrefix()) {
     <ng-template ard-prefix-tmp>
@@ -17,12 +19,14 @@
     </ng-template>
   }
   <ng-template ard-value-tmp let-itemData="itemData">
-    <span class="select-value" [class.searchable]="searchable()">{{ itemData.selectedLabel ?? itemData.label }}</span>
+    <span class="select-value" [class.searchable]="searchable()">{{
+      dynamicLabelMap() ? dynamicLabelMap()![itemData.value] : (itemData.selectedLabel ?? itemData.label)
+    }}</span>
   </ng-template>
 
-  <ng-template ard-option-tmp let-label="label" let-selected="selected">
+  <ng-template ard-option-tmp let-label="label" let-itemData="itemData" let-selected="selected">
     <div class="option">
-      <span class="label">{{ label }}</span>
+      <span class="label">{{ dynamicLabelMap() ? dynamicLabelMap()![itemData.value] : label }}</span>
       @if (selected) {
         <ard-icon-check class="check-icon" />
       }

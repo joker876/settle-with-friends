@@ -1,0 +1,83 @@
+@use '../../../../../../../breakpoints.scss' as *;
+
+:host {
+  display: block;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.icon {
+  width: 1.25rem;
+}
+
+.user-text {
+  display: flex;
+  align-items: center;
+}
+
+.remaining-text {
+  display: flex;
+  align-items: center;
+  color: var(--ard-text3);
+  font-size: 0.875rem;
+  padding-top: 1.5rem;
+  line-height: var(--ard-form-field-height);
+  padding-left: 0.5rem;
+}
+p {
+  padding-top: 0;
+  color: var(--text3);
+}
+app-card {
+  min-width: max-content;
+  width: 25rem;
+  padding: 0;
+
+  table {
+    width: 100%;
+  }
+  tr {
+    height: 3.25rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+
+    .icon {
+      width: 1.125rem;
+    }
+    .user-text {
+      font-weight: 500;
+    }
+    .amount-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      padding-left: 2rem;
+    }
+    .card-remaining-text {
+      font-weight: 600;
+    }
+    .amount-type {
+      font-size: 0.75rem;
+      color: var(--text3);
+    }
+    table {
+      width: 100%;
+    }
+    td {
+      padding: 0 0.75rem;
+    }
+    .delete-cell {
+      padding-left: 0;
+    }
+  }
+}
+.info-row {
+  font-size: 0.875rem;
+}
+.buttons {
+  display: flex;
+  gap: 0.5rem;
+}

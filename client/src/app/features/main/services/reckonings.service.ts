@@ -15,11 +15,12 @@ export class ReckoningsService {
 
   private readonly _reckonings = rxResource({
     stream: () => this._http.get<GetAllReckoningsResponseDto>('/reckonings'),
+    defaultValue: [],
   });
   public readonly reckonings = this._reckonings.asReadonly();
 
   private _addReckoningToList(data: IReckoningTableData): void {
-    this._reckonings.update(reckonings => [...(reckonings ?? []), data]);
+    this._reckonings.update(reckonings => [...reckonings, data]);
   }
 
   //! creating

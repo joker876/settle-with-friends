@@ -2,7 +2,7 @@
   "name": "app",
   "scripts": {
     "prettier": "npx prettier --write .",
-    "build": "cd client && pnpm install --frozen-lockfile && pnpm run build && cd ../server && pnpm install",
+    "start": "tsx auto-ip.ts",
     "preinstall": "npx only-allow pnpm"
   },
   "devDependencies": {

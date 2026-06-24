@@ -104,6 +104,7 @@
 
   --ard-form-field-font-size: 0.875rem;
   --ard-form-field-height: 1.875rem;
+  --ard-form-field-error-color: var(--red);
   --ard-select-font-size: 0.875rem;
   --ard-select-padding: 0 0.375rem;
   --ard-select-dropdown-padding: 0.75rem;
@@ -113,6 +114,7 @@
   --ard-select-dropdown-max-height: 15.5rem;
   --ard-select-placeholder-color: var(--text3);
   --ard-input-padding: 0 0.375rem;
+  --ard-checkbox-list-padding: 0;
   // --ard-date-input-padding: 0.375rem;
 
   //! Colors derived from Ardium UI
@@ -159,6 +161,7 @@
     -webkit-font-smoothing: antialiased;
     position: relative;
     font-family: var(--font-family);
+    background-color: var(--bg2);
   }
 
   img,
@@ -202,6 +205,13 @@
   ol {
     padding: 0.5rem 0 0.5rem 1.75rem;
   }
+  abbr {
+    text-decoration: underline dotted;
+    cursor: help;
+  }
+  small {
+    font-size: 0.8125rem;
+  }
 }
 //! Global styles
 .page-wrapper-g {
@@ -227,10 +237,6 @@ hr {
     width: 0;
     height: 100%;
   }
-}
-abbr {
-  text-decoration: underline dotted;
-  cursor: help;
 }
 
 //! Global scrollbar styles
@@ -422,6 +428,14 @@ ard-button {
   &.ard-appearance-flat {
     border: 1px solid var(--ard-cmpcl--bg-colored);
   }
+  &.ard-appearance-outlined {
+    border-color: var(--ard-cmpcl--bg-colored);
+    color: var(--ard-cmpcl--bg-colored);
+
+    &.ard-color-none {
+      border-color: var(--border);
+    }
+  }
 }
 .ard-button-content {
   gap: 0.5rem !important;
@@ -490,6 +504,9 @@ ard-button.icon-only-g .ard-button {
   .ard-label {
     font-size: 0.875rem;
     font-weight: 600;
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 1.25rem;
 
     .ard-label__required .ard-label__required-optional-text {
       font: inherit;
@@ -500,14 +517,32 @@ ard-button.icon-only-g .ard-button {
   .ard-form-field__hints {
     padding: 0;
 
-    &:not(:has(.ard-hint, .ard-error, .ard-hint-error)):not(.ard-form-field__reserve-hint-line) {
+    &:not(:has(.ard-hint, .ard-error:not(.ard-auto-error), .ard-hint-error)):not(.ard-form-field__reserve-hint-line) {
       display: none;
     }
   }
 }
+ard-error,
+.ard-error {
+  color: var(--ard-form-field-error-color);
+}
 // form field frame
 .ard-form-field-frame.ard-appearance-outlined {
   border: 1px solid var(--ard-border-light);
+}
+// number input
+ard-number-input {
+  display: block;
+}
+.ard-number-input {
+  .ard-input-container,
+  .ard-placeholder {
+    padding: 0;
+  }
+  .ard-number-input-prefix-container,
+  .ard-number-input-suffix-container {
+    min-width: max-content;
+  }
 }
 // input
 .ard-input {
@@ -651,4 +686,8 @@ ard-radio-group {
 // modal
 .ard-modal-panel {
   max-height: calc(100vh - 3rem);
+
+  &.full-width-g {
+    width: 100%;
+  }
 }

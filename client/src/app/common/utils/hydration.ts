@@ -2,7 +2,7 @@
 // All of the below functions mutate the original objects.
 // @experimental
 
-import { Signal } from "@angular/core";
+import { Signal } from '@angular/core';
 
 export interface MappingToken<T extends Record<string, any>> {
   isSingle: boolean;
@@ -11,9 +11,7 @@ export interface MappingToken<T extends Record<string, any>> {
   arrayProp?: keyof T;
 }
 
-function _getMap<V>(
-  valueMap: Map<number, V> | Signal<Map<number, V>>,
-) {
+function _getMap<V>(valueMap: Map<number, V> | Signal<Map<number, V>>) {
   return valueMap instanceof Function ? valueMap() : valueMap;
 }
 
@@ -38,9 +36,9 @@ function _getObject<V>(userId: number, valueMap: Map<number, V>): V {
 export function hydrateSingleProp<T extends Record<string, any>, V>(
   mappingTokens: MappingToken<T>[],
   valueMap: Map<number, V> | Signal<Map<number, V>>,
-): (objects: T[]) => T[] {
-  return objects =>
-    objects.map(v => {
+): (objects: T[] | T) => T[] | T {
+  return objects => {
+    const mappedObjects = (Array.isArray(objects) ? objects : [objects]).map(v => {
       for (const token of mappingTokens) {
         if (token.isSingle) {
           v[token.destProp] = _getObject(v[token.idProp], _getMap(valueMap)) as any;
@@ -53,18 +51,22 @@ export function hydrateSingleProp<T extends Record<string, any>, V>(
       }
       return v;
     });
+    return Array.isArray(objects) ? mappedObjects : mappedObjects[0];
+  };
 }
 
 export function hydrateAllInArray<T extends Record<string, any>, A extends Record<string, any>, V>(
   arrayProp: keyof T,
   mappingTokens: MappingToken<A>[],
   valueMap: Map<number, V> | Signal<Map<number, V>>,
-): (objects: T[]) => T[] {
-  return objects =>
-    objects.map(obj => {
+): (objects: T[] | T) => T[] | T {
+  return objects => {
+    const mappedObjects = (Array.isArray(objects) ? objects : [objects]).map(obj => {
       if (Array.isArray(obj[arrayProp])) {
         obj[arrayProp] = hydrateSingleProp<A, V>(mappingTokens, valueMap)(obj[arrayProp]) as any;
       }
       return obj;
     });
+    return Array.isArray(objects) ? mappedObjects : mappedObjects[0];
+  };
 }

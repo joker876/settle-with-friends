@@ -1,10 +1,13 @@
 import { UserRole } from '../enums/user-role';
 
-export interface IUser {
+export interface IUserPublicData {
   id: number;
-  email: string;
   displayName: string;
   photo: string | null;
+}
+
+export interface IUser extends IUserPublicData {
+  email: string;
 }
 
 export interface IUserWithRole extends IUser {

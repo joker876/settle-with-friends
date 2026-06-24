@@ -7,8 +7,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { SessionAuthGuard } from './auth/session-auth.guard';
+import { PaymentsModule } from './payments/payments.module';
 import { ReckoningsModule } from './reckonings/reckonings.module';
-import { TransactionsModule } from './reckonings/transactions/transactions.module';
+import { TransactionsModule } from './transactions/transactions.module';
 import { SessionEntity } from './typeorm/entities/Session';
 import { entities } from './typeorm/entities/index';
 import { DateMappingInterceptor } from './utils/date-mapping.interceptor';
@@ -36,6 +37,7 @@ import { DateMappingInterceptor } from './utils/date-mapping.interceptor';
     AuthModule,
     ReckoningsModule,
     TransactionsModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [

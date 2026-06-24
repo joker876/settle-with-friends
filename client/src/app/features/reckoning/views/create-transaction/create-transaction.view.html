@@ -8,71 +8,113 @@
     />
     <form>
       <app-stack>
-        <app-card-with-heading heading="Informacje podstawowe" i18n-heading="@@create-transaction.basic-info">
-          <app-data-grid cols="1 md:2">
-            <app-grid-item>
+        <app-card-with-heading
+          heading="Informacje podstawowe"
+          i18n-heading="@@create-transaction.basic-info"
+          subheading="Podstawowe informacje o o transakcji"
+          i18n-subheading="@@create-transaction.basic-info-subheading"
+        >
+          <ard-grid container rowSpacing="6">
+            <ard-grid size="12">
               <ard-form-field>
-                <ard-label i18n="@@create-transaction.field.name" required>Tytuł transakcji</ard-label>
-                <ard-input [formControl]="form.controls.transaction.controls.name" />
-                @if (form.controls.transaction.controls.name.touched && form.controls.transaction.controls.name.errors)
-                {
-                <ard-error>{{ form.controls.transaction.controls.name.errors | mapError }}</ard-error>
-                }
+                <ard-label i18n="@@create-transaction.field.name.label" required>Tytuł transakcji</ard-label>
+                <ard-input
+                  [formControl]="form.controls.transaction.controls.name"
+                  placeholder="np. Zakupy, Paliwo, Restauracja"
+                  i18n-placeholder="@@create-transaction.field.name.placeholder"
+                />
+                <ard-auto-error [control]="form.controls.transaction.controls.name" />
               </ard-form-field>
-            </app-grid-item>
-            <app-grid-item>
+            </ard-grid>
+            <ard-grid size="12">
               <ard-form-field>
-                <ard-label i18n="@@create-transaction.field.date" required>Data transakcji</ard-label>
-                <ard-date-input [formControl]="form.controls.transaction.controls.transactionDate" [max]="TODAY" />
-                @if (form.controls.transaction.controls.transactionDate.touched &&
-                form.controls.transaction.controls.transactionDate.errors) {
-                <ard-error>{{ form.controls.transaction.controls.transactionDate.errors | mapError }}</ard-error>
-                }
+                <ard-label i18n="@@create-transaction.field.date.label" required>Data transakcji</ard-label>
+                <ard-date-input
+                  [formControl]="form.controls.transaction.controls.transactionDate"
+                  [max]="TODAY"
+                  placeholder="DD.MM.YYYY"
+                  i18n-placeholder="@@create-transaction.field.date.placeholder"
+                />
+                <ard-auto-error [control]="form.controls.transaction.controls.transactionDate" />
               </ard-form-field>
-            </app-grid-item>
-            <app-grid-item>
+            </ard-grid>
+            <ard-grid size="12 sm:6">
               <div class="amount-row">
                 <ard-form-field>
-                  <ard-label i18n="@@create-transaction.field.amount" required>Kwota</ard-label>
-                  <ard-number-input [formControl]="form.controls.transaction.controls.amount" />
-                  @if (form.controls.transaction.controls.amount.touched &&
-                  form.controls.transaction.controls.amount.errors) {
-                  <ard-error>{{ form.controls.transaction.controls.amount.errors | mapError }}</ard-error>
-                  }
+                  <ard-label i18n="@@create-transaction.field.amount.label" required>Kwota</ard-label>
+                  <ard-number-input
+                    [formControl]="form.controls.transaction.controls.amount"
+                    placeholder="np. 307,42"
+                    i18n-placeholder="@@create-transaction.field.amount.placeholder"
+                  />
+                  <ard-auto-error [control]="form.controls.transaction.controls.amount" />
                 </ard-form-field>
                 <ard-form-field>
                   <ard-label>&nbsp;</ard-label>
                   <app-select [options]="currencies()" [control]="form.controls.transaction.controls.currencyCode" />
-                  @if (form.controls.transaction.controls.currencyCode.touched &&
-                  form.controls.transaction.controls.currencyCode.errors) {
-                  <ard-error>{{ form.controls.transaction.controls.currencyCode.errors | mapError }}</ard-error>
-                  }
+                  <ard-auto-error [control]="form.controls.transaction.controls.currencyCode" />
                 </ard-form-field>
               </div>
-            </app-grid-item>
-            <app-grid-item>
-              @if (currencyCodeValue() && currencyCodeValue() !== currencies()[0].value) {
+            </ard-grid>
+            @if (currencyCodeValue() && currencyCodeValue() !== currencies()[0].value) {
+            <ard-grid size="12 sm:6">
               <app-currency-rate-input
                 [mainCurrency]="currencies()[0].value"
                 [currencyCode]="currencyCodeValue()"
                 [formControl]="form.controls.transaction.controls.currencyRate"
                 [isCurrencyRateFromApiControl]="form.controls.transaction.controls.isCurrencyRateFromApi"
                 [isValueLoading]="isCurrencyRateLoading() && !form.controls.transaction.controls.currencyRate.touched"
+                [selectedTransactionDate]="transactionDateValue()"
+                [currencyRateFromApi]="currencyRateFromApi()"
               />
-              }
-            </app-grid-item>
-          </app-data-grid>
+            </ard-grid>
+            }
+          </ard-grid>
         </app-card-with-heading>
-        <app-card-with-heading heading="Osoby płacące" i18n-heading="@@create-transaction.payers">
-          <app-payers-adder
-            [formControl]="form.controls.payers"
-            [totalAmount]="formValue()!.transaction!.amount!"
-            [currencyCode]="formValue()!.transaction!.currencyCode!"
-          />
+        <app-card-with-heading
+          heading="Osoby płacące"
+          i18n-heading="@@create-transaction.payers"
+          subheading="Podaj, kto i ile zapłacił za transakcję"
+          i18n-subheading="@@create-transaction.payers.subheading"
+        >
+          <ard-form-field>
+            <app-payers-adder
+              [formControl]="form.controls.payers"
+              [totalAmount]="formValue()!.transaction!.amount!"
+              [currencyCode]="currencyCodeValue()"
+            />
+            @if (form.controls.payers.touched && form.controls.payers.invalid) {
+            <ard-error i18n="@@create-transaction.payers.error">Dodaj przynajmniej jednego płacącego</ard-error>
+            }
+          </ard-form-field>
         </app-card-with-heading>
-        <app-card-with-heading heading="Podział kosztów" i18n-heading="@@create-transaction.cost-splits">
-          <p>TODO</p>
+        <app-card-with-heading
+          heading="Podział kosztów"
+          i18n-heading="@@create-transaction.cost-splits"
+          subheading="Podaj, do kogo należą poszczególne części rachunku"
+          i18n-subheading="@@create-transaction.cost-splits.subheading"
+        >
+          <ard-form-field>
+            <app-split-parts-adder
+              [formControl]="form.controls.splitParts"
+              [totalAmount]="formValue()!.transaction!.amount!"
+              [currencyCode]="currencyCodeValue()"
+            />
+            @if (form.controls.splitParts.touched && form.controls.splitParts.invalid) {
+            <ard-error i18n="@@create-transaction.split-parts.error"
+              >Dodaj przynajmniej jeden podział kosztów</ard-error
+            >
+            }
+          </ard-form-field>
         </app-card-with-heading>
+        <div class="actions">
+          <ard-button (click)="onCancelClick()" i18n="@@common.cancel">Anuluj</ard-button>
+          @if (isCreateMode()) {
+            <ard-button (click)="onCreateClick()" appearance="flat" color="primary" i18n="@@common.add">Dodaj</ard-button>
+          } @else {
+            <ard-button (click)="onUpdateClick()" appearance="flat" color="primary" i18n="@@common.save">Zapisz</ard-button>
+          }
+        </div>
       </app-stack>
     </form>
   </app-stack>

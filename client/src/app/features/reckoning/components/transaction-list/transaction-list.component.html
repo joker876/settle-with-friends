@@ -1,0 +1,41 @@
+<app-section-heading
+  i18n-heading="@@reckoning-page.transactions.heading"
+  heading="Transakcje"
+  [showAllButton]="partialList()"
+  (showAllButtonClick)="showAllButtonClick.emit()"
+>
+  <ard-button (click)="createTransactionClick.emit()" appearance="outlined" color="primary">
+    <ard-icon-plus class="icon" />
+    <span i18n="@@common.add">Dodaj</span>
+  </ard-button>
+</app-section-heading>
+<div class="transaction-list">
+  @for (transx of transactions(); track transx.id) {
+    <app-transaction-list-item
+      [data]="transx"
+      [mainCurrency]="mainCurrency() ?? ''"
+      [isDeleteLoading]="isDeleteLoading()"
+      (editClick)="editTransactionClick.emit(transx.id)"
+      (deleteClick)="onDeleteTransactionClick(transx)"
+    />
+  } @empty {
+    <p class="empty-placeholder" i18n="@@reckoning-page.transactions.empty-placeholder">
+      Nie dodano jeszcze żadnych transakcji.
+    </p>
+  }
+</div>
+
+@if (transactionToBeDeleted(); as transx) {
+  <app-confirmation-dialog
+    [open]="true"
+    heading="Usuwanie transakcji"
+    i18n-heading="@@reckoning-page.transactions.delete-confirmation.heading"
+    confirmButtonText="Usuń"
+    i18n-confirmButtonText="@@common.delete"
+    i18n="@@reckoning-page.transactions.delete-confirmation.content"
+    (submit)="onDeleteTransactionSubmit(transx.id)"
+  >
+    Czy na pewno chcesz usunąć transakcję <strong>{{ transx.name }}</strong> na kwotę
+    <strong><app-money [amount]="transx.amount" [currency]="transx.currencyCode" /></strong>?
+  </app-confirmation-dialog>
+}
