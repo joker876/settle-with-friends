@@ -1,12 +1,12 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, input, model, output } from '@angular/core';
+import { ArdIconChevron } from '@ardium-ui/icons';
 import { ArdiumButtonModule, ArdiumIconButtonModule } from '@ardium-ui/ui';
 import { BalanceComponent } from '@common/components/balance/balance.component';
 import { CardComponent } from '@common/components/card/card.component';
 import { StatisticRowComponent } from '@common/components/statistic-row/statistic-row.component';
 import { StatisticWithValueComponent } from '@common/components/statistic-with-value/statistic-with-value.component';
 import { StatisticComponent } from '@common/components/statistic/statistic.component';
-import { ArdIconChevron } from '@common/icons/chevron.icon';
 import { IPayment } from '@shared/entities/payment';
 
 @Component({

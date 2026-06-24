@@ -1,10 +1,10 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { BooleanLike, coerceBooleanProperty } from '@ardium-ui/devkit';
+import { ArdIconPlus } from '@ardium-ui/icons';
 import { ArdiumButtonModule, ArdiumDialogModule, ArdiumIconButtonModule } from '@ardium-ui/ui';
 import { ConfirmationDialogComponent } from '@common/components/confirmation-dialog/confirmation-dialog.component';
 import { MoneyComponent } from '@common/components/money/money.component';
 import { SectionHeadingComponent } from '@common/components/section-heading/section-heading.component';
-import { ArdIconPlus } from '@common/icons/plus.icon';
 import { CurrencyRatesService } from '@features/reckoning/services/currency-rates.service';
 import { IPayment, IPaymentBasicData } from '@shared/entities/payment';
 import { PaymentCreateEditDialogComponent } from './payment-create-edit-dialog/payment-create-edit-dialog.component';
@@ -125,6 +125,7 @@ export class PaymentListComponent {
     const success = await this._paymentsService.deletePayment(payment.id);
     if (success) {
       this.removePayment.emit(payment.id);
+      this.paymentToBeDeleted.set(null);
     }
   }
 }

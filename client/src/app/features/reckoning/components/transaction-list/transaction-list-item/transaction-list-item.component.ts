@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, input, model, output } from '@angular/core';
+import { ArdIconChevron, ArdIconUserArrowLeftIn_2, ArdIconUserArrowRightOut_2 } from '@ardium-ui/icons';
 import { ArdiumButtonModule, ArdiumIconButtonModule } from '@ardium-ui/ui';
 import { BalanceComponent } from '@common/components/balance/balance.component';
 import { CardComponent } from '@common/components/card/card.component';
@@ -11,9 +12,6 @@ import {
   IUserBalanceGridItem,
   UserBalanceGridComponent,
 } from '@common/components/user-balance-grid/user-balance-grid.component';
-import { ArdIconChevron } from '@common/icons/chevron.icon';
-import { ArdIconUserArrowLeftIn_2 } from '@common/icons/user-arrow-left-in-2.icon';
-import { ArdIconUserArrowRightOut_2 } from '@common/icons/user-arrow-right-out-2.icon';
 import {
   transactionPayersToUserIncludeeData,
   transactionSplitPartsToUserIncludeeData,

@@ -1,8 +1,8 @@
 import { DatePipe } from '@angular/common';
 import { Component, forwardRef, input, signal } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ArdIconEditLine_2 } from '@ardium-ui/icons';
 import { ArdiumDialogModule, ArdiumIconButtonModule, ArdiumNumberInputModule } from '@ardium-ui/ui';
-import { ArdIconEditLine_2 } from '@common/icons/edit-line-2.icon';
 import { BalanceComponent } from '../balance/balance.component';
 import { StatisticWithValueComponent } from '../statistic-with-value/statistic-with-value.component';
 

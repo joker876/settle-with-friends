@@ -11,6 +11,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { trackBoundControl } from '@ardium-ui/devkit';
+import { ArdIconUser_2, ArdIconX_2 } from '@ardium-ui/icons';
 import {
   ARD_FORM_FIELD_CONTROL,
   ArdFormFieldControl,
@@ -31,8 +32,6 @@ import { PluralComponent } from '@common/components/plural/plural.component';
 import { SelectComponent } from '@common/components/select/select.component';
 import { StackComponent } from '@common/components/stack/stack.component';
 import { StatisticWithIconComponent } from '@common/components/statistic-with-icon/statistic-with-icon.component';
-import { ArdIconUser_2 } from '@common/icons/user-2.icon';
-import { ArdIconX_2 } from '@common/icons/x-2.icon';
 import { WrapInAbstractControl } from '@common/utils/form-types';
 import { UsersService } from '@features/reckoning/services/users.service';
 import { AmountType, amountTypeOptions, createAmountTypeLabelMap } from '@features/reckoning/utils/amount-type';

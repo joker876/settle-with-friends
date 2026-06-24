@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { ArdIconChevron } from "@common/icons/chevron.icon";
+import { ArdIconChevron } from '@ardium-ui/icons';
 import { TextBtnComponent } from "../text-btn/text-btn.component";
 
 @Component({

@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { ArdIconPlus } from '@ardium-ui/icons';
 import { ArdiumButtonModule } from '@ardium-ui/ui';
 import { SectionHeadingComponent } from "@common/components/section-heading/section-heading.component";
-import { ArdIconPlus } from '@common/icons/plus.icon';
 import { AuthService } from '@common/services/auth.service';
 import { ReckoningsService } from '@features/main/services/reckonings.service';
 import { ICreateReckoningRequestDto } from '@shared/contracts/reckonings/create';

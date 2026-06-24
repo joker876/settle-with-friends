@@ -1,6 +1,7 @@
 import { Component, computed, inject, input, OnDestroy, OnInit, signal, ViewEncapsulation } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { trackBoundControl } from '@ardium-ui/devkit';
+import { ArdIconCheckboxEmpty, ArdIconCheckboxFilled, ArdIconEditLine_2 } from '@ardium-ui/icons';
 import {
   ARD_FORM_FIELD_CONTROL,
   ArdFormFieldControl,
@@ -11,9 +12,6 @@ import {
   ArdiumIconButtonModule,
   ArdiumSelectModule,
 } from '@ardium-ui/ui';
-import { ArdIconCheckboxEmpty } from '@common/icons/checkbox-empty.icon';
-import { ArdIconCheckboxFilled } from '@common/icons/checkbox.icon copy';
-import { ArdIconEditLine_2 } from "@common/icons/edit-line-2.icon";
 import { DeviceService } from '@common/services/device.service';
 import { mapResourceToIdMap } from '@common/utils/resource-mappers';
 import { IUserPublicData } from '@shared/entities/user';

@@ -23,6 +23,10 @@
 @use '../node_modules/@ardium-ui/ui/themes/default/chips.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/slider.scss';
 @use '../node_modules/@ardium-ui/ui/themes/default/stars.scss';
+
+@use '../node_modules/@ardium-ui/icons/styles/core.scss' as icons;
+@use '../node_modules/@ardium-ui/icons/styles/direction.scss';
+
 @use '@angular/material' as mat;
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
@@ -446,10 +450,6 @@ ard-button.icon-only-g .ard-button {
 }
 // icon button
 .ard-icon-button {
-  width: 100%;
-  height: 100%;
-  aspect-ratio: 1;
-
   &.ard-compact {
     .ard-icon-outlined,
     .ard-icon-filled {

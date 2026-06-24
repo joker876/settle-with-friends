@@ -1,10 +1,10 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { BooleanLike, coerceBooleanProperty } from '@ardium-ui/devkit';
+import { ArdIconPlus } from '@ardium-ui/icons';
 import { ArdiumButtonModule, ArdiumIconButtonModule } from '@ardium-ui/ui';
 import { ConfirmationDialogComponent } from '@common/components/confirmation-dialog/confirmation-dialog.component';
 import { MoneyComponent } from '@common/components/money/money.component';
 import { SectionHeadingComponent } from '@common/components/section-heading/section-heading.component';
-import { ArdIconPlus } from '@common/icons/plus.icon';
 import { CurrencyRatesService } from '@features/reckoning/services/currency-rates.service';
 import { ITransaction } from '@shared/entities/transaction';
 import { TransactionListItemComponent } from './transaction-list-item/transaction-list-item.component';

@@ -1,6 +1,7 @@
 import { Component, computed, input, output } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { BooleanLike, coerceBooleanProperty } from '@ardium-ui/devkit';
+import { ArdIconCheck, ArdIconChevron } from '@ardium-ui/icons';
 import {
   AddCustomFn,
   ARD_FORM_FIELD_CONTROL,
@@ -9,8 +10,6 @@ import {
   CompareWithFn,
   FormElementAppearance,
 } from '@ardium-ui/ui';
-import { ArdIconCheck } from '@common/icons/check.icon';
-import { ArdIconChevron } from '@common/icons/chevron.icon';
 import { SelectableOption } from '@common/utils/options';
 import { isEqual } from 'lodash';
 import { Observable } from 'rxjs';
@@ -37,10 +36,10 @@ export class SelectComponent implements ArdFormFieldControl {
   readonly appearance = input<FormElementAppearance>(FormElementAppearance.Filled);
 
   readonly addCustomFn = input<AddCustomFn<any> | AddCustomFn<Promise<any>> | AddCustomFn<Observable<any>> | false>(
-    false
+    false,
   );
   readonly compareWithFn = computed<CompareWithFn | null>(() =>
-    this.options().some(opt => typeof opt.value === 'object') ? isEqual : null
+    this.options().some(opt => typeof opt.value === 'object') ? isEqual : null,
   );
 
   readonly withPrefix = input<boolean, BooleanLike>(false, { transform: v => coerceBooleanProperty(v) });
