@@ -3,7 +3,8 @@
     <h2>{{ heading() }}</h2>
     @if (showAllButton()) {
       <app-text-btn (click)="showAllButtonClick.emit()">
-        Zobacz wszystkie
+        <span class="large">Zobacz wszystkie</span>
+        <span class="small">Wszystkie</span>
         <ard-icon-chevron class="chevron" direction="right" />
       </app-text-btn>
     }

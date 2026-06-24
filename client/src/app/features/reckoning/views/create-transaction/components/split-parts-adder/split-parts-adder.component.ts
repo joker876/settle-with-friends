@@ -154,7 +154,7 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
     this.parts.push(group);
   }
 
-  removePayer(partName: string | null): void {
+  removeSplitPart(partName: string | null): void {
     const index = this.parts.controls.findIndex(control => control.value.name === partName);
     const group = this.parts.at(index);
     const sub = this._typeSubs.get(group);
@@ -219,6 +219,7 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
     const shouldBeRemaining =
       part.amount === null &&
       !this.parts.controls.some(control => control.controls.type.getRawValue() === AmountType.Remaining);
+    
     const typeControl = new FormControl<AmountType>(shouldBeRemaining ? AmountType.Remaining : AmountType.Amount, {
       nonNullable: true,
     });
@@ -330,22 +331,28 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
       includees: this.users.value().map(v => v.id),
     });
   }
-  clickEditPayer(v: SplitPartFormValue) {
+  clickEditSplitPart(v: SplitPartFormValue) {
     this.isEditDialogOpen.set(true);
     this.editedPartName.set(v.name);
     // wait for options to update
     setTimeout(() => {
       this.editDialogForm.setValue(v);
+      this.onAmountTypeChange(v.type);
     }, 0);
   }
   onClickRemoveRow(event: MouseEvent, partName: string | null) {
     event.stopPropagation();
-    this.removePayer(partName);
+    this.removeSplitPart(partName);
   }
   saveSplitPart() {
+    if (this.editedPartName() !== null) {
+      this.removeSplitPart(this.editedPartName());
+    }
     this.addSplitPart(this.editDialogForm.getRawValue());
+    this.onDialogClose();
   }
   onDialogClose() {
+    this.isEditDialogOpen.set(false);
     this.editedPartName.set(null);
   }
 

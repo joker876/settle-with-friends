@@ -59,7 +59,7 @@
           Łączna kwota zapłacona jest większa od kwoty transakcji (suma:
           <app-money [amount]="totalAmount()! - amount" [currency]="currencyCode()" />)!
         </ard-error>
-      } @else if (hasUnassignedRemainingAmount()) {
+      } @else if (noPayerHasRemainingAmount()) {
         @if (hasFilledAllAmountsAndNoUsersLeft()) {
           <ard-error i18n="@@create-transaction.payers.remaining-no-users-text">
             Pozostała kwota <app-money [amount]="amount" [currency]="currencyCode()" /> pomimo, że wszyscy użytkownicy
@@ -79,9 +79,9 @@
   [(open)]="isEditDialogOpen"
   [canConfirm]="editDialogForm.valid"
   panelClass="full-width-g"
-  confirmButtonText="Dodaj"
-  i18n-confirmButtonText="@@common.add"
+  [confirmButtonText]="editDialogConfirmText()"
   (confirm)="savePayer()"
+  (reject)="onDialogClose()"
   (close)="onDialogClose()"
 >
   <app-stack class="mobile">
@@ -113,8 +113,8 @@
         @if (editDialogForm.controls.type.value === AmountType.Remaining) {
           <div class="remaining-text">
             <ng-container i18n="@@create-transaction.payers.payer-row.remaining-text">Kwota:</ng-container>&nbsp;
-            @if (remainingAmount()) {
-              <app-money [amount]="remainingAmount()" [currency]="currencyCode()" />
+            @if (remainingAmount(); as amount) {
+              <app-money [amount]="amount + (editedUserPayerData()?.amount ?? 0)" [currency]="currencyCode()" />
             } @else {
               <abbr
                 title='Wpisz kwotę transakcji w sekcji "Informacje podstawowe".'
@@ -152,10 +152,13 @@
       </p>
     }
     @if (remainingAmount(); as amount) {
-      @if (amount > 0 && hasUnassignedRemainingAmount() && !hasFilledAllAmountsAndNoUsersLeft()) {
-        <div i18n="@@create-transaction.payers.remaining-text">
+      @if (amount > 0 && noPayerHasRemainingAmount() && !hasFilledAllAmountsAndNoUsersLeft()) {
+        <div class="remaining-amount-text" i18n="@@create-transaction.payers.remaining-text">
           Pozostała kwota:
-          <app-money [amount]="amount" [currency]="currencyCode()" />
+          <app-money
+            [amount]="amount + (editedUserPayerData()?.amount ?? 0) - (editDialogForm.controls.amount.value ?? 0)"
+            [currency]="currencyCode()"
+          />
         </div>
       }
     }

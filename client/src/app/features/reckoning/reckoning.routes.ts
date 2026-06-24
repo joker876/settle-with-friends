@@ -24,4 +24,9 @@ export const reckoningRoutes: Routes = [
     loadComponent: () =>
       import('./views/transaction-list/transaction-list.view').then(m => m.TransactionListView),
   },
+  {
+    path: 'payments',
+    loadComponent: () =>
+      import('./views/payment-list/payment-list.view').then(m => m.PaymentListView),
+  },
 ];

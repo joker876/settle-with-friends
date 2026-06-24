@@ -21,7 +21,7 @@ import {
   ArdiumGridModule,
   ArdiumIconButtonModule,
   ArdiumNumberInputComponent,
-  ArdiumNumberInputModule
+  ArdiumNumberInputModule,
 } from '@ardium-ui/ui';
 import { CardComponent } from '@common/components/card/card.component';
 import { MoneyComponent } from '@common/components/money/money.component';
@@ -125,7 +125,7 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
     }, 0);
     return total - sum;
   });
-  readonly hasUnassignedRemainingAmount = computed<boolean>(() => {
+  readonly noPayerHasRemainingAmount = computed<boolean>(() => {
     const remaining = this.remainingAmount();
     if (remaining === null || remaining === 0) return false;
     return !this._payersValue().some(v => v.type === AmountType.Remaining);
@@ -154,6 +154,9 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
 
     const group = this._createPayerGroup({ userId, amount: null });
     if (fullValue) {
+      if (fullValue.type === AmountType.Remaining) {
+        fullValue.amount = null;
+      }
       group.setValue(fullValue);
     }
 
@@ -270,6 +273,15 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
   readonly editDialogForm = this._createPayerGroup({ userId: null as unknown as number, amount: null }, true);
   readonly editedUserId = signal<number | null>(null);
 
+  readonly editDialogConfirmText = computed<string>(() =>
+    this.editedUserId() === null ? $localize`:@@common.add:Dodaj` : $localize`:@@common.save:Zapisz`,
+  );
+  readonly editedUserPayerData = computed(() => {
+    const userId = this.editedUserId();
+    if (userId === null) return null;
+    return this._payersValue().find(payer => payer.userId === userId) ?? null;
+  });
+
   ngOnInit(): void {
     this.editDialogForm.controls.type.addValidators((control: AbstractControl) => {
       if (!control.value || control.value === AmountType.Amount) return null;
@@ -311,9 +323,14 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
     this.removePayer(userId);
   }
   savePayer() {
+    if (this.editedUserId() !== null) {
+      this.removePayer(this.editedUserId());
+    }
     this.addPayer(this.editDialogForm.getRawValue().userId!, this.editDialogForm.getRawValue());
+    this.onDialogClose();
   }
   onDialogClose() {
+    this.isEditDialogOpen.set(false);
     this.editedUserId.set(null);
   }
 

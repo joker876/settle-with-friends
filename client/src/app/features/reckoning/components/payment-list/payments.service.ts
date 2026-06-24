@@ -3,9 +3,9 @@ import { HttpService } from '@common/services/http-service';
 import { SnackbarController } from '@common/services/snackbar-controller.service';
 import { setResourceStatusAfterLoaded } from '@common/utils/rxjs';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
-import { singleUser, UsersService } from '@features/reckoning/services/users.service';
+import { UsersService } from '@features/reckoning/services/users.service';
+import { hydratePayment } from '@features/reckoning/utils/hydration/payment';
 import { IPayment, IPaymentBasicData } from '@shared/entities/payment';
-import { map } from 'rxjs';
 
 @Injectable()
 export class PaymentsService {
@@ -26,16 +26,7 @@ export class PaymentsService {
     return new Promise<IPayment | null>(resolve =>
       this._http
         .post<IPayment, IPaymentBasicData>(['reckonings', this._reckoningService.reckoningId()!, 'payments'], data)
-        .pipe(setResourceStatusAfterLoaded(this._createPaymentStatus))
-        .pipe(
-          map(
-            this._usersService.hydrateUsersSingle([
-              singleUser<IPayment>('createdBy', 'createdByUserId'),
-              singleUser<IPayment>('updatedBy', 'updatedByUserId'),
-              singleUser<IPayment>('paidBy', 'paidByUserId'),
-            ]),
-          ),
-        )
+        .pipe(setResourceStatusAfterLoaded(this._createPaymentStatus), hydratePayment(this._usersService))
         .subscribe({
           next: payment => {
             this._snackbarController.openSuccess($localize`:@@payments.created-payment:Dodano wpłatę`);
@@ -64,16 +55,7 @@ export class PaymentsService {
           ['reckonings', this._reckoningService.reckoningId()!, 'payments', String(paymentId)],
           data,
         )
-        .pipe(setResourceStatusAfterLoaded(this._updatePaymentStatus))
-        .pipe(
-          map(
-            this._usersService.hydrateUsersSingle([
-              singleUser<IPayment>('createdBy', 'createdByUserId'),
-              singleUser<IPayment>('updatedBy', 'updatedByUserId'),
-              singleUser<IPayment>('paidBy', 'paidByUserId'),
-            ]),
-          ),
-        )
+        .pipe(setResourceStatusAfterLoaded(this._updatePaymentStatus), hydratePayment(this._usersService))
         .subscribe({
           next: payment => {
             this._snackbarController.openSuccess($localize`:@@payments.updated-payment:Zapisano wpłatę`);

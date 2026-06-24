@@ -5,13 +5,11 @@ import { SnackbarController } from '@common/services/snackbar-controller.service
 import { ensureParams } from '@common/utils/resource';
 import { setResourceStatusAfterLoaded } from '@common/utils/rxjs';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
-import { multipleUsers, singleUser, UsersService } from '@features/reckoning/services/users.service';
+import { UsersService } from '@features/reckoning/services/users.service';
+import { hydrateTransaction } from '@features/reckoning/utils/hydration/transaction';
 import { ICreateTransactionRequestDto } from '@shared/contracts/transactions/create';
 import { IUpdateTransactionRequestDto } from '@shared/contracts/transactions/update';
 import { ITransaction } from '@shared/entities/transaction';
-import { ITransactionSplitPart, ITransactionSplitPartIncludee } from '@shared/entities/transaction-includee';
-import { ITransactionPayer } from '@shared/entities/transaction-payer';
-import { map } from 'rxjs';
 
 @Injectable()
 export class CreateTransactionService {
@@ -33,23 +31,7 @@ export class CreateTransactionService {
         params.reckoningId && params.transactionId,
         this._http
           .get<ITransaction>(['reckonings', params.reckoningId!, 'transactions', params.transactionId!.toString()])
-          .pipe(
-            map(transaction => [transaction]),
-            this._usersService.waitForUsersLoaded(),
-            map(
-              this._usersService.hydrateUsers<ITransaction>([
-                singleUser<ITransaction>('createdBy', 'createdByUserId'),
-                singleUser<ITransaction>('updatedBy', 'updatedByUserId'),
-                multipleUsers<ITransaction, ITransactionPayer>('payers'),
-              ]),
-            ),
-            map(
-              this._usersService.hydrateUsersInArray<ITransaction, ITransactionSplitPart>('splitParts', [
-                multipleUsers<ITransactionSplitPart, ITransactionSplitPartIncludee>('includees'),
-              ]),
-            ),
-            map(transactions => transactions[0]),
-          ),
+          .pipe(this._usersService.waitForUsersLoaded(), hydrateTransaction(this._usersService)),
         null,
       ),
     defaultValue: null,
@@ -71,20 +53,10 @@ export class CreateTransactionService {
           ['reckonings', this._reckoningService.reckoningId()!, 'transactions'],
           data,
         )
-        .pipe(setResourceStatusAfterLoaded(this._createTransactionStatus))
         .pipe(
-          map(
-            this._usersService.hydrateUsersSingle([
-              singleUser<ITransaction>('createdBy', 'createdByUserId'),
-              singleUser<ITransaction>('updatedBy', 'updatedByUserId'),
-              multipleUsers<ITransaction, ITransactionPayer>('payers'),
-            ]),
-          ),
-          map(
-            this._usersService.hydrateUsersInArraySingle<ITransaction, ITransactionSplitPart>('splitParts', [
-              multipleUsers<ITransactionSplitPart, ITransactionSplitPartIncludee>('includees'),
-            ]),
-          ),
+          setResourceStatusAfterLoaded(this._createTransactionStatus),
+          this._usersService.waitForUsersLoaded(),
+          hydrateTransaction(this._usersService),
         )
         .subscribe({
           next: transaction => {
@@ -117,20 +89,7 @@ export class CreateTransactionService {
           data,
         )
         .pipe(setResourceStatusAfterLoaded(this._updateTransactionStatus))
-        .pipe(
-          map(
-            this._usersService.hydrateUsersSingle([
-              singleUser<ITransaction>('createdBy', 'createdByUserId'),
-              singleUser<ITransaction>('updatedBy', 'updatedByUserId'),
-              multipleUsers<ITransaction, ITransactionPayer>('payers'),
-            ]),
-          ),
-          map(
-            this._usersService.hydrateUsersInArraySingle<ITransaction, ITransactionSplitPart>('splitParts', [
-              multipleUsers<ITransactionSplitPart, ITransactionSplitPartIncludee>('includees'),
-            ]),
-          ),
-        )
+        .pipe()
         .subscribe({
           next: transaction => {
             this._snackbarController.openSuccess($localize`:@@transactions.updated-transaction:Zapisano transakcję`);

@@ -3,11 +3,9 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { HttpService } from '@common/services/http-service';
 import { ensureParams } from '@common/utils/resource';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
-import { multipleUsers, singleUser, UsersService } from '@features/reckoning/services/users.service';
+import { UsersService } from '@features/reckoning/services/users.service';
+import { hydrateTransaction } from '@features/reckoning/utils/hydration/transaction';
 import { ITransaction } from '@shared/entities/transaction';
-import { ITransactionSplitPart, ITransactionSplitPartIncludee } from '@shared/entities/transaction-includee';
-import { ITransactionPayer } from '@shared/entities/transaction-payer';
-import { map } from 'rxjs';
 
 @Injectable()
 export class TransactionListService {
@@ -22,21 +20,7 @@ export class TransactionListService {
         params.reckoningId,
         this._http
           .get<ITransaction[]>(['reckonings', params.reckoningId!, 'transactions/recent'])
-          .pipe(
-            this._usersService.waitForUsersLoaded(),
-            map(
-              this._usersService.hydrateUsers<ITransaction>([
-                singleUser<ITransaction>('createdBy', 'createdByUserId'),
-                singleUser<ITransaction>('updatedBy', 'updatedByUserId'),
-                multipleUsers<ITransaction, ITransactionPayer>('payers'),
-              ]),
-            ),
-            map(
-              this._usersService.hydrateUsersInArray<ITransaction, ITransactionSplitPart>('splitParts', [
-                multipleUsers<ITransactionSplitPart, ITransactionSplitPartIncludee>('includees'),
-              ]),
-            ),
-          ),
+          .pipe(this._usersService.waitForUsersLoaded(), hydrateTransaction(this._usersService, true)),
         [],
       ),
     defaultValue: [],

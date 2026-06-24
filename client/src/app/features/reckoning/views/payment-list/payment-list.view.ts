@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { TransactionListComponent } from '@features/reckoning/components/transaction-list/transaction-list.component';
+import { PaymentListComponent } from '@features/reckoning/components/payment-list/payment-list.component';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
 import { UsersService } from '@features/reckoning/services/users.service';
 import { IPayment } from '@shared/entities/payment';
@@ -7,7 +7,7 @@ import { PaymentListService } from './payment-list.service';
 
 @Component({
   selector: 'app-payment-list-view',
-  imports: [TransactionListComponent],
+  imports: [PaymentListComponent],
   templateUrl: './payment-list.view.html',
   styleUrl: './payment-list.view.scss',
   providers: [PaymentListService],

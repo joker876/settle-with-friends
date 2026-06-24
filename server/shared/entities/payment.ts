@@ -13,6 +13,7 @@ export interface IPaymentBasicData {
 export interface IPayment extends IPaymentBasicData {
   id: number;
   paidBy: IUser;
+  paidByUserId: number;
   createdBy: IUser;
   createdByUserId: number;
   createdDate: Date;

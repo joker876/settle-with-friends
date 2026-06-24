@@ -4,7 +4,7 @@
       <table>
         <tbody>
           @for (part of sortedSplitPartsValue(); track part) {
-            <tr (click)="clickEditPayer(part)">
+            <tr (click)="clickEditSplitPart(part)">
               <td aria-label="Podział kwoty" i18n-aria-label="@@create-transaction.split-parts.split-part-name">
                 <div class="user-text">
                   {{ part.name }}

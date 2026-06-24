@@ -3,9 +3,9 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { HttpService } from '@common/services/http-service';
 import { ensureParams } from '@common/utils/resource';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
-import { singleUser, UsersService } from '@features/reckoning/services/users.service';
+import { UsersService } from '@features/reckoning/services/users.service';
+import { hydratePayment } from '@features/reckoning/utils/hydration/payment';
 import { IPayment } from '@shared/entities/payment';
-import { map } from 'rxjs';
 
 @Injectable()
 export class RecentPaymentListService {
@@ -20,16 +20,7 @@ export class RecentPaymentListService {
         params.reckoningId,
         this._http
           .get<IPayment[]>(['reckonings', params.reckoningId!, 'payments'])
-          .pipe(
-            this._usersService.waitForUsersLoaded(),
-            map(
-              this._usersService.hydrateUsers<IPayment>([
-                singleUser<IPayment>('createdBy', 'createdByUserId'),
-                singleUser<IPayment>('updatedBy', 'updatedByUserId'),
-                singleUser<IPayment>('paidBy', 'paidByUserId'),
-              ]),
-            ),
-          ),
+          .pipe(this._usersService.waitForUsersLoaded(), hydratePayment(this._usersService, true)),
         [],
       ),
     defaultValue: [],

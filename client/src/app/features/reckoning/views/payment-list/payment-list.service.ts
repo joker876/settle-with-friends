@@ -3,11 +3,9 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { HttpService } from '@common/services/http-service';
 import { ensureParams } from '@common/utils/resource';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
-import { multipleUsers, singleUser, UsersService } from '@features/reckoning/services/users.service';
-import { ITransaction } from '@shared/entities/transaction';
-import { ITransactionSplitPart, ITransactionSplitPartIncludee } from '@shared/entities/transaction-includee';
-import { ITransactionPayer } from '@shared/entities/transaction-payer';
-import { map } from 'rxjs';
+import { UsersService } from '@features/reckoning/services/users.service';
+import { hydratePayment } from '@features/reckoning/utils/hydration/payment';
+import { IPayment } from '@shared/entities/payment';
 
 @Injectable()
 export class PaymentListService {
@@ -15,36 +13,28 @@ export class PaymentListService {
   private readonly _reckoningService = inject(ReckoningService);
   private readonly _usersService = inject(UsersService);
 
-  private readonly _transactions = rxResource({
+  private readonly _payments = rxResource({
     params: () => ({ reckoningId: this._reckoningService.reckoningId() }),
     stream: ({ params }) =>
       ensureParams(
         params.reckoningId,
         this._http
-          .get<ITransaction[]>(['reckonings', params.reckoningId!, 'transactions/recent'])
-          .pipe(
-            this._usersService.waitForUsersLoaded(),
-            map(
-              this._usersService.hydrateUsers<ITransaction>([
-                singleUser<ITransaction>('createdBy', 'createdByUserId'),
-                singleUser<ITransaction>('updatedBy', 'updatedByUserId'),
-                multipleUsers<ITransaction, ITransactionPayer>('payers'),
-              ]),
-            ),
-            map(
-              this._usersService.hydrateUsersInArray<ITransaction, ITransactionSplitPart>('splitParts', [
-                multipleUsers<ITransactionSplitPart, ITransactionSplitPartIncludee>('includees'),
-              ]),
-            ),
-          ),
+          .get<IPayment[]>(['reckonings', params.reckoningId!, 'payments/recent'])
+          .pipe(this._usersService.waitForUsersLoaded(), hydratePayment(this._usersService, true)),
         [],
       ),
     defaultValue: [],
   });
 
-  public readonly transactions = this._transactions.asReadonly();
+  public readonly payments = this._payments.asReadonly();
 
-  removeTransaction(transactionId: number): void {
-    this._transactions.update(transactions => transactions.filter(transaction => transaction.id !== transactionId));
+  appendPayment(payment: IPayment): void {
+    this._payments.update(payments => [...payments, payment]);
+  }
+  refreshPayment(payment: IPayment): void {
+    this._payments.update(payments => payments.map(p => (p.id === payment.id ? { ...p, ...payment } : p)));
+  }
+  removePayment(paymentId: number): void {
+    this._payments.update(payments => payments.filter(payment => payment.id !== paymentId));
   }
 }

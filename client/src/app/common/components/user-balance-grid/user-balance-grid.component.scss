@@ -1,7 +1,9 @@
 :host {
   display: flex;
   flex-direction: column;
-  min-width: 20rem;
+  width: 20rem;
+  min-width: max-content;
+  max-width: 100%;
 }
 .heading-row {
   display: flex;

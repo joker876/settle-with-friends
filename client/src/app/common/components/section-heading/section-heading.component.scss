@@ -1,3 +1,5 @@
+@use '../../../../breakpoints.scss' as *;
+
 .heading-container {
   display: grid;
   grid-template-columns: 1fr max-content;
@@ -23,6 +25,21 @@
   }
   app-text-btn {
     font-size: 0.875rem;
+
+    .large {
+      display: none;
+
+      @media (width > $bp-sm) {
+        display: inline;
+      }
+    }
+    .small {
+      display: inline;
+
+      @media (width > $bp-sm) {
+        display: none;
+      }
+    }
   }
   .actions {
     padding-left: 1.5rem;

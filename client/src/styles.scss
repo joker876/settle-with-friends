@@ -29,6 +29,8 @@
 
 @use '@angular/material' as mat;
 
+@use './breakpoints.scss' as *;
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 :root {
@@ -102,8 +104,8 @@
   --ard-button-rounded-corner-radius: 0.375rem;
   --ard-button-overlay-focus-opacity: 0;
   --ard-icon-button-margin: 0;
-  --ard-icon-button-height: 1.75rem;
-  --ard-icon-button-height-compact: 1.5rem;
+  --ard-icon-button-size: 1.75rem;
+  --ard-icon-button-size-compact: 1.5rem;
   --ard-icon-button-disabled-opacity: 0;
 
   --ard-form-field-font-size: 0.875rem;
@@ -224,7 +226,7 @@
   box-sizing: content-box;
   margin: 0 auto;
 
-  @media (width > 32rem) {
+  @media (width > $bp-sm) {
     padding: 1.5rem 3rem;
   }
 }
@@ -412,6 +414,7 @@ ard-button {
   transition:
     color 0.2s ease,
     border-color 0.2s ease;
+  aspect-ratio: var(--ard-button-aspect-ratio, auto);
 
   &::before {
     z-index: 0;
@@ -449,6 +452,10 @@ ard-button.icon-only-g .ard-button {
   aspect-ratio: 1;
 }
 // icon button
+ard-icon-button {
+  min-width: max-content;
+  min-height: max-content;
+}
 .ard-icon-button {
   &.ard-compact {
     .ard-icon-outlined,

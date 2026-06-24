@@ -11,9 +11,6 @@ export class PaymentsService {
 
   async getAllForReckoning(id: number): Promise<Payment[]> {
     return this.paymentRepo.find({
-      relations: {
-        paidBy: {},
-      },
       where: {
         reckoning: { id },
       },
@@ -26,9 +23,6 @@ export class PaymentsService {
 
   async getRecentForReckoning(id: number): Promise<Payment[]> {
     return this.paymentRepo.find({
-      relations: {
-        paidBy: {},
-      },
       where: {
         reckoning: { id },
       },
@@ -41,9 +35,6 @@ export class PaymentsService {
 
   async getById(reckoningId: number, paymentId: number): Promise<Payment> {
     const pmnt = await this.paymentRepo.findOne({
-      relations: {
-        paidBy: {},
-      },
       where: {
         id: paymentId,
         reckoning: { id: reckoningId },
@@ -66,7 +57,6 @@ export class PaymentsService {
     const savedPmnt = await this.paymentRepo.save(pmnt);
 
     return (await this.paymentRepo.findOne({
-      relations: { paidBy: {} },
       where: { id: savedPmnt.id },
     }))!;
   }
@@ -89,7 +79,6 @@ export class PaymentsService {
     const savedPmnt = await this.paymentRepo.save(pmnt);
 
     return (await this.paymentRepo.findOne({
-      relations: { paidBy: {} },
       where: { id: savedPmnt.id },
     }))!;
   }
