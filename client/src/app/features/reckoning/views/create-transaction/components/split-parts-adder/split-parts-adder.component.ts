@@ -10,7 +10,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { trackFormControl } from '@ardium-ui/devkit';
+import { trackBoundControl } from '@ardium-ui/devkit';
 import {
   ARD_FORM_FIELD_CONTROL,
   ArdFormFieldControl,
@@ -174,7 +174,7 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
   }
 
   //! ard form field control
-  readonly control = trackFormControl(this);
+  readonly control = trackBoundControl(this);
 
   readonly hasError = computed(() => this.control.invalid() && this.control.touched());
   readonly disabled = this.control.disabled;

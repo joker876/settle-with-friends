@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Component, forwardRef, input, signal } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ArdiumDialogModule, ArdiumIconButtonModule, ArdiumNumberInputModule } from '@ardium-ui/ui';
@@ -14,6 +15,7 @@ import { StatisticWithValueComponent } from '../statistic-with-value/statistic-w
     BalanceComponent,
     ArdiumIconButtonModule,
     ArdiumNumberInputModule,
+    DatePipe,
   ],
   templateUrl: './currency-rate-input.component.html',
   styleUrl: './currency-rate-input.component.scss',

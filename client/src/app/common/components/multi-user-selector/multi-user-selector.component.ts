@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, OnDestroy, OnInit, signal, ViewEncapsulation } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { trackFormControl } from '@ardium-ui/devkit';
+import { trackBoundControl } from '@ardium-ui/devkit';
 import {
   ARD_FORM_FIELD_CONTROL,
   ArdFormFieldControl,
@@ -87,7 +87,7 @@ export class MultiUserSelectorComponent implements ArdFormFieldControl, ControlV
   }
 
   //! ard form field control
-  readonly control = trackFormControl(this);
+  readonly control = trackBoundControl(this);
 
   readonly hasError = computed(() => this.control.touched() && this.control.invalid());
   readonly disabled = this.control.disabled;
