@@ -18,7 +18,7 @@ void (async () => {
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: process.env.FRONTEND_URL?.split(',') ?? 'http://localhost:4200',
+    origin: process.env.FRONTEND_URL?.split(',').concat('http://localhost:5260') ?? 'http://localhost:4200',
     credentials: true,
   });
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
