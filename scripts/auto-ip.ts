@@ -123,7 +123,7 @@ function modifyServerDotEnv(ip: string): string | null {
   }
 
   const newContent = content
-    .replace(/FRONTEND_URL=.*/, `FRONTEND_URL="http://${ip}:5260"`)
+    .replace(/FRONTEND_URL=.*/, `FRONTEND_URL="http://${ip}:5260,http://localhost:5260"`)
     .replace(/APP_HOST=.*/, `APP_HOST="${ip}"`);
 
   fs.writeFileSync(envFilePath, newContent);
