@@ -4,7 +4,7 @@ export interface IUser {
   id: number;
   email: string;
   displayName: string;
-  photo?: string;
+  photo: string | null;
 }
 
 export interface IUserWithRole extends IUser {

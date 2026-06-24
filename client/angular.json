@@ -65,6 +65,7 @@
               }
             ],
             "styles": [
+              "src/layers.css",
               "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.scss"
             ],

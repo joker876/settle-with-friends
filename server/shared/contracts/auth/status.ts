@@ -2,7 +2,7 @@ import { IUser } from '../../entities/user';
 
 export interface IAuthStatusResponseDto {
   loggedIn: boolean;
-  user?: IUser;
-  expiresAt?: Date;
+  user?: IUser | null;
+  expiresAt?: Date | null;
   isRegistered?: boolean;
 }

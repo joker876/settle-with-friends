@@ -12,7 +12,7 @@ export interface MappingToken<T extends Record<string, any>> {
 }
 
 function _getMap<V>(
-  valueMap: Record<number, V> | Signal<Record<number, V>>,
+  valueMap: Map<number, V> | Signal<Map<number, V>>,
 ) {
   return valueMap instanceof Function ? valueMap() : valueMap;
 }
@@ -21,23 +21,23 @@ function _mapUsersMutate<T extends Record<string, any>>(
   objects: T[],
   destProp: keyof T,
   idProp: keyof T,
-  valueMap: Record<number, any>,
+  valueMap: Map<number, any> | Signal<Map<number, any>>,
 ): void {
   objects.forEach(v => {
-    v[destProp] = _getObject(v[idProp] as number, valueMap) as any;
+    v[destProp] = _getObject(v[idProp] as number, _getMap(valueMap)) as any;
     if (!v[destProp]) {
       console.warn(`Failed to hydrate property ${String(destProp)} for object`, v);
     }
   });
 }
 
-function _getObject<V>(userId: number, valueMap: Record<number, V>): V {
-  return valueMap[userId];
+function _getObject<V>(userId: number, valueMap: Map<number, V>): V {
+  return valueMap.get(userId)!;
 }
 
 export function hydrateSingleProp<T extends Record<string, any>, V>(
   mappingTokens: MappingToken<T>[],
-  valueMap: Record<number, V> | Signal<Record<number, V>>,
+  valueMap: Map<number, V> | Signal<Map<number, V>>,
 ): (objects: T[]) => T[] {
   return objects =>
     objects.map(v => {
@@ -58,7 +58,7 @@ export function hydrateSingleProp<T extends Record<string, any>, V>(
 export function hydrateAllInArray<T extends Record<string, any>, A extends Record<string, any>, V>(
   arrayProp: keyof T,
   mappingTokens: MappingToken<A>[],
-  valueMap: Record<number, V> | Signal<Record<number, V>>,
+  valueMap: Map<number, V> | Signal<Map<number, V>>,
 ): (objects: T[]) => T[] {
   return objects =>
     objects.map(obj => {

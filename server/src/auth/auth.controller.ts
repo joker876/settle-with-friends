@@ -49,7 +49,7 @@ export class AuthController {
         ...req.user,
         photo: req.user.photo,
       },
-      expiresAt: req.session.cookie.expires ?? undefined,
+      expiresAt: req.session.cookie.expires ?? null,
       isRegistered: userIsRegistered,
     };
   }

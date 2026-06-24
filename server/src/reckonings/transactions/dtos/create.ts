@@ -21,10 +21,10 @@ export class CreateTransactionBasicDataDto implements ITransactionBasicData {
   currencyCode: string;
 
   @IsNumber()
-  currencyRate?: number;
+  currencyRate: number | null;
 
   @IsBoolean()
-  isCurrencyRateFromApi?: boolean;
+  isCurrencyRateFromApi: boolean | null;
 
   @IsNotEmpty()
   @IsDate()

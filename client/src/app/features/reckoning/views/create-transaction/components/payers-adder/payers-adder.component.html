@@ -1,0 +1,83 @@
+<div class="payers-grid">
+  @if (payers.controls.length > 0) {
+    <div class="header" i18n="@@create-transaction.payers.person">Osoba</div>
+    <div class="header" i18n="@@create-transaction.payers.amount">Kwota</div>
+    <div class="header"></div>
+    <div class="header actions"></div>
+  }
+
+  @for (payer of payers.controls; track payer; let i = $index) {
+    @let hasError = payer.controls.amount.touched && !!payer.controls.amount.errors;
+    <div class="cell">
+      <div class="user-text" aria-label="Osoba" i18n-aria-label="@@create-transaction.payers.person">
+        {{ userName(payer.controls.userId.getRawValue()) }}
+      </div>
+    </div>
+    <div class="cell">
+      <ard-form-field [reserveHintLine]="hasError">
+        <app-select [options]="amountTypeOptions" [control]="payer.controls.type" />
+      </ard-form-field>
+    </div>
+    <div class="cell">
+      @if (payer.controls.type.value === PayerAmountType.Remaining) {
+        <div class="remaining-text" i18n="@@create-transaction.payers.remaining-text">
+          Pozostało: {{ remainingAmount() ?? '-' }} {{ currencyCode() ?? '' }}
+        </div>
+      } @else {
+        <ard-form-field>
+          <ard-number-input
+            [formControl]="payer.controls.amount"
+            placeholder="Kwota"
+            i18n-placeholder="@@create-transaction.payers.amount"
+          >
+            <ng-template ard-suffix-tmp>{{ currencyCode() }}</ng-template>
+          </ard-number-input>
+          @if (payer.controls.amount.touched && payer.controls.amount.errors) {
+            <ard-error>{{ payer.controls.amount.errors | mapError }}</ard-error>
+          }
+        </ard-form-field>
+      }
+    </div>
+    <div class="cell actions">
+      <ard-icon-button
+        (click)="removePayer(i)"
+        title="Usuń płacącego"
+        i18n-title="@@create-transaction.payers.remove"
+        aria-label="Usuń płacącego"
+        i18n-aria-label="@@create-transaction.payers.remove"
+      >
+        <ard-icon-trash-can-2 class="icon" />
+      </ard-icon-button>
+    </div>
+  }
+
+  @if (remainingUsersOptions().length > 0) {
+    <div class="cell">
+      <ard-form-field>
+        <app-select
+          [options]="remainingUsersOptions()"
+          [control]="newUserIdControl"
+          placeholder="Dodaj osobę"
+          i18n-placeholder="@@create-transaction.payers.add"
+        />
+      </ard-form-field>
+    </div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell actions"></div>
+  }
+</div>
+@if (remainingUsersOptions().length === 0) {
+  @if (remainingAmountFinal() !== null && remainingAmountFinal()! > 0) {
+    <p class="remaining-msg" [class.error-msg]="areAllAmountFieldsFilled()">
+      <ng-container i18n="@@create-transaction.payers.remaining-info">
+        Pozostała kwota: {{ remainingAmountFinal() }} {{ currencyCode() }}
+      </ng-container>
+      @if (areAllAmountFieldsFilled()) {
+        <ng-container i18n="@@create-transaction.payers.remaining-info.error-addon">
+          - uzupełnij kwoty płacących
+        </ng-container>
+      }
+    </p>
+  }
+}

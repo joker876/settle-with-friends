@@ -6,8 +6,8 @@ export interface IPayment {
   paidBy: IUser;
   amount: number;
   currencyCode: string;
-  currencyRate?: number;
-  isCurrencyRateFromApi?: boolean;
+  currencyRate: number | null;
+  isCurrencyRateFromApi: boolean | null;
   paymentDate: Date;
   createdBy: IUser;
   createdDate: Date;

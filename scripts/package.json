@@ -1,0 +1,18 @@
+{
+  "name": "app",
+  "scripts": {
+    "prettier": "npx prettier --write .",
+    "build": "cd client && pnpm install --frozen-lockfile && pnpm run build && cd ../server && pnpm install",
+    "preinstall": "npx only-allow pnpm"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "only-allow": "^1.2.1",
+    "pnpm": "^10.9.0",
+    "prettier": "^3.3.3"
+  },
+  "dependencies": {
+    "ansis": "^4.2.0",
+    "tslib": "^2.8.1"
+  }
+}

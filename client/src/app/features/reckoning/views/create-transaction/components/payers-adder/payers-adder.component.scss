@@ -1,0 +1,53 @@
+:host {
+  display: block;
+}
+
+.payers-grid {
+  display: grid;
+  grid-template-columns: minmax(max-content, 8rem) 6rem minmax(8rem, 12rem) 1fr;
+  column-gap: 0.75rem;
+  row-gap: 0.25rem;
+  align-items: center;
+  font-size: var(--ard-form-field-font-size);
+}
+
+.header {
+  font-size: 0.75rem;
+  color: var(--ard-text2);
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: -0.25rem;
+}
+
+.cell {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.icon {
+  width: 1.25rem;
+  color: var(--red);
+}
+
+.user-text {
+  display: flex;
+  align-items: center;
+}
+
+.remaining-text {
+  display: flex;
+  align-items: center;
+  color: var(--ard-text3);
+}
+
+.remaining-msg {
+  font-size: 0.875rem;
+  color: var(--ard-text3);
+}
+.error-msg {
+  color: var(--red);
+}
