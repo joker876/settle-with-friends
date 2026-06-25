@@ -15,7 +15,7 @@
               <pl-plural
                 [value]="data().payers.length"
                 forms="płacący,płacących,płacących"
-                i18n-forms="@@payers.plural-forms"
+                i18n-forms="@@common.payers.plural-forms"
               />
             }
           </ng-container>
@@ -29,7 +29,7 @@
               <pl-plural
                 [value]="numberOfIncludees()"
                 forms="wliczany,wliczanych,wliczanych"
-                i18n-forms="@@includees.plural-forms"
+                i18n-forms="@@common.includees.plural-forms"
               />
             }
           </ng-container>

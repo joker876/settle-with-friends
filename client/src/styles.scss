@@ -698,3 +698,7 @@ ard-radio-group {
     width: 100%;
   }
 }
+// grid
+ard-grid[container] {
+  align-items: stretch;
+}

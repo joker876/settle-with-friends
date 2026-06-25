@@ -4,9 +4,14 @@
       <div class="name">{{ data().name }}</div>
       <div class="additional-info">
         <div class="section-with-icon">
-          <ard-icon-user-2 class="icon" /> {{ data().numberOfUsers | pluralizePL : PEOPLE1 : PEOPLE2 : PEOPLE5 : true }}
+          <ard-icon-user-2 class="icon" />
+          <pl-plural
+            [value]="data().numberOfUsers"
+            forms="osoba,osoby,osób"
+            i18n-forms="@@common.people.plural-forms"
+          />
         </div>
-        <div class="section-with-icon" [title]="getLastUpdatedString(data().updatedDate | date : 'medium')">
+        <div class="section-with-icon" [title]="getLastUpdatedString(data().updatedDate | date: 'medium')">
           <span class="icon"></span>
           {{ data().updatedDate | timeago }}
         </div>

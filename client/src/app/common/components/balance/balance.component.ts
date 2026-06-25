@@ -1,5 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, input } from '@angular/core';
+import { BooleanLike, coerceBooleanProperty } from '@ardium-ui/devkit';
 
 export const BalanceColoringType = {
   None: 'none',
@@ -26,4 +27,5 @@ export class BalanceComponent {
 
   readonly coloringType = input<BalanceColoringType>(BalanceColoringType.None);
   readonly places = input<string>('2-2');
+  readonly explicitSign = input<boolean, BooleanLike>(false, { transform: v => coerceBooleanProperty(v) });
 }

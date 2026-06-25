@@ -1,16 +1,33 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ArdIconPlaceholder_2 } from '@ardium-ui/icons';
+import { ArdiumGridModule, ArdiumSpinnerModule } from '@ardium-ui/ui';
+import { BalanceComponent } from '@common/components/balance/balance.component';
+import { StatisticComponent } from '@common/components/statistic/statistic.component';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
 import { UsersService } from '@features/reckoning/services/users.service';
 import { IPayment } from '@shared/entities/payment';
+import { PluralizePlComponent } from 'ngx-polish-number-to-words';
 import { PaymentListComponent } from '../../components/payment-list/payment-list.component';
+import { SummaryCardComponent } from '../../components/summary-card/summary-card.component';
 import { TransactionListComponent } from '../../components/transaction-list/transaction-list.component';
+import { BasicSummaryService } from './basic-summary.service';
 import { RecentPaymentListService } from './recent-payment-list.service';
 import { RecentTransactionListService } from './recent-transaction-list.service';
 
 @Component({
   selector: 'app-reckoning-view',
-  imports: [TransactionListComponent, PaymentListComponent],
+  imports: [
+    TransactionListComponent,
+    PaymentListComponent,
+    ArdiumGridModule,
+    SummaryCardComponent,
+    ArdIconPlaceholder_2,
+    BalanceComponent,
+    ArdiumSpinnerModule,
+    StatisticComponent,
+    PluralizePlComponent
+  ],
   templateUrl: './reckoning.view.html',
   styleUrl: './reckoning.view.scss',
   providers: [RecentTransactionListService, RecentPaymentListService],
@@ -19,6 +36,7 @@ export class ReckoningView {
   readonly reckoningService = inject(ReckoningService);
   readonly transactionListService = inject(RecentTransactionListService);
   readonly paymentListService = inject(RecentPaymentListService);
+  readonly basicSummaryService = inject(BasicSummaryService);
   readonly usersService = inject(UsersService);
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);

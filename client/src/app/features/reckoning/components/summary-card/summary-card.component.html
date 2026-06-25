@@ -1,0 +1,16 @@
+<app-card>
+  <div class="summary-heading">
+    <div class="summary-icon">
+      <ng-content select="icon" />
+    </div>
+    {{ heading() }}
+  </div>
+  <div class="content">
+    <div class="summary-value">
+      <ng-content select="value" />
+    </div>
+    <app-statistic class="summary-subtext">
+      <ng-content select="subtext" />
+    </app-statistic>
+  </div>
+</app-card>

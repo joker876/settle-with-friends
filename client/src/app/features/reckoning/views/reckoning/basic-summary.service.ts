@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { HttpService } from '@common/services/http-service';
 import { ensureParams } from '@common/utils/resource';
+import { ReckoningService } from '@features/reckoning/services/reckoning.service';
 import { IGetBasicSummaryResponse } from '@shared/contracts/summary/get-basic';
-import { ReckoningService } from './reckoning.service';
 
 @Injectable()
 export class BasicSummaryService {

@@ -2,6 +2,101 @@
   <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
 
   <section>
+    @let mainCurrency = reckoningService.reckoning.value()?.mainCurrency ?? ''; @let totalPaid =
+    basicSummaryService.summary.value()?.totalFromPaidTransactions; @let totalToPay =
+    basicSummaryService.summary.value()?.totalFromSplitParts; @let totalReturned =
+    basicSummaryService.summary.value()?.totalFromPayments;
+    <ard-grid container columns="2 lg:4">
+      <ard-grid size="1">
+        <app-summary-card heading="Zapłacone">
+          <ng-container ngProjectAs="icon">
+            <ard-icon-placeholder-2 />
+          </ng-container>
+          <ng-container ngProjectAs="value">
+            @if (totalPaid) {
+            <app-balance [balance]="totalPaid" [currency]="mainCurrency" />
+            } @else {
+            <ard-spinner />
+            }
+          </ng-container>
+          <ng-container ngProjectAs="subtext">
+            @if (basicSummaryService.summary.value()?.numberOfPaidTransactions; as amount) {
+            <pl-plural
+              [value]="amount"
+              forms="transakcja,transakcje,transakcji"
+              i18n-forms="@@common.transaction.plural-forms"
+            />
+            } @else { &nbsp; }
+          </ng-container>
+        </app-summary-card>
+      </ard-grid>
+      <ard-grid size="1">
+        <app-summary-card heading="Do zapłaty">
+          <ng-container ngProjectAs="icon">
+            <ard-icon-placeholder-2 />
+          </ng-container>
+          <ng-container ngProjectAs="value">
+            @if (totalToPay) {
+            <app-balance [balance]="-totalToPay" [currency]="mainCurrency" coloringType="negative" />
+            } @else {
+            <ard-spinner />
+            }
+          </ng-container>
+          <ng-container ngProjectAs="subtext">
+            @if (basicSummaryService.summary.value()?.numberOfSplitPartTransactions; as amount) {
+            <pl-plural
+              [value]="amount"
+              forms="transakcja,transakcje,transakcji"
+              i18n-forms="@@common.transaction.plural-forms"
+            />
+            } @else { &nbsp; }
+          </ng-container>
+        </app-summary-card>
+      </ard-grid>
+      <ard-grid size="1">
+        <app-summary-card heading="Zwrócone">
+          <ng-container ngProjectAs="icon">
+            <ard-icon-placeholder-2 />
+          </ng-container>
+          <ng-container ngProjectAs="value">
+            @if (totalReturned) {
+            <app-balance [balance]="totalReturned" [currency]="mainCurrency" />
+            } @else {
+            <ard-spinner />
+            }
+          </ng-container>
+          <ng-container ngProjectAs="subtext">
+            @if (basicSummaryService.summary.value()?.numberOfPayments; as amount) {
+            <pl-plural [value]="amount" forms="wpłata,wpłaty,wpłat" i18n-forms="@@common.payment.plural-forms" />
+            } @else { &nbsp; }
+          </ng-container>
+        </app-summary-card>
+      </ard-grid>
+      <ard-grid size="1">
+        <app-summary-card heading="Bilans">
+          <ng-container ngProjectAs="icon">
+            <ard-icon-placeholder-2 />
+          </ng-container>
+          <ng-container ngProjectAs="value">
+            @if (totalPaid !== undefined && totalToPay !== undefined && totalReturned !== undefined) { @let balance =
+            totalPaid - totalToPay + totalReturned;
+            <app-balance
+              [balance]="balance"
+              [currency]="mainCurrency"
+              [coloringType]="balance < 0 ? 'negative' : 'positive'"
+              explicitSign
+            />
+            } @else {
+            <ard-spinner />
+            }
+          </ng-container>
+          <ng-container ngProjectAs="subtext"> &nbsp; </ng-container>
+        </app-summary-card>
+      </ard-grid>
+    </ard-grid>
+  </section>
+
+  <section>
     <app-transaction-list
       [transactions]="transactionListService.transactions.value()"
       partialList
