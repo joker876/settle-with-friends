@@ -90,6 +90,7 @@ export class PaymentsService {
     if (!pmnt) {
       throw new NotFoundException('Payment not found');
     }
+    if (pmnt.createdByUserId )
 
     await this.paymentRepo.remove(pmnt);
   }
