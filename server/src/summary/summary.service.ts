@@ -78,65 +78,41 @@ export class SummaryService {
         2,
       );
 
-      console.log('transaction', JSON.stringify(transaction, null, 2));
-
       for (const splitPart of transaction.splitParts) {
         const userIncludee = splitPart.includees.find(includee => includee.userId === userId);
         if (!userIncludee) continue;
 
         if (splitPart.amount !== null) {
           totalAmountInThisTransaction += splitPart.amount / splitPart.includees.length;
-          console.log(
-            'totalAmountInThisTransaction',
-            totalAmountInThisTransaction,
-            'splitPart.id',
-            splitPart.id,
-            'splitPart.amount',
-            splitPart.amount,
-            'transaction.currencyRate',
-            transaction.currencyRate,
-            'splitPart.includees.length',
-            splitPart.includees.length,
-          );
           continue;
         }
         totalAmountInThisTransaction +=
           (transaction.amount - totalFromNonNullAmountSplitParts) / splitPart.includees.length;
-
-        console.log(
-          'totalAmountInThisTransaction',
-          totalAmountInThisTransaction,
-          'splitPart.id',
-          splitPart.id,
-          'transaction.amount',
-          transaction.amount,
-          'transaction.currencyRate',
-          transaction.currencyRate,
-          'splitPart.includees.length',
-          splitPart.includees.length,
-          'totalFromNonNullAmountSplitParts',
-          totalFromNonNullAmountSplitParts,
-        );
       }
       numberOfSplitPartTransactions += 1;
       totalFromSplitParts += roundToPrecision(totalAmountInThisTransaction * (transaction.currencyRate ?? 1), 2);
     }
 
-    const paymentsAndTotalAmount: { numberOfPayments: string; totalFromPayments: number } = (await this.paymentRepo
-      .createQueryBuilder('p')
-      .where('p.reckoningId = :reckoningId', { reckoningId })
-      .andWhere('p.paidByUserId = :userId', { userId })
-      .select('COUNT(p.id)', 'numberOfPayments')
-      .addSelect('SUM(p.amount)', 'totalFromPayments')
-      .getRawOne())!;
+    const paymentsForUser = await this.paymentRepo.find({
+      where: {
+        reckoning: { id: reckoningId },
+        paidByUserId: userId,
+      },
+    });
+
+    const numberOfPayments = paymentsForUser.length;
+    const totalFromPayments = roundToPrecision(
+      paymentsForUser.reduce((sum, payment) => sum + (payment.amount ?? 0) * (payment.currencyRate ?? 1), 0),
+      2,
+    );
 
     return {
       numberOfPaidTransactions,
       totalFromPaidTransactions,
       numberOfSplitPartTransactions,
       totalFromSplitParts,
-      numberOfPayments: parseInt(paymentsAndTotalAmount.numberOfPayments, 10),
-      totalFromPayments: roundToPrecision(paymentsAndTotalAmount.totalFromPayments, 2),
+      numberOfPayments,
+      totalFromPayments,
     } as any;
   }
 
