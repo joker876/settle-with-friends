@@ -5,7 +5,7 @@ import { hydrateAllInArray, hydrateSingleProp, MappingToken } from '@common/util
 import { ensureParams, isResourceResolved } from '@common/utils/resource';
 import { mapResourceToIdMap, mapResourceToSelectableIdOptions } from '@common/utils/resource-mappers';
 import { bufferLastUntil } from '@common/utils/rxjs';
-import { IUser } from '@shared/entities/user';
+import { IUser, IUserWithRole } from '@shared/entities/user';
 import { OperatorFunction } from 'rxjs';
 import { ReckoningService } from './reckoning.service';
 
@@ -17,7 +17,11 @@ export class UsersService {
   private readonly _users = rxResource({
     params: () => ({ reckoningId: this._reckoningService.reckoningId() }),
     stream: ({ params }) =>
-      ensureParams(params.reckoningId, this._http.get<IUser[]>(['reckonings', params.reckoningId!, 'users']), []),
+      ensureParams(
+        params.reckoningId,
+        this._http.get<IUserWithRole[]>(['reckonings', params.reckoningId!, 'participants']),
+        [],
+      ),
     defaultValue: [],
   });
   private readonly _usersResolved$ = isResourceResolved(this._users);

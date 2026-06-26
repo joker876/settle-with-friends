@@ -1,5 +1,5 @@
 <ard-select
-  [formControl]="control()"
+  [(value)]="value"
   [items]="options()"
   valueFrom="value"
   labelFrom="label"
@@ -12,6 +12,7 @@
   [appearance]="appearance()"
   (close)="close.emit()"
   (valueChange)="change.emit($event)"
+  (blur)="emitTouched()"
 >
   @if (withPrefix()) {
     <ng-template ard-prefix-tmp>

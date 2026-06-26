@@ -1,13 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  ArdIconBankCardPayment,
-  ArdIconBankCardX,
-  ArdIconChevron,
-  ArdIconCoins,
-  ArdIconHandCoins,
-} from '@ardium-ui/icons';
-import { ArdiumGridModule, ArdiumSpinnerModule } from '@ardium-ui/ui';
+import { ArdIconBankCardPayment, ArdIconBankCardX, ArdIconChevron, ArdIconCoins, ArdIconHandCoins, ArdIconSettings } from '@ardium-ui/icons';
+import { ArdiumGridModule, ArdiumIconButtonModule, ArdiumSpinnerModule, ArdiumStackModule } from '@ardium-ui/ui';
 import { BalanceComponent } from '@common/components/balance/balance.component';
 import { TextBtnComponent } from '@common/components/text-btn/text-btn.component';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
@@ -37,7 +31,10 @@ import { RecentTransactionListService } from './recent-transaction-list.service'
     ArdIconHandCoins,
     ArdIconCoins,
     ArdIconBankCardX,
-  ],
+    ArdiumStackModule,
+    ArdiumIconButtonModule,
+    ArdIconSettings
+],
   templateUrl: './reckoning.view.html',
   styleUrl: './reckoning.view.scss',
   providers: [RecentTransactionListService, RecentPaymentListService],
@@ -59,6 +56,9 @@ export class ReckoningView {
   }
   navigateToSummary() {
     this._router.navigate(['summary'], { relativeTo: this._activatedRoute });
+  }
+  navigateToSettings() {
+    this._router.navigate(['settings'], { relativeTo: this._activatedRoute });
   }
 
   navigateToCreateTransaction() {

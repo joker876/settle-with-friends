@@ -1,0 +1,26 @@
+<app-card>
+  <table class="table-g">
+    <thead>
+      <tr>
+        <th i18n="@@common.person">Osoba</th>
+        <th i18n="@@common.role">Rola</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of settingsService.users.value(); track user.id) {
+      <tr>
+        <td>
+          <app-avatar [name]="user.displayName" [photo]="user.photo" showName />
+        </td>
+        <td>
+          <app-role-selector [value]="user.role" (valueChange)="onUserRoleChange(user.id, $event)" />
+        </td>
+        <td>
+          <ard-icon-button> ⋮ </ard-icon-button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</app-card>

@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { PaymentsService } from './components/payment-list/payments.service';
 import { TransactionsService } from './components/transaction-list/transactions.service';
+import { AccessService } from './services/access.service';
 import { CurrencyRatesService } from './services/currency-rates.service';
 import { ReckoningService } from './services/reckoning.service';
 import { UsersService } from './services/users.service';
@@ -12,7 +13,15 @@ import { BasicSummaryService } from './views/reckoning/basic-summary.service';
   imports: [RouterModule],
   templateUrl: './reckoning.page.html',
   styleUrl: './reckoning.page.scss',
-  providers: [ReckoningService, TransactionsService, UsersService, CurrencyRatesService, PaymentsService, BasicSummaryService],
+  providers: [
+    ReckoningService,
+    TransactionsService,
+    UsersService,
+    CurrencyRatesService,
+    PaymentsService,
+    BasicSummaryService,
+    AccessService,
+  ],
 })
 export class ReckoningPage {
   readonly reckoningService = inject(ReckoningService);

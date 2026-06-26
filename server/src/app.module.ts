@@ -4,13 +4,13 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { SessionAuthGuard } from './auth/session-auth.guard';
-import { PaymentsModule } from './payments/payments.module';
-import { ReckoningsModule } from './reckonings/reckonings.module';
-import { SummaryModule } from './summary/summary.module';
-import { TransactionsModule } from './transactions/transactions.module';
+import { AuthModule } from './features/auth/auth.module';
+import { SessionAuthGuard } from './features/auth/session-auth.guard';
+import { ParticipantsModule } from './features/participants/participants.module';
+import { PaymentsModule } from './features/payments/payments.module';
+import { ReckoningsModule } from './features/reckonings/reckonings.module';
+import { SummaryModule } from './features/summary/summary.module';
+import { TransactionsModule } from './features/transactions/transactions.module';
 import { SessionEntity } from './typeorm/entities/Session';
 import { entities } from './typeorm/entities/index';
 import { DateMappingInterceptor } from './utils/date-mapping.interceptor';
@@ -40,10 +40,10 @@ import { DateMappingInterceptor } from './utils/date-mapping.interceptor';
     TransactionsModule,
     PaymentsModule,
     SummaryModule,
+    ParticipantsModule,
   ],
   controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_GUARD,
       useClass: SessionAuthGuard,

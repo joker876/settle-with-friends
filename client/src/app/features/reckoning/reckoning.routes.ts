@@ -34,4 +34,9 @@ export const reckoningRoutes: Routes = [
     loadComponent: () =>
       import('./views/detailed-summary/detailed-summary.view').then(m => m.DetailedSummaryView),
   },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('./views/settings/settings.view').then(m => m.SettingsView),
+  },
 ];

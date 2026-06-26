@@ -51,7 +51,10 @@
                 </ard-form-field>
                 <ard-form-field>
                   <ard-label>&nbsp;</ard-label>
-                  <app-select [options]="currencies()" [control]="form.controls.transaction.controls.currencyCode" />
+                  <app-select
+                    [options]="currencies()"
+                    [formControl]="form.controls.transaction.controls.currencyCode"
+                  />
                   <ard-auto-error [control]="form.controls.transaction.controls.currencyCode" />
                 </ard-form-field>
               </div>
@@ -110,9 +113,11 @@
         <div class="actions">
           <ard-button (click)="onCancelClick()" i18n="@@common.cancel">Anuluj</ard-button>
           @if (isCreateMode()) {
-            <ard-button (click)="onCreateClick()" appearance="flat" color="primary" i18n="@@common.add">Dodaj</ard-button>
+          <ard-button (click)="onCreateClick()" appearance="flat" color="primary" i18n="@@common.add">Dodaj</ard-button>
           } @else {
-            <ard-button (click)="onUpdateClick()" appearance="flat" color="primary" i18n="@@common.save">Zapisz</ard-button>
+          <ard-button (click)="onUpdateClick()" appearance="flat" color="primary" i18n="@@common.save"
+            >Zapisz</ard-button
+          >
           }
         </div>
       </app-stack>

@@ -1,6 +1,6 @@
-import { Component, computed, input, output } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { BooleanLike, coerceBooleanProperty } from '@ardium-ui/devkit';
+import { Component, computed, input, model, output } from '@angular/core';
+import { ControlValueAccessor } from '@angular/forms';
+import { BooleanLike, coerceBooleanProperty, trackBoundControl } from '@ardium-ui/devkit';
 import { ArdIconCheck, ArdIconChevron } from '@ardium-ui/icons';
 import {
   AddCustomFn,
@@ -17,14 +17,12 @@ import TakeChance from 'take-chance';
 
 @Component({
   selector: 'app-select',
-  imports: [ArdiumSelectModule, ReactiveFormsModule, ArdIconCheck, ArdIconChevron],
+  imports: [ArdiumSelectModule, ArdIconCheck, ArdIconChevron],
   templateUrl: './select.component.html',
   styleUrl: './select.component.scss',
   providers: [{ provide: ARD_FORM_FIELD_CONTROL, useExisting: SelectComponent }],
 })
-export class SelectComponent implements ArdFormFieldControl {
-  readonly control = input.required<FormControl<any>>();
-
+export class SelectComponent implements ControlValueAccessor, ArdFormFieldControl {
   readonly options = input.required<SelectableOption<any>[]>();
   readonly areOptionsLoading = input<boolean>(false);
   readonly searchable = input<boolean, BooleanLike>(true, { transform: v => coerceBooleanProperty(v) });
@@ -44,11 +42,28 @@ export class SelectComponent implements ArdFormFieldControl {
 
   readonly withPrefix = input<boolean, BooleanLike>(false, { transform: v => coerceBooleanProperty(v) });
 
-  readonly htmlId = input<string>(TakeChance.id());
-
   readonly close = output<void>();
   readonly change = output<any>();
 
-  readonly disabled = (): boolean => this.control().disabled;
-  readonly hasError = (): boolean => this.control().invalid && this.control().touched;
+  readonly value = model<any>(null);
+
+  writeValue(value: any): void {
+    this.value.set(value);
+  }
+  registerOnChange(fn: (value: any) => void): void {
+    this.value.subscribe(fn);
+  }
+  private _onTouched: () => void = () => {};
+  registerOnTouched(fn: () => void): void {
+    this._onTouched = fn;
+  }
+  emitTouched(): void {
+    this._onTouched?.();
+  }
+
+  private readonly _control = trackBoundControl(this);
+
+  readonly htmlId = input<string>(TakeChance.id());
+  readonly disabled = this._control.disabled;
+  readonly hasError = this._control.touchedHasErrors;
 }

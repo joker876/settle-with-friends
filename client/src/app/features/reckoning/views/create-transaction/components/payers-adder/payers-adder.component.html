@@ -89,7 +89,7 @@
       <ard-label required i18n="@@common.person">Osoba</ard-label>
       <app-select
         [options]="remainingUsersOptionsWithEditedUser()"
-        [control]="editDialogForm.controls.userId"
+        [formControl]="editDialogForm.controls.userId"
         placeholder="Wybierz osobę"
         i18n-placeholder="@@create-transaction.payers.choose-person"
       />
@@ -102,7 +102,7 @@
           <app-select
             [options]="amountTypeOptions"
             [dynamicLabelMap]="amountTypeLabelMap()"
-            [control]="editDialogForm.controls.type"
+            [formControl]="editDialogForm.controls.type"
             (close)="focusAmountField()"
             (change)="onAmountTypeChange($event)"
           />

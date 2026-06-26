@@ -1,5 +1,11 @@
 <div class="page-wrapper-g">
-  <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
+  <ard-stack direction="row" alignItems="center" spacing="8">
+    <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
+
+    <ard-icon-button (click)="navigateToSettings()">
+      <ard-icon-settings />
+    </ard-icon-button>
+  </ard-stack>
 
   <section class="summary-section">
     <p>

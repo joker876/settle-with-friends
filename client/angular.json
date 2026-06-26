@@ -55,10 +55,7 @@
             "outputPath": "dist/client",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [
-              "zone.js",
-              "@angular/localize/init"
-            ],
+            "polyfills": ["zone.js", "@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -67,11 +64,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/layers.css",
-              "@angular/material/prebuilt-themes/azure-blue.css",
-              "src/styles.scss"
-            ],
+            "styles": ["src/layers.css", "@angular/material/prebuilt-themes/azure-blue.css", "src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -136,11 +129,7 @@
         "test": {
           "builder": "@angular/build:test",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing",
-              "@angular/localize/init"
-            ],
+            "polyfills": ["zone.js", "zone.js/testing", "@angular/localize/init"],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -149,10 +138,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "@angular/material/prebuilt-themes/azure-blue.css",
-              "src/styles.scss"
-            ],
+            "styles": ["@angular/material/prebuilt-themes/azure-blue.css", "src/styles.scss"],
             "scripts": []
           }
         }

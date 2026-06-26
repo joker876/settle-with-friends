@@ -1,0 +1,16 @@
+@if (value() === UserRole.Owner) {
+  <app-statistic i18n="@@role.owner">Właściciel</app-statistic>
+} @else {
+  <app-role-guard [role]="UserRole.Owner">
+    <app-select [(value)]="value" [options]="userOptions" appearance="transparent" />
+  </app-role-guard>
+  <app-role-guard [role]="UserRole.Owner" below>
+    <app-statistic ngProjectAs="else">
+      @if (value() === UserRole.Admin) {
+        <ng-container i18n="@@role.admin">Administrator</ng-container>
+      } @else {
+        <ng-container i18n="@@role.member">Uczestnik</ng-container>
+      }
+    </app-statistic>
+  </app-role-guard>
+}

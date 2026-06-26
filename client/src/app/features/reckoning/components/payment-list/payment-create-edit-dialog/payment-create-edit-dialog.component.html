@@ -27,7 +27,7 @@
     <ard-grid size="12">
       <ard-form-field>
         <ard-label i18n="@@create-payment.field.paidBy.label" required>Osoba wpłacająca</ard-label>
-        <app-select [control]="form.controls.paidByUserId" [options]="userOptions()" />
+        <app-select [formControl]="form.controls.paidByUserId" [options]="userOptions()" />
         <ard-auto-error [control]="form.controls.paidByUserId" />
       </ard-form-field>
     </ard-grid>
@@ -56,7 +56,7 @@
         </ard-form-field>
         <ard-form-field>
           <ard-label>&nbsp;</ard-label>
-          <app-select [options]="currencies()" [control]="form.controls.currencyCode" />
+          <app-select [options]="currencies()" [formControl]="form.controls.currencyCode" />
           <ard-auto-error [control]="form.controls.currencyCode" />
         </ard-form-field>
       </div>

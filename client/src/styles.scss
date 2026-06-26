@@ -317,6 +317,24 @@ scrollbar-thumb:hover {
   color: white;
 }
 
+.table-g {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+
+  thead {
+    background-color: var(--bg3);
+  }
+  th, td {
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    font-weight: 600;
+  }
+}
+
 //! Angular Material styling
 @include mat.core();
 
