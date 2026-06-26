@@ -36,7 +36,7 @@
 :root {
   --bg: #ffffff;
   --bg2: #f9fafb;
-  --bg3: #f1f2f2;
+  --bg3: #f1f2f4;
   --bg-input: #f3f3f5;
   --bg-dark: #231e1e;
   --bg-dark2: #1e1e1e;
@@ -83,12 +83,12 @@
   --ard-danger-700: 158, 26, 35;
   --ard-danger-900: 102, 9, 15;
 
-  --ard-success-50: 229, 247, 227;
-  --ard-success-100: 168, 224, 162;
-  --ard-success-300: 112, 207, 101;
-  --ard-success-500: 76, 164, 67;
-  --ard-success-700: 44, 141, 34;
-  --ard-success-900: 23, 88, 16;
+  --ard-success-50: 232, 248, 236;
+  --ard-success-100: 176, 230, 188;
+  --ard-success-300: 110, 201, 129;
+  --ard-success-500: 84, 189, 106;
+  --ard-success-700: 56, 151, 77;
+  --ard-success-900: 33, 110, 50;
 
   --ard-font-family: var(--font-family);
   --ard-text: var(--text);
@@ -377,22 +377,10 @@ $ard-mat-theme: mat.m2-define-light-theme(
     stroke: none;
   }
 }
-.custom-icon {
-  &.rotatable {
-    transition: transform 0.2s ease;
-  }
-  &.rotate-left {
-    transform: rotate(90deg);
-  }
-  &.rotate-down {
-    transform: rotate(0deg);
-  }
-  &.rotate-right {
-    transform: rotate(-90deg);
-  }
-  &.rotate-up {
-    transform: rotate(180deg);
-  }
+
+ard-icon-placeholder,
+ard-icon-placeholder-2 {
+  color: red;
 }
 
 //! Ardium UI styles

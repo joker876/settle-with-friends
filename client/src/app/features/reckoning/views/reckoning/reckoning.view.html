@@ -1,7 +1,14 @@
 <div class="page-wrapper-g">
   <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
 
-  <section>
+  <section class="summary-section">
+    <p>
+      <app-text-btn (click)="navigateToSummary()">
+        Pełne podsumowanie
+        <ard-icon-chevron class="chevron" direction="right" />
+      </app-text-btn>
+    </p>
+
     @let mainCurrency = reckoningService.reckoning.value()?.mainCurrency ?? ''; @let totalPaid =
     basicSummaryService.summary.value()?.totalFromPaidTransactions; @let totalToPay =
     basicSummaryService.summary.value()?.totalFromSplitParts; @let totalReturned =
@@ -10,7 +17,7 @@
       <ard-grid size="1">
         <app-summary-card heading="Zapłacone">
           <ng-container ngProjectAs="icon">
-            <ard-icon-placeholder-2 />
+            <ard-icon-bank-card-payment />
           </ng-container>
           <ng-container ngProjectAs="value">
             @if (totalPaid) {
@@ -33,7 +40,7 @@
       <ard-grid size="1">
         <app-summary-card heading="Do zapłaty">
           <ng-container ngProjectAs="icon">
-            <ard-icon-placeholder-2 />
+            <ard-icon-bank-card-x />
           </ng-container>
           <ng-container ngProjectAs="value">
             @if (totalToPay) {
@@ -49,14 +56,14 @@
               forms="transakcja,transakcje,transakcji"
               i18n-forms="@@common.transaction.plural-forms"
             />
-            } @else { &nbsp; }
+            }
           </ng-container>
         </app-summary-card>
       </ard-grid>
       <ard-grid size="1">
-        <app-summary-card heading="Zwrócone">
+        <app-summary-card heading="Bilans zwrotów">
           <ng-container ngProjectAs="icon">
-            <ard-icon-placeholder-2 />
+            <ard-icon-hand-coins />
           </ng-container>
           <ng-container ngProjectAs="value">
             @if (totalReturned) {
@@ -67,15 +74,21 @@
           </ng-container>
           <ng-container ngProjectAs="subtext">
             @if (basicSummaryService.summary.value()?.numberOfPayments; as amount) {
-            <pl-plural [value]="amount" forms="wpłata,wpłaty,wpłat" i18n-forms="@@common.payment.plural-forms" />
-            } @else { &nbsp; }
+            <pl-plural [value]="amount" forms="zwrot,zwroty,zwrotów" i18n-forms="@@common.returns-given.plural-forms" />
+            •
+            <pl-plural
+              [value]="69"
+              forms="otrzymany,otrzymane,otrzymanych"
+              i18n-forms="@@common.returns-received.plural-forms"
+            />
+            }
           </ng-container>
         </app-summary-card>
       </ard-grid>
       <ard-grid size="1">
         <app-summary-card heading="Bilans">
           <ng-container ngProjectAs="icon">
-            <ard-icon-placeholder-2 />
+            <ard-icon-coins />
           </ng-container>
           <ng-container ngProjectAs="value">
             @if (totalPaid !== undefined && totalToPay !== undefined && totalReturned !== undefined) { @let balance =
@@ -90,7 +103,6 @@
             <ard-spinner />
             }
           </ng-container>
-          <ng-container ngProjectAs="subtext"> &nbsp; </ng-container>
         </app-summary-card>
       </ard-grid>
     </ard-grid>

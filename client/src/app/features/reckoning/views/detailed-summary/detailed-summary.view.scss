@@ -1,0 +1,117 @@
+@use '../../../../../breakpoints.scss' as *;
+
+section {
+  margin-top: 2rem;
+}
+
+.users-section {
+  app-card {
+    padding: 0;
+  }
+  #users-grid {
+    width: 100%;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 1fr max-content;
+
+    @media (width > $bp-md) {
+      grid-template-columns: 1fr max-content max-content max-content;
+    }
+
+    .grid-heading {
+      background-color: #f5f7fb;
+      font-weight: 500;
+      color: var(--ard-text3);
+    }
+    .grid-cell {
+      border-bottom: 1px solid var(--ard-detail-ultralight);
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      transition: background-color 0.15s ease-in-out;
+    }
+    app-avatar {
+      font-size: 1rem;
+      --avatar-size: 1.375em;
+    }
+    .separator {
+      display: none;
+
+      @media (width > $bp-lg) {
+        display: block;
+      }
+    }
+    ard-stack {
+      width: 100%;
+    }
+    app-balance {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+    button {
+      border: none;
+      background-color: transparent;
+      aspect-ratio: 1;
+      border-radius: 9999px;
+    }
+    .chevron {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+    .tc,
+    .rc,
+    .grid-heading:nth-of-type(2),
+    .grid-heading:nth-of-type(3) {
+      display: none;
+
+      @media (width > $bp-md) {
+        display: block;
+      }
+    }
+  }
+}
+
+::ng-deep #users-grid {
+  .grid-cell:not(.grid-heading):hover,
+  .grid-cell:not(.grid-heading):focus-within,
+  .nc:has(+ .tc:hover),
+  .nc:has(+ .tc + .rc:hover),
+  .nc:has(+ .tc + .rc + .bc:hover),
+  .nc:has(+ .tc + .rc + .bc:focus-within),
+  .tc:has(+ .rc:hover),
+  .tc:has(+ .rc + .bc:hover),
+  .tc:has(+ .rc + .bc:focus-within),
+  .rc:has(+ .bc:hover),
+  .rc:has(+ .bc:focus-within),
+  .nc:hover + .tc,
+  .nc:hover + .tc + .rc,
+  .nc:hover + .tc + .rc + .bc,
+  .tc:hover + .rc,
+  .tc:hover + .rc + .bc,
+  .rc:hover + .bc {
+    background-color: var(--bg2);
+    cursor: pointer;
+  }
+  .grid-cell:not(.grid-heading):active,
+  .nc:has(+ .tc:active),
+  .nc:has(+ .tc + .rc:active),
+  .nc:has(+ .tc + .rc + .bc:active),
+  .tc:has(+ .rc:active),
+  .tc:has(+ .rc + .bc:active),
+  .rc:has(+ .bc:active),
+  .nc:active + .tc,
+  .nc:active + .tc + .rc,
+  .nc:active + .tc + .rc + .bc,
+  .tc:active + .rc,
+  .tc:active + .rc + .bc,
+  .rc:active + .bc {
+    background-color: var(--bg3);
+  }
+}
+
+.user-details-grid {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  gap: 1rem 0.5rem;
+}

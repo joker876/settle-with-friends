@@ -1,0 +1,230 @@
+<div class="page-wrapper-g">
+  <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
+
+  <section>
+    @let mainCurrency = reckoningService.reckoning.value()?.mainCurrency ?? ''; @let totalTransactions =
+    detailedSummaryService.summary.value()?.totalFromTransactions; @let totalReturned =
+    detailedSummaryService.summary.value()?.totalFromPayments;
+    <ard-grid container columns="2 lg:4">
+      <ard-grid size="1">
+        <app-summary-card heading="Zapłacone" i18n-heading="@@summary.paid">
+          <ng-container ngProjectAs="icon">
+            <ard-icon-bank-card-payment />
+          </ng-container>
+          <ng-container ngProjectAs="value">
+            @if (totalTransactions) {
+            <app-balance [balance]="totalTransactions" [currency]="mainCurrency" />
+            } @else {
+            <ard-spinner />
+            }
+          </ng-container>
+          <ng-container ngProjectAs="subtext">
+            @if (detailedSummaryService.summary.value()?.numberOfTransactions; as amount) {
+            <pl-plural
+              [value]="amount"
+              forms="transakcja,transakcje,transakcji"
+              i18n-forms="@@common.transaction.plural-forms"
+            />
+            }
+          </ng-container>
+        </app-summary-card>
+      </ard-grid>
+      <ard-grid size="1">
+        <app-summary-card heading="Zwrócone" i18n-heading="@@summary.returned">
+          <ng-container ngProjectAs="icon">
+            <ard-icon-hand-coins />
+          </ng-container>
+          <ng-container ngProjectAs="value">
+            @if (totalReturned) {
+            <app-balance [balance]="totalReturned" [currency]="mainCurrency" coloringType="negative" />
+            } @else {
+            <ard-spinner />
+            }
+          </ng-container>
+          <ng-container ngProjectAs="subtext">
+            @if (detailedSummaryService.summary.value()?.numberOfPayments; as amount) {
+            <pl-plural [value]="amount" forms="zwrot,zwroty,zwrotów" i18n-forms="@@common.returns.plural-forms" />
+            }
+          </ng-container>
+        </app-summary-card>
+      </ard-grid>
+      <ard-grid size="1">
+        <app-summary-card heading="Bilans" i18n-heading="@@common.balance">
+          <ng-container ngProjectAs="icon">
+            <ard-icon-coins />
+          </ng-container>
+          <ng-container ngProjectAs="value">
+            @if (totalTransactions !== undefined && totalReturned !== undefined && totalReturned !== undefined) {
+            <!-- @let balance = -totalTransactions + totalReturned; -->
+            @let balance = -totalTransactions;
+            <app-balance
+              [balance]="balance"
+              [currency]="mainCurrency"
+              [coloringType]="balance < 0 ? 'negative' : 'positive'"
+              explicitSign
+            />
+            } @else {
+            <ard-spinner />
+            }
+          </ng-container>
+          <ng-container ngProjectAs="subtext"> &nbsp; </ng-container>
+        </app-summary-card>
+      </ard-grid>
+      <ard-grid size="1">
+        <app-summary-card heading="Uczestnicy" i18n-heading="@@summary.participants">
+          <ng-container ngProjectAs="icon">
+            <ard-icon-users />
+          </ng-container>
+          <ng-container ngProjectAs="value">
+            @if (detailedSummaryService.summary.value()?.numberOfUsers; as amount) { {{ amount }} } @else {
+            <ard-spinner />
+            }
+          </ng-container>
+        </app-summary-card>
+      </ard-grid>
+    </ard-grid>
+  </section>
+
+  <section class="users-section">
+    <app-card>
+      <div id="users-grid">
+        <div class="grid-cell grid-heading" i18n="@@common.person">Osoba</div>
+        <div class="grid-cell grid-heading" i18n="@@common.transactions">Transakcje</div>
+        <div class="grid-cell grid-heading" i18n="@@common.returns">Zwroty</div>
+        <div class="grid-cell grid-heading" i18n="@@common.balance">Bilans</div>
+
+        @for (personSummary of detailedSummaryService.summary.value()?.personalSummaries; track personSummary.userId) {
+        <div class="grid-cell nc" (click)="userDetailsModalData.set(personSummary)">
+          <app-avatar [name]="personSummary.user.displayName" [photo]="personSummary.user.photo" showName />
+        </div>
+        <div class="grid-cell tc" (click)="userDetailsModalData.set(personSummary)">
+          <ard-stack direction="column lg:row" spacing="1">
+            <app-statistic>
+              <pl-plural
+                [value]="personSummary.numberOfPaidTransactions"
+                forms="opłacona,opłacone,opłaconych"
+                i18n-forms="@@common.paid-transactions.plural-forms"
+              />
+            </app-statistic>
+            <app-statistic class="separator">•</app-statistic>
+            <app-statistic>
+              <pl-plural
+                [value]="personSummary.numberOfSplitPartTransactions"
+                forms="wydatek,wydatki,wydatków"
+                i18n-forms="@@common.cost-transactions.plural-forms"
+              />
+            </app-statistic>
+          </ard-stack>
+        </div>
+        <div class="grid-cell rc" (click)="userDetailsModalData.set(personSummary)">
+          <ard-stack direction="column lg:row" spacing="1">
+            <app-statistic>
+              <pl-plural
+                [value]="personSummary.numberOfPaidTransactions"
+                forms="zwrot,zwroty,zwrotów"
+                i18n-forms="@@common.returns.plural-forms"
+              />
+            </app-statistic>
+            <app-statistic class="separator">•</app-statistic>
+            <app-statistic>
+              <pl-plural
+                [value]="69"
+                forms="otrzymany,otrzymane,otrzymanych"
+                i18n-forms="@@common.returns-received.plural-forms"
+              />
+            </app-statistic>
+          </ard-stack>
+        </div>
+        <div class="grid-cell bc" (click)="userDetailsModalData.set(personSummary)">
+          <ard-stack direction="row" justifyContent="space-between">
+            <!-- @let balance = personSummary.totalFromPaidTransactions - personSummary.totalFromSplitParts +
+                personSummary.totalFromPayments; -->
+            @let balance = personSummary.totalFromPaidTransactions - personSummary.totalFromSplitParts;
+            <app-balance
+              [balance]="balance"
+              [currency]="mainCurrency"
+              [coloringType]="balance < 0 ? 'negative' : 'positive'"
+              explicitSign
+            />
+            <button>
+              <ard-icon-chevron-2 class="chevron" direction="right" />
+            </button>
+          </ard-stack>
+        </div>
+        }
+      </div>
+    </app-card>
+  </section>
+</div>
+
+<ard-modal
+  [open]="userDetailsModalData() !== null"
+  (close)="userDetailsModalData.set(null)"
+  [heading]="`Podsumowanie: ${userDetailsModalData()?.user?.displayName ?? ''}`"
+>
+  @if (userDetailsModalData(); as userDetails) {
+  <div class="user-details-grid">
+    <app-statistic i18n="@@summary.paid-transactions">Opłacone transakcje:</app-statistic>
+    <ard-stack spacing="0">
+      <app-balance [balance]="userDetails.totalFromPaidTransactions" [currency]="mainCurrency" />
+      <app-statistic>
+        <small>
+          (<pl-plural
+            [value]="userDetails.numberOfPaidTransactions"
+            forms="transakcja,transakcje,transakcji"
+            i18n-forms="@@common.transaction.plural-forms"
+          />)
+        </small>
+      </app-statistic>
+    </ard-stack>
+    <app-statistic i18n="@@summary.expenses">Wydatki:</app-statistic>
+    <ard-stack spacing="0">
+      <app-balance [balance]="userDetails.totalFromSplitParts" [currency]="mainCurrency" />
+      <app-statistic>
+        <small>
+          (<pl-plural
+            [value]="userDetails.numberOfSplitPartTransactions"
+            forms="transakcja,transakcje,transakcji"
+            i18n-forms="@@common.transaction.plural-forms"
+          />)
+        </small>
+      </app-statistic>
+    </ard-stack>
+    <app-statistic i18n="@@summary.returns-given">Zwroty oddane:</app-statistic>
+    <ard-stack spacing="0">
+      <app-balance [balance]="userDetails.totalFromPayments" [currency]="mainCurrency" />
+      <app-statistic>
+        <small>
+          (<pl-plural
+            [value]="userDetails.numberOfPayments"
+            forms="zwrot,zwroty,zwrotów"
+            i18n-forms="@@common.returns.plural-forms"
+          />)
+        </small>
+      </app-statistic>
+    </ard-stack>
+    <app-statistic i18n="@@summary.returns-received">Zwroty przyjęte:</app-statistic>
+    <ard-stack spacing="0">
+      <app-balance [balance]="0" [currency]="mainCurrency" />
+      <app-statistic>
+        <small>
+          (<pl-plural
+            [value]="0"
+            forms="zwrot,zwroty,zwrotów"
+            i18n-forms="@@common.returns.plural-forms"
+          />)
+        </small>
+      </app-statistic>
+    </ard-stack>
+    <app-statistic><ng-container i18n="@@common.balance">Bilans</ng-container>:</app-statistic>
+    @let balance = userDetails.totalFromPaidTransactions - userDetails.totalFromSplitParts +
+    userDetails.totalFromPayments - 0;
+    <app-balance
+      [balance]="balance"
+      [currency]="mainCurrency"
+      [coloringType]="balance < 0 ? 'negative' : 'positive'"
+      explicitSign
+    />
+  </div>
+  }
+</ard-modal>

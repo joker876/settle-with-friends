@@ -109,6 +109,13 @@ export const appConfig: ApplicationConfig = {
     }),
     provideSpinnerDefaults({ color: ComponentColor.None }),
     provideErrorMap(ERROR_MAP),
-    provideBreakpoints(),
+    provideBreakpoints({
+      sm: '37.5rem',
+      md: '48rem',
+      lg: '60rem',
+      xl: '72rem',
+      '2xl': '84rem',
+      '3xl': '96rem',
+    }),
   ],
 };
