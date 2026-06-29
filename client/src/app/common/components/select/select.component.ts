@@ -1,5 +1,5 @@
 import { Component, computed, input, model, output } from '@angular/core';
-import { ControlValueAccessor } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { BooleanLike, coerceBooleanProperty, trackBoundControl } from '@ardium-ui/devkit';
 import { ArdIconCheck, ArdIconChevron } from '@ardium-ui/icons';
 import {
@@ -20,7 +20,10 @@ import TakeChance from 'take-chance';
   imports: [ArdiumSelectModule, ArdIconCheck, ArdIconChevron],
   templateUrl: './select.component.html',
   styleUrl: './select.component.scss',
-  providers: [{ provide: ARD_FORM_FIELD_CONTROL, useExisting: SelectComponent }],
+  providers: [
+    { provide: NG_VALUE_ACCESSOR, useExisting: SelectComponent, multi: true },
+    { provide: ARD_FORM_FIELD_CONTROL, useExisting: SelectComponent },
+  ],
 })
 export class SelectComponent implements ControlValueAccessor, ArdFormFieldControl {
   readonly options = input.required<SelectableOption<any>[]>();
