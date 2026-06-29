@@ -22,11 +22,10 @@ header {
 .logo-container {
   display: flex;
   align-items: center;
+  height: 60%;
 
   img {
     height: 100%;
-    max-height: clamp(2rem, 5vh, 3rem);
-    width: auto;
     object-fit: contain;
     filter: drop-shadow(0 clamp(0.5px, 0.1vh, 2px) clamp(1px, 0.3vh, 4px) rgba(0, 0, 0, 0.1));
   }

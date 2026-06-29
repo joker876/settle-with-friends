@@ -1,0 +1,40 @@
+@use '../../../../../../../../breakpoints.scss' as *;
+
+ard-stack {
+  margin: 1.5rem 0 1rem;
+  width: max-content;
+
+  > div {
+    height: var(--ard-form-field-height);
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    padding-top: 0.25rem;
+  }
+}
+ard-form-field {
+  width: 24ch;
+}
+.current-name {
+  width: 24ch;
+  justify-content: center;
+
+  @media (width > $bp-md) {
+    width: auto;
+    justify-content: flex-end;
+  }
+}
+.arrow {
+  .left {
+    display: none;
+  }
+
+  @media (width > $bp-md) {
+    .left {
+      display: inline;
+    }
+    .down {
+      display: none;
+    }
+  }
+}

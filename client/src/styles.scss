@@ -365,6 +365,9 @@ $ard-mat-theme: mat.m2-define-light-theme(
     padding: 0;
   }
 }
+.mat-ripple {
+  display: none !important;
+}
 
 //! icon styles
 .custom-icon,

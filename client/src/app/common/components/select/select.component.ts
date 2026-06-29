@@ -26,6 +26,10 @@ export class SelectComponent implements ControlValueAccessor, ArdFormFieldContro
   readonly options = input.required<SelectableOption<any>[]>();
   readonly areOptionsLoading = input<boolean>(false);
   readonly searchable = input<boolean, BooleanLike>(true, { transform: v => coerceBooleanProperty(v) });
+  readonly _disabled = input<boolean, BooleanLike>(false, {
+    transform: v => coerceBooleanProperty(v),
+    alias: 'disabled',
+  });
 
   readonly dynamicLabelMap = input<Record<string | number, string> | null>(null);
 
@@ -64,6 +68,6 @@ export class SelectComponent implements ControlValueAccessor, ArdFormFieldContro
   private readonly _control = trackBoundControl(this);
 
   readonly htmlId = input<string>(TakeChance.id());
-  readonly disabled = this._control.disabled;
+  readonly disabled = computed(() => this._disabled() || this._control.disabled());
   readonly hasError = this._control.touchedHasErrors;
 }

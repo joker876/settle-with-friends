@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, model } from '@angular/core';
+import { Component, input, model } from '@angular/core';
 import { SelectComponent } from '@common/components/select/select.component';
 import { StatisticComponent } from '@common/components/statistic/statistic.component';
 import { RoleGuardComponent } from '@features/reckoning/components/role-guard/role-guard.component';
+import { UserRolePipe } from '@features/reckoning/pipes/user-role.pipe';
 import { UserRole } from '@shared/enums/user-role';
 
 @Component({
   selector: 'app-role-selector',
-  imports: [RoleGuardComponent, SelectComponent, StatisticComponent, CommonModule],
+  imports: [RoleGuardComponent, SelectComponent, StatisticComponent, CommonModule, UserRolePipe],
   templateUrl: './role-selector.component.html',
   styleUrl: './role-selector.component.scss',
 })
@@ -20,4 +21,6 @@ export class RoleSelectorComponent {
   ];
 
   readonly value = model<UserRole>(UserRole.Member);
+
+  readonly isLoading = input<boolean>(false);
 }

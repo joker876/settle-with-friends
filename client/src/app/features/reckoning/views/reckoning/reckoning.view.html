@@ -26,7 +26,7 @@
             <ard-icon-bank-card-payment />
           </ng-container>
           <ng-container ngProjectAs="value">
-            @if (totalPaid) {
+            @if (totalPaid !== undefined) {
             <app-balance [balance]="totalPaid" [currency]="mainCurrency" />
             } @else {
             <ard-spinner />
@@ -49,7 +49,7 @@
             <ard-icon-bank-card-x />
           </ng-container>
           <ng-container ngProjectAs="value">
-            @if (totalToPay) {
+            @if (totalToPay !== undefined) {
             <app-balance [balance]="-totalToPay" [currency]="mainCurrency" coloringType="negative" />
             } @else {
             <ard-spinner />
@@ -72,7 +72,7 @@
             <ard-icon-hand-coins />
           </ng-container>
           <ng-container ngProjectAs="value">
-            @if (totalReturned) {
+            @if (totalReturned !== undefined) {
             <app-balance [balance]="totalReturned" [currency]="mainCurrency" />
             } @else {
             <ard-spinner />

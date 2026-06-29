@@ -1,0 +1,30 @@
+<ard-dialog
+  [open]="!!user()"
+  heading="Zmień nazwę użytkownika"
+  i18n-heading="@@participants.change-user-name"
+  confirmButtonText="Zmień"
+  i18n-confirmButtonText="@@common.change"
+  (close)="close.emit()"
+  (confirm)="onSubmit()"
+  [canConfirm]="newPseudonym.valid"
+  buttonActionType="no-op"
+>
+  <p i18n="@@participants.change-user-name-dialog-text">
+    Wprowadź nową nazwę użytkownika, która będzie wyświetlana w rozliczeniu.
+  </p>
+  <ard-stack direction="column md:row" alignItems="center md:flex-start" justifyContent="center" rowSpacing="0">
+    <div class="current-name">
+      <span>
+        {{ user().displayName }}
+      </span>
+    </div>
+    <div class="arrow">
+      <span class="left"> ⇒ </span>
+      <span class="down"> ⇓ </span>
+    </div>
+    <ard-form-field reserveHintLine>
+      <ard-input [formControl]="newPseudonym" />
+      <ard-auto-error [control]="newPseudonym" />
+    </ard-form-field>
+  </ard-stack>
+</ard-dialog>

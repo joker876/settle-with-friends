@@ -1,21 +1,38 @@
-import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input } from '@angular/core';
-import { BooleanLike, coerceBooleanProperty } from '@ardium-ui/devkit';
+import { AsyncPipe, CommonModule } from '@angular/common';
+import { Component, inject, input, Pipe, PipeTransform } from '@angular/core';
 import { AccessService } from '@features/reckoning/services/access.service';
 import { UserRole } from '@shared/enums/user-role';
+import { map, Observable } from 'rxjs';
+
+@Pipe({
+  name: 'roleGuard',
+  standalone: true,
+})
+export class RoleGuardPipe implements PipeTransform {
+  private readonly _accessService = inject(AccessService);
+
+  transform({
+    role,
+    userId = null,
+  }: {
+    role?: UserRole | null;
+    userId?: number | number[] | null;
+  }): Observable<boolean> {
+    return this._accessService.isUserAuthorizedOrSelfObs.pipe(map(fn => fn(role ?? null, userId ?? null)));
+  }
+}
 
 @Component({
   selector: 'app-role-guard',
-  imports: [CommonModule],
-  template: '@if (isAllowed()) { <ng-content /> }',
+  imports: [CommonModule, RoleGuardPipe, AsyncPipe],
+  template: `@if ({ role: role(), userId: userId() } | roleGuard | async) {
+      <ng-content />
+    } @else {
+      <ng-content select="else" />
+    }`,
   styles: ':host { display: block; }',
 })
 export class RoleGuardComponent {
-  private readonly _accessService = inject(AccessService);
-
-  readonly role = input.required<UserRole>();
-
-  readonly isAllowed = computed(() => this._accessService.isUserAuthorized(this.role(), this.below()));
-
-  readonly below = input<boolean, BooleanLike>(false, { transform: v => coerceBooleanProperty(v) });
+  readonly role = input.required<UserRole | null>();
+  readonly userId = input<number | number[] | null>(null);
 }

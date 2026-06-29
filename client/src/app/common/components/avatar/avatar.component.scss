@@ -8,6 +8,7 @@
 .img-wrapper {
   height: 100%;
   position: relative;
+  user-select: none;
 }
 img,
 .empty-container {

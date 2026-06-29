@@ -1,0 +1,45 @@
+:host {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.5rem;
+
+  &.row-reverse {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+  &:has(.ard-readonly) {
+    cursor: not-allowed;
+
+    * {
+      cursor: not-allowed;
+    }
+  }
+}
+.checkbox {
+  height: var(--ard-form-field-height);
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+}
+label {
+  min-height: var(--ard-form-field-height);
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  font-size: inherit;
+}
+
+:host(.has-error) {
+  --checkbox-error-color: var(--red-dark);
+}
+
+:host(.has-error) label {
+  color: var(--checkbox-error-color);
+}
+
+:host(.has-error) ::ng-deep ard-icon-checkbox-empty svg path {
+  stroke: var(--checkbox-error-color) !important;
+}

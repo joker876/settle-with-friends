@@ -1,0 +1,27 @@
+<div class="checkbox">
+  <ard-checkbox
+    color="none"
+    [htmlId]="htmlId"
+    [reverseSelected]="reverseSelected()"
+    [(selected)]="value"
+    [readonly]="readonly()"
+    (blur)="emitTouched()"
+  >
+    <ng-template ard-checkbox-tmp let-selected>
+      @if (selected) {
+        <ard-icon-checkbox-filled />
+      } @else {
+        <ard-icon-checkbox-empty />
+      }
+    </ng-template>
+  </ard-checkbox>
+</div>
+@if (label() || contentLabel()) {
+  <label [htmlFor]="htmlId">
+    @if (label()) {
+      {{ label() }}
+    } @else {
+      <ng-content />
+    }
+  </label>
+}

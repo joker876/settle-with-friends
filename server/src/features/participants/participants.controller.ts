@@ -1,6 +1,9 @@
-import { Controller, Get, Inject, Param, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, ParseIntPipe, Patch, Req } from '@nestjs/common';
+import { Request } from 'express';
+import { UserWithRoleDto } from '../../dtos/user-with-role';
 import { ReckoningAccess } from '../reckonings/reckoning-access.guard';
-import { UserWithRoleDto } from './dtos/get-users';
+import { UpdateUserPseudonymRequestDto, UpdateUserPseudonymResponseDto } from './dtos/update-pseudonym';
+import { UpdateUserRoleRequestDto, UpdateUserRoleResponseDto } from './dtos/update-role';
 import { ParticipantsService } from './participants.service';
 
 @Controller('reckonings/:reckoningId/participants')
@@ -11,5 +14,27 @@ export class ParticipantsController {
   @Get()
   async getAll(@Param('reckoningId', ParseIntPipe) reckoningId: number): Promise<UserWithRoleDto[]> {
     return this.participantsService.getAllForReckoning(reckoningId);
+  }
+
+  @Patch(':userId/role')
+  async updateRole(
+    @Param('reckoningId', ParseIntPipe) reckoningId: number,
+    @Param('userId', ParseIntPipe) targetUserId: number,
+    @Body() body: UpdateUserRoleRequestDto,
+    @Req() req: Request,
+  ): Promise<UpdateUserRoleResponseDto> {
+    const agentUserId = req.user!.id;
+    return this.participantsService.updateUserRole(reckoningId, targetUserId, agentUserId, body.role);
+  }
+
+  @Patch(':userId/pseudonym')
+  async updatePseudonym(
+    @Param('reckoningId', ParseIntPipe) reckoningId: number,
+    @Param('userId', ParseIntPipe) targetUserId: number,
+    @Body() body: UpdateUserPseudonymRequestDto,
+    @Req() req: Request,
+  ): Promise<UpdateUserPseudonymResponseDto> {
+    const agentUserId = req.user!.id;
+    return this.participantsService.updateUserPseudonym(reckoningId, targetUserId, agentUserId, body.pseudonym);
   }
 }

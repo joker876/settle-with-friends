@@ -1,6 +1,21 @@
 app-card {
   padding: 0;
 }
-ard-icon-button {
+.more-btn {
   margin-left: auto;
+}
+app-menu-item {
+  --mat-menu-item-label-text-weight: 400;
+
+  &.red {
+    --mat-menu-item-icon-color: var(--red);
+    --mat-menu-item-label-text-color: var(--red);
+  }
+}
+app-checkbox {
+  margin-top: 1.5rem;
+}
+.edit-icon {
+  width: 1rem;
+  height: 1rem;
 }

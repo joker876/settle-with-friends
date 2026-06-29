@@ -25,4 +25,7 @@ export class ReckoningUser {
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.Member })
   role: UserRole;
+
+  @Column({ nullable: true })
+  pseudonym?: string;
 }

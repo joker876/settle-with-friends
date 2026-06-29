@@ -11,16 +11,75 @@
       @for (user of settingsService.users.value(); track user.id) {
       <tr>
         <td>
-          <app-avatar [name]="user.displayName" [photo]="user.photo" showName />
+          <ard-stack direction="row" spacing="2">
+            <app-avatar [name]="user.displayName" [photo]="user.photo" showName />
+            <app-role-guard [role]="UserRole.Admin" [userId]="user.id">
+              <ard-icon-button
+                title="Zmień nazwę"
+                i18n-title="@@participants.change-name"
+                (click)="onEditUserPseudonym(user)"
+              >
+                <ard-icon-edit-line class="edit-icon" />
+              </ard-icon-button>
+            </app-role-guard>
+          </ard-stack>
         </td>
         <td>
-          <app-role-selector [value]="user.role" (valueChange)="onUserRoleChange(user.id, $event)" />
+          <app-role-selector
+            [value]="userRoles.get(user.id)!"
+            (valueChange)="onUserRoleChange(user, $event)"
+            [isLoading]="!!settingsService.userRoleLoadingMap.get(user.id)"
+          />
         </td>
         <td>
-          <ard-icon-button> ⋮ </ard-icon-button>
+          <app-role-guard [role]="UserRole.Admin" [userId]="user.id">
+            <ard-icon-button class="more-btn" [matMenuTriggerFor]="menu"> ⋮ </ard-icon-button>
+
+            <mat-menu #menu="matMenu">
+              <app-menu-item>
+                <ard-icon-user-edit ngProjectAs="icon" />
+                <span i18n="@@participants.change-name">Zmień nazwę</span>
+              </app-menu-item>
+              <app-menu-item
+                class="red"
+                [disabled]="({ role: UserRole.Owner } | roleGuard | async) && ({ userId: user.id } | roleGuard | async)"
+                disabledTooltip="Właściciel nie może opuścić rozliczenia"
+              >
+                <ard-icon-logout ngProjectAs="icon" />
+                <app-role-guard [role]="null" [userId]="user.id">
+                  <span i18n="@@participants.leave-reckoning">Opuść rozliczenie</span>
+                  <span ngProjectAs="else" i18n="@@participants.remove-user">Wyrzuć użytkownika</span>
+                </app-role-guard>
+              </app-menu-item>
+            </mat-menu>
+          </app-role-guard>
         </td>
       </tr>
       }
     </tbody>
   </table>
 </app-card>
+
+@if (userToEditPseudonym(); as userToEditPseudonymValue) {
+<app-edit-user-pseudonym-dialog
+  [user]="userToEditPseudonymValue"
+  (submit)="onConfirmUserPseudonymChange(userToEditPseudonymValue.id, $event)"
+  (close)="userToEditPseudonym.set(null)"
+/>
+} @if (userToChangeRole(); as userToChangeRoleValue) {
+<app-confirmation-dialog
+  [open]="!!userToChangeRoleValue"
+  heading="Zmiana roli"
+  i18n-heading="@@participants.changing-role"
+  confirmButtonText="Zmień"
+  i18n-confirmButtonText="@@common.change"
+  (submit)="onConfirmUserRoleChange(userToChangeRoleValue.id, userRoles.get(userToChangeRoleValue.id)!, dontShowChangeRoleDialogCheckbox.value())"
+  (openChange)="userToChangeRole.set(null)"
+>
+  <p i18n="@@participants.change-role-dialog-text">
+    Czy na pewno chcesz zmienić rolę uczestnika {{ userToChangeRoleValue.displayName }} na
+    <strong>{{ userRoles.get(userToChangeRoleValue.id) | userRole }}</strong>?
+  </p>
+  <app-checkbox #dontShowChangeRoleDialogCheckbox label="Nie pytaj ponownie przez 5 minut" />
+</app-confirmation-dialog>
+}

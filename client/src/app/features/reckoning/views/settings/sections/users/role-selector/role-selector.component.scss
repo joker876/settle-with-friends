@@ -1,6 +1,9 @@
 app-statistic {
   padding: var(--ard-select-padding);
 }
-app-select {
+app-role-guard {
   width: 8rem;
+}
+app-select {
+  width: max-content;
 }

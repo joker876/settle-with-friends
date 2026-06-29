@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRole, userRoleToInt } from '@shared/enums/user-role';
 import { Repository } from 'typeorm';
@@ -18,25 +18,26 @@ export class ReckoningAccessService {
   }
 
   async getUserRole(reckoningId: number, userId: number | undefined): Promise<{ role: UserRole }> {
-    if (!userId) {
-      throw new UnauthorizedException();
-    }
     const user = await this.userRepo.findOne({
       where: {
         id: userId,
-        reckoningUsers: { reckoningId },
       },
       relations: ['reckoningUsers'],
     });
     if (!user) {
-      throw new UnauthorizedException();
+      throw new NotFoundException();
     }
     return { role: user.reckoningUsers.find(ru => ru.reckoningId === reckoningId)?.role! };
   }
 
-  async isUserAuthorized(reckoningId: number, userId: number | undefined, minimumRole: UserRole): Promise<boolean> {
-    const userRole = await this.getUserRole(reckoningId, userId);
-    const userRoleInt = userRoleToInt(userRole.role);
+  async isUserAuthorized(
+    reckoningId: number,
+    userId: number | undefined,
+    minimumRole: UserRole,
+    actualRole?: UserRole,
+  ): Promise<boolean> {
+    actualRole ??= (await this.getUserRole(reckoningId, userId)).role;
+    const userRoleInt = userRoleToInt(actualRole);
     const minimumRoleInt = userRoleToInt(minimumRole);
     return userRoleInt >= minimumRoleInt;
   }

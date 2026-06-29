@@ -6,6 +6,7 @@ import { ensureParams, isResourceResolved } from '@common/utils/resource';
 import { mapResourceToIdMap, mapResourceToSelectableIdOptions } from '@common/utils/resource-mappers';
 import { bufferLastUntil } from '@common/utils/rxjs';
 import { IUser, IUserWithRole } from '@shared/entities/user';
+import { UserRole } from '@shared/enums/user-role';
 import { OperatorFunction } from 'rxjs';
 import { ReckoningService } from './reckoning.service';
 
@@ -32,6 +33,34 @@ export class UsersService {
 
   public readonly userMap = mapResourceToIdMap(this.users);
 
+  updateUserRole(userId: number, newRole: UserRole): UserRole | null {
+    let oldRole: UserRole | null = null;
+    this._users.update(users =>
+      users.map(user => {
+        if (user.id === userId) {
+          oldRole = user.role;
+          return { ...user, role: newRole as any };
+        }
+        return user;
+      }),
+    );
+    return oldRole;
+  }
+  updateUserPseudonym(userId: number, newPseudonym: string): string | null {
+    let oldPseudonym: string | null = null;
+    this._users.update(users =>
+      users.map(user => {
+        if (user.id === userId) {
+          oldPseudonym = user.displayName;
+          return { ...user, displayName: newPseudonym as any };
+        }
+        return user;
+      }),
+    );
+    return oldPseudonym;
+  }
+
+  //! hydration
   waitForUsersLoaded<T extends Record<string, any> | Record<string, any>[]>(): OperatorFunction<T, T> {
     return bufferLastUntil<T>(this._usersResolved$);
   }
