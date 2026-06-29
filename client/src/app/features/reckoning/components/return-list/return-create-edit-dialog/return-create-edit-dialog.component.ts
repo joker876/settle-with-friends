@@ -1,6 +1,13 @@
 import { Component, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import {
   ArdiumDateInputModule,
   ArdiumDialogModule,
@@ -57,25 +64,40 @@ export class ReturnCreateEditDialogComponent {
   readonly submit = output<IReturnBasicData>();
   readonly close = output<void>();
 
-  readonly form = new FormGroup<WrapInAbstractControl<IReturnBasicData>>({
-    name: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
-    returnedByUserId: new FormControl<number>(null as unknown as number, {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    returnedToUserId: new FormControl<number>(null as unknown as number, {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    amount: new FormControl(null as unknown as number, {
-      nonNullable: true,
-      validators: [Validators.required, Validators.min(0)],
-    }),
-    currencyCode: new FormControl(null as unknown as string, { nonNullable: true }),
-    currencyRate: new FormControl<number | null>(null, { validators: [Validators.required, Validators.min(0)] }),
-    isCurrencyRateFromApi: new FormControl<boolean | null>(null, { validators: [Validators.required] }),
-    returnDate: new FormControl(this.TODAY, { nonNullable: true, validators: [Validators.required] }),
-  });
+  readonly form = new FormGroup<WrapInAbstractControl<IReturnBasicData>>(
+    {
+      name: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
+      returnedByUserId: new FormControl<number>(null as unknown as number, {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+      returnedToUserId: new FormControl<number>(null as unknown as number, {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+      amount: new FormControl(null as unknown as number, {
+        nonNullable: true,
+        validators: [Validators.required, Validators.min(0)],
+      }),
+      currencyCode: new FormControl(null as unknown as string, { nonNullable: true }),
+      currencyRate: new FormControl<number | null>(null, { validators: [Validators.required, Validators.min(0)] }),
+      isCurrencyRateFromApi: new FormControl<boolean | null>(null, { validators: [Validators.required] }),
+      returnDate: new FormControl(this.TODAY, { nonNullable: true, validators: [Validators.required] }),
+    },
+    {
+      validators: [
+        (control: AbstractControl): ValidationErrors | null => {
+          const returnedByUserId = control.get('returnedByUserId')?.value;
+          const returnedToUserId = control.get('returnedToUserId')?.value;
+
+          if (returnedByUserId == null || returnedToUserId == null) {
+            return null;
+          }
+          return returnedByUserId === returnedToUserId ? { sameReturnedUser: true } : null;
+        },
+      ],
+    },
+  );
   readonly formValue = toSignal(this.form.valueChanges.pipe(startWith(this.form.value)));
   readonly currencyCodeValue = computed<string>(() => this.formValue()!.currencyCode!);
   readonly returnDateValue = computed<Date>(() => this.formValue()!.returnDate!);
@@ -90,6 +112,12 @@ export class ReturnCreateEditDialogComponent {
   readonly userOptions = this._usersService.usersOptions;
 
   constructor() {
+    // reset value every time the form is opened
+    effect(() => {
+      if (!this.isOpen()) {
+        untracked(() => this.form.reset());
+      }
+    });
     // set value if is editing return
     effect(() => {
       const v = this.return();

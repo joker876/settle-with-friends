@@ -27,15 +27,35 @@
     <ard-grid size="12">
       <ard-form-field>
         <ard-label i18n="@@create-return.field.returnedBy.label" required>Kto zwraca</ard-label>
-        <app-select [formControl]="form.controls.returnedByUserId" [options]="userOptions()" />
-        <ard-auto-error [control]="form.controls.returnedByUserId" />
+        <app-select
+          [formControl]="form.controls.returnedByUserId"
+          [options]="userOptions()"
+          [hasError]="form.controls.returnedByUserId.touched && !!form.errors"
+          placeholder="Wybierz osobę..."
+          i18n-placeholder="@@placeholder.select-person"
+        />
+        @if (form.controls.returnedByUserId.touched && form.errors) {
+          <ard-auto-error [control]="form" />
+        } @else {
+          <ard-auto-error [control]="form.controls.returnedByUserId" />
+        }
       </ard-form-field>
     </ard-grid>
     <ard-grid size="12">
       <ard-form-field>
         <ard-label i18n="@@create-return.field.returnedTo.label" required>Komu zwraca</ard-label>
-        <app-select [formControl]="form.controls.returnedToUserId" [options]="userOptions()" />
-        <ard-auto-error [control]="form.controls.returnedToUserId" />
+        <app-select
+          [formControl]="form.controls.returnedToUserId"
+          [options]="userOptions()"
+          [hasError]="form.controls.returnedToUserId.touched && !!form.errors"
+          placeholder="Wybierz osobę..."
+          i18n-placeholder="@@placeholder.select-person"
+        />
+        @if (form.controls.returnedToUserId.touched && form.errors) {
+          <ard-auto-error [control]="form" />
+        } @else {
+          <ard-auto-error [control]="form.controls.returnedToUserId" />
+        }
       </ard-form-field>
     </ard-grid>
     <ard-grid size="12">
