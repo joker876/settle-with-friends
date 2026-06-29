@@ -1,25 +1,33 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArdIconBankCardPayment, ArdIconBankCardX, ArdIconChevron, ArdIconCoins, ArdIconHandCoins, ArdIconSettings } from '@ardium-ui/icons';
+import {
+  ArdIconBankCardPayment,
+  ArdIconBankCardX,
+  ArdIconChevron,
+  ArdIconCoins,
+  ArdIconHandCoins,
+  ArdIconSettings,
+} from '@ardium-ui/icons';
 import { ArdiumGridModule, ArdiumIconButtonModule, ArdiumSpinnerModule, ArdiumStackModule } from '@ardium-ui/ui';
 import { BalanceComponent } from '@common/components/balance/balance.component';
 import { TextBtnComponent } from '@common/components/text-btn/text-btn.component';
+import { LoadingBlockerDirective } from "@common/directives/loading-blocker.directive";
+import { ReturnListComponent } from '@features/reckoning/components/return-list/return-list.component';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
 import { UsersService } from '@features/reckoning/services/users.service';
-import { IPayment } from '@shared/entities/payment';
+import { IReturn } from '@shared/entities/return';
 import { PluralizePlComponent } from 'ngx-polish-number-to-words';
-import { PaymentListComponent } from '../../components/payment-list/payment-list.component';
 import { SummaryCardComponent } from '../../components/summary-card/summary-card.component';
 import { TransactionListComponent } from '../../components/transaction-list/transaction-list.component';
 import { BasicSummaryService } from './basic-summary.service';
-import { RecentPaymentListService } from './recent-payment-list.service';
+import { RecentReturnListService } from './recent-returns-list.service';
 import { RecentTransactionListService } from './recent-transaction-list.service';
 
 @Component({
   selector: 'app-reckoning-view',
   imports: [
     TransactionListComponent,
-    PaymentListComponent,
+    ReturnListComponent,
     ArdiumGridModule,
     SummaryCardComponent,
     BalanceComponent,
@@ -33,16 +41,17 @@ import { RecentTransactionListService } from './recent-transaction-list.service'
     ArdIconBankCardX,
     ArdiumStackModule,
     ArdiumIconButtonModule,
-    ArdIconSettings
+    ArdIconSettings,
+    LoadingBlockerDirective
 ],
   templateUrl: './reckoning.view.html',
   styleUrl: './reckoning.view.scss',
-  providers: [RecentTransactionListService, RecentPaymentListService],
+  providers: [RecentTransactionListService, RecentReturnListService],
 })
 export class ReckoningView {
   readonly reckoningService = inject(ReckoningService);
   readonly transactionListService = inject(RecentTransactionListService);
-  readonly paymentListService = inject(RecentPaymentListService);
+  readonly returnListService = inject(RecentReturnListService);
   readonly basicSummaryService = inject(BasicSummaryService);
   readonly usersService = inject(UsersService);
   private readonly _router = inject(Router);
@@ -51,8 +60,8 @@ export class ReckoningView {
   navigateToTransactions() {
     this._router.navigate(['transactions'], { relativeTo: this._activatedRoute });
   }
-  navigateToPayments() {
-    this._router.navigate(['payments'], { relativeTo: this._activatedRoute });
+  navigateToReturns() {
+    this._router.navigate(['returns'], { relativeTo: this._activatedRoute });
   }
   navigateToSummary() {
     this._router.navigate(['summary'], { relativeTo: this._activatedRoute });
@@ -71,13 +80,16 @@ export class ReckoningView {
     this.transactionListService.removeTransaction(transactionId);
   }
 
-  appendPayment(payment: IPayment) {
-    this.paymentListService.appendPayment(payment);
+  appendReturn(rtn: IReturn) {
+    this.returnListService.appendReturn(rtn);
+    this.basicSummaryService.reload({ returns: true });
   }
-  refreshPayment(payment: IPayment) {
-    this.paymentListService.refreshPayment(payment);
+  refreshReturn(rtn: IReturn) {
+    this.returnListService.refreshReturn(rtn);
+    this.basicSummaryService.reload({ returns: true });
   }
-  removePayment(paymentId: number) {
-    this.paymentListService.removePayment(paymentId);
+  removeReturn(returnId: number) {
+    this.returnListService.removeReturn(returnId);
+    this.basicSummaryService.reload({ returns: true });
   }
 }

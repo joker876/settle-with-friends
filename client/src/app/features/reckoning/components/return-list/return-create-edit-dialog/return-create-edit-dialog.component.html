@@ -1,9 +1,9 @@
 <ard-dialog
   [open]="isOpen()"
-  [heading]="isCreatingPayment() ? 'Tworzenie wpłaty' : 'Edytowanie wpłaty'"
-  i18n-heading="@@reckoning-page.payments.create-edit-dialog.heading"
-  [confirmButtonText]="isCreatingPayment() ? 'Utwórz' : 'Zapisz'"
-  i18n-confirmButtonText="@@reckoning-page.payments.create-edit-dialog.confirm-button-text"
+  [heading]="isCreatingReturn() ? 'Tworzenie zwrotu' : 'Edytowanie zwrotu'"
+  i18n-heading="@@reckoning-page.returns.create-edit-dialog.heading"
+  [confirmButtonText]="isCreatingReturn() ? 'Utwórz' : 'Zapisz'"
+  i18n-confirmButtonText="@@reckoning-page.returns.create-edit-dialog.confirm-button-text"
   noCloseButton
   disableBackdropClose
   buttonActionType="no-op"
@@ -13,44 +13,51 @@
   <ard-grid container rowSpacing="6" class="base-grid">
     <ard-grid size="12">
       <ard-form-field>
-        <ard-label i18n="@@create-payment.field.name.label" required>Tytuł wpłaty</ard-label>
+        <ard-label i18n="@@create-return.field.name.label" required>Tytuł zwrotu</ard-label>
         <ard-input
           [formControl]="form.controls.name"
           placeholder="np. Zwrot, Końcowy rozrachunek"
-          i18n-placeholder="@@create-payment.field.name.placeholder"
+          i18n-placeholder="@@create-return.field.name.placeholder"
           [inputAttrs]="{ autocomplete: 'one-time-code' }"
-          htmlId="payment-name-field"
+          htmlId="return-name-field"
         />
         <ard-auto-error [control]="form.controls.name" />
       </ard-form-field>
     </ard-grid>
     <ard-grid size="12">
       <ard-form-field>
-        <ard-label i18n="@@create-payment.field.paidBy.label" required>Osoba wpłacająca</ard-label>
-        <app-select [formControl]="form.controls.paidByUserId" [options]="userOptions()" />
-        <ard-auto-error [control]="form.controls.paidByUserId" />
+        <ard-label i18n="@@create-return.field.returnedBy.label" required>Kto zwraca</ard-label>
+        <app-select [formControl]="form.controls.returnedByUserId" [options]="userOptions()" />
+        <ard-auto-error [control]="form.controls.returnedByUserId" />
       </ard-form-field>
     </ard-grid>
     <ard-grid size="12">
       <ard-form-field>
-        <ard-label i18n="@@create-payment.field.date.label" required>Data wpłaty</ard-label>
+        <ard-label i18n="@@create-return.field.returnedTo.label" required>Komu zwraca</ard-label>
+        <app-select [formControl]="form.controls.returnedToUserId" [options]="userOptions()" />
+        <ard-auto-error [control]="form.controls.returnedToUserId" />
+      </ard-form-field>
+    </ard-grid>
+    <ard-grid size="12">
+      <ard-form-field>
+        <ard-label i18n="@@create-return.field.date.label" required>Data zwrotu</ard-label>
         <ard-date-input
-          [formControl]="form.controls.paymentDate"
+          [formControl]="form.controls.returnDate"
           [max]="TODAY"
           placeholder="DD.MM.YYYY"
-          i18n-placeholder="@@create-payment.field.date.placeholder"
+          i18n-placeholder="@@create-return.field.date.placeholder"
         />
-        <ard-auto-error [control]="form.controls.paymentDate" />
+        <ard-auto-error [control]="form.controls.returnDate" />
       </ard-form-field>
     </ard-grid>
     <ard-grid size="12">
       <div class="amount-row">
         <ard-form-field>
-          <ard-label i18n="@@create-payment.field.amount.label" required>Kwota</ard-label>
+          <ard-label i18n="@@create-return.field.amount.label" required>Kwota</ard-label>
           <ard-number-input
             [formControl]="form.controls.amount"
             placeholder="np. 200,00"
-            i18n-placeholder="@@create-payment.field.amount.placeholder"
+            i18n-placeholder="@@create-return.field.amount.placeholder"
           />
           <ard-auto-error [control]="form.controls.amount" />
         </ard-form-field>
@@ -69,7 +76,7 @@
           [formControl]="form.controls.currencyRate"
           [isCurrencyRateFromApiControl]="form.controls.isCurrencyRateFromApi"
           [isValueLoading]="isCurrencyRateLoading() && !form.controls.currencyRate.touched"
-          [selectedTransactionDate]="paymentDateValue()"
+          [selectedTransactionDate]="returnDateValue()"
           [currencyRateFromApi]="currencyRateFromApi()"
         />
       </ard-grid>

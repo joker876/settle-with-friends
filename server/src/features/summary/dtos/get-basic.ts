@@ -5,6 +5,8 @@ export class GetBasicSummaryResponseDto implements IGetBasicSummaryResponse {
   totalFromPaidTransactions: number;
   numberOfSplitPartTransactions: number;
   totalFromSplitParts: number;
-  numberOfPayments: number;
-  totalFromPayments: number;
+  numberOfReturnsGiven: number;
+  totalReturnsGiven: number;
+  numberOfReturnsReceived: number;
+  totalReturnsReceived: number;
 }

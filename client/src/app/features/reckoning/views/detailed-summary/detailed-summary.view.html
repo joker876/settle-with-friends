@@ -4,7 +4,7 @@
   <section>
     @let mainCurrency = reckoningService.reckoning.value()?.mainCurrency ?? ''; @let totalTransactions =
     detailedSummaryService.summary.value()?.totalFromTransactions; @let totalReturned =
-    detailedSummaryService.summary.value()?.totalFromPayments;
+    detailedSummaryService.summary.value()?.totalFromReturns;
     <ard-grid container columns="2 lg:4">
       <ard-grid size="1">
         <app-summary-card heading="Zapłacone" i18n-heading="@@summary.paid">
@@ -12,7 +12,7 @@
             <ard-icon-bank-card-payment />
           </ng-container>
           <ng-container ngProjectAs="value">
-            @if (totalTransactions) {
+            @if (totalTransactions !== undefined) {
             <app-balance [balance]="totalTransactions" [currency]="mainCurrency" />
             } @else {
             <ard-spinner />
@@ -35,16 +35,18 @@
             <ard-icon-hand-coins />
           </ng-container>
           <ng-container ngProjectAs="value">
-            @if (totalReturned) {
+            @if (totalReturned !== undefined) {
             <app-balance [balance]="totalReturned" [currency]="mainCurrency" coloringType="negative" />
             } @else {
             <ard-spinner />
             }
           </ng-container>
           <ng-container ngProjectAs="subtext">
-            @if (detailedSummaryService.summary.value()?.numberOfPayments; as amount) {
-            <pl-plural [value]="amount" forms="zwrot,zwroty,zwrotów" i18n-forms="@@common.returns.plural-forms" />
-            }
+            <pl-plural
+              [value]="detailedSummaryService.summary.value()?.numberOfReturns ?? 0"
+              forms="zwrot,zwroty,zwrotów"
+              i18n-forms="@@common.returns.plural-forms"
+            />
           </ng-container>
         </app-summary-card>
       </ard-grid>
@@ -54,9 +56,8 @@
             <ard-icon-coins />
           </ng-container>
           <ng-container ngProjectAs="value">
-            @if (totalTransactions !== undefined && totalReturned !== undefined && totalReturned !== undefined) {
-            <!-- @let balance = -totalTransactions + totalReturned; -->
-            @let balance = -totalTransactions;
+            @if (totalTransactions !== undefined && totalReturned !== undefined) { @let balance = -totalTransactions +
+            totalReturned;
             <app-balance
               [balance]="balance"
               [currency]="mainCurrency"
@@ -120,15 +121,15 @@
           <ard-stack direction="column lg:row" spacing="1">
             <app-statistic>
               <pl-plural
-                [value]="personSummary.numberOfPaidTransactions"
-                forms="zwrot,zwroty,zwrotów"
-                i18n-forms="@@common.returns.plural-forms"
+                [value]="personSummary.numberOfReturnsGiven"
+                forms="oddany,oddane,oddanych"
+                i18n-forms="@@common.returns-given.plural-forms"
               />
             </app-statistic>
             <app-statistic class="separator">•</app-statistic>
             <app-statistic>
               <pl-plural
-                [value]="69"
+                [value]="personSummary.numberOfReturnsReceived"
                 forms="otrzymany,otrzymane,otrzymanych"
                 i18n-forms="@@common.returns-received.plural-forms"
               />
@@ -137,9 +138,7 @@
         </div>
         <div class="grid-cell bc" (click)="userDetailsModalData.set(personSummary)">
           <ard-stack direction="row" justifyContent="space-between">
-            <!-- @let balance = personSummary.totalFromPaidTransactions - personSummary.totalFromSplitParts +
-                personSummary.totalFromPayments; -->
-            @let balance = personSummary.totalFromPaidTransactions - personSummary.totalFromSplitParts;
+            @let balance = personSummary.totalFromPaidTransactions - personSummary.totalFromSplitParts + personSummary.totalReturnsGiven - personSummary.totalReturnsReceived;
             <app-balance
               [balance]="balance"
               [currency]="mainCurrency"
@@ -192,11 +191,11 @@
     </ard-stack>
     <app-statistic i18n="@@summary.returns-given">Zwroty oddane:</app-statistic>
     <ard-stack spacing="0">
-      <app-balance [balance]="userDetails.totalFromPayments" [currency]="mainCurrency" />
+      <app-balance [balance]="userDetails.totalReturnsGiven" [currency]="mainCurrency" />
       <app-statistic>
         <small>
           (<pl-plural
-            [value]="userDetails.numberOfPayments"
+            [value]="userDetails.numberOfReturnsGiven"
             forms="zwrot,zwroty,zwrotów"
             i18n-forms="@@common.returns.plural-forms"
           />)
@@ -205,11 +204,11 @@
     </ard-stack>
     <app-statistic i18n="@@summary.returns-received">Zwroty przyjęte:</app-statistic>
     <ard-stack spacing="0">
-      <app-balance [balance]="0" [currency]="mainCurrency" />
+      <app-balance [balance]="userDetails.totalReturnsReceived" [currency]="mainCurrency" />
       <app-statistic>
         <small>
           (<pl-plural
-            [value]="0"
+            [value]="userDetails.numberOfReturnsReceived"
             forms="zwrot,zwroty,zwrotów"
             i18n-forms="@@common.returns.plural-forms"
           />)
@@ -218,7 +217,7 @@
     </ard-stack>
     <app-statistic><ng-container i18n="@@common.balance">Bilans</ng-container>:</app-statistic>
     @let balance = userDetails.totalFromPaidTransactions - userDetails.totalFromSplitParts +
-    userDetails.totalFromPayments - 0;
+    userDetails.totalReturnsGiven - userDetails.totalReturnsReceived;
     <app-balance
       [balance]="balance"
       [currency]="mainCurrency"

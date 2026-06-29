@@ -4,8 +4,8 @@ import { IGetBasicSummaryResponse } from './get-basic';
 export interface IGetDetailedSummaryResponse {
   numberOfTransactions: number;
   totalFromTransactions: number;
-  numberOfPayments: number;
-  totalFromPayments: number;
+  numberOfReturns: number;
+  totalFromReturns: number;
   numberOfUsers: number;
 
   personalSummaries: IPersonalSummary[];

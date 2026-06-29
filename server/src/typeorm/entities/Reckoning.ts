@@ -1,7 +1,7 @@
 import { IReckoning } from '@shared/entities/reckoning';
 import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { Payment } from './Payment';
 import { ReckoningUser } from './ReckoningUser';
+import { Return } from './Return';
 import { Transaction } from './Transaction';
 
 @Entity({ name: 'reckonings' })
@@ -34,6 +34,6 @@ export class Reckoning implements IReckoning {
   @OneToMany(() => Transaction, transaction => transaction.reckoning)
   transactions: Transaction[];
 
-  @OneToMany(() => Payment, payment => payment.reckoning)
-  payments: Payment[];
+  @OneToMany(() => Return, returnEntity => returnEntity.reckoning)
+  returns: Return[];
 }

@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { roundToPrecision } from 'more-rounding';
 import { In, Repository } from 'typeorm';
-import { Payment, Transaction } from '../../typeorm/entities';
+import { Return, Transaction } from '../../typeorm/entities';
 import { GetBasicSummaryResponseDto } from './dtos/get-basic';
 import { GetDetailedSummaryResponseDto, PersonalSummaryDto } from './dtos/get-detailed';
 
 @Injectable()
 export class SummaryService {
   constructor(
-    @InjectRepository(Payment) private readonly paymentRepo: Repository<Payment>,
+    @InjectRepository(Return) private readonly returnRepo: Repository<Return>,
     @InjectRepository(Transaction) private readonly transactionRepo: Repository<Transaction>,
   ) {}
 
@@ -93,16 +93,29 @@ export class SummaryService {
       totalFromSplitParts += roundToPrecision(totalAmountInThisTransaction * (transaction.currencyRate ?? 1), 2);
     }
 
-    const paymentsForUser = await this.paymentRepo.find({
+    const returnsGivenForUser = await this.returnRepo.find({
       where: {
         reckoning: { id: reckoningId },
-        paidByUserId: userId,
+        returnedByUserId: userId,
       },
     });
 
-    const numberOfPayments = paymentsForUser.length;
-    const totalFromPayments = roundToPrecision(
-      paymentsForUser.reduce((sum, payment) => sum + (payment.amount ?? 0) * (payment.currencyRate ?? 1), 0),
+    const numberOfReturnsGiven = returnsGivenForUser.length;
+    const totalReturnsGiven = roundToPrecision(
+      returnsGivenForUser.reduce((sum, rtn) => sum + (rtn.amount ?? 0) * (rtn.currencyRate ?? 1), 0),
+      2,
+    );
+
+    const returnsReceivedForUser = await this.returnRepo.find({
+      where: {
+        reckoning: { id: reckoningId },
+        returnedToUserId: userId,
+      },
+    });
+
+    const numberOfReturnsReceived = returnsReceivedForUser.length;
+    const totalReturnsReceived = roundToPrecision(
+      returnsReceivedForUser.reduce((sum, rtn) => sum + (rtn.amount ?? 0) * (rtn.currencyRate ?? 1), 0),
       2,
     );
 
@@ -111,9 +124,11 @@ export class SummaryService {
       totalFromPaidTransactions,
       numberOfSplitPartTransactions,
       totalFromSplitParts,
-      numberOfPayments,
-      totalFromPayments,
-    } as any;
+      numberOfReturnsGiven,
+      totalReturnsGiven,
+      numberOfReturnsReceived,
+      totalReturnsReceived,
+    };
   }
 
   async getDetailed(reckoningId: number): Promise<GetDetailedSummaryResponseDto> {
@@ -121,7 +136,7 @@ export class SummaryService {
       where: { reckoning: { id: reckoningId } },
       relations: ['payers', 'splitParts', 'splitParts.includees'],
     });
-    const payments = await this.paymentRepo.find({
+    const returns = await this.returnRepo.find({
       where: { reckoning: { id: reckoningId } },
     });
 
@@ -131,9 +146,9 @@ export class SummaryService {
       2,
     );
 
-    const numberOfPayments = payments.length;
-    const totalFromPayments = roundToPrecision(
-      payments.reduce((sum, payment) => sum + (payment.amount ?? 0) * (payment.currencyRate ?? 1), 0),
+    const numberOfReturns = returns.length;
+    const totalFromReturns = roundToPrecision(
+      returns.reduce((sum, rtn) => sum + (rtn.amount ?? 0) * (rtn.currencyRate ?? 1), 0),
       2,
     );
 
@@ -146,8 +161,10 @@ export class SummaryService {
           totalFromPaidTransactions: 0,
           numberOfSplitPartTransactions: 0,
           totalFromSplitParts: 0,
-          numberOfPayments: 0,
-          totalFromPayments: 0,
+          numberOfReturnsGiven: 0,
+          totalReturnsGiven: 0,
+          numberOfReturnsReceived: 0,
+          totalReturnsReceived: 0,
           userId: userId,
           user: undefined as any,
         });
@@ -202,17 +219,21 @@ export class SummaryService {
       }
     }
 
-    for (const payment of payments) {
-      const summary = getUserSummary(payment.paidByUserId);
-      summary.numberOfPayments += 1;
-      summary.totalFromPayments += roundToPrecision(payment.amount * (payment.currencyRate ?? 1), 2);
+    for (const rtn of returns) {
+      const summaryGiven = getUserSummary(rtn.returnedByUserId);
+      summaryGiven.numberOfReturnsGiven += 1;
+      summaryGiven.totalReturnsGiven += roundToPrecision(rtn.amount * (rtn.currencyRate ?? 1), 2);
+      
+      const summaryReceived = getUserSummary(rtn.returnedToUserId);
+      summaryReceived.numberOfReturnsReceived += 1;
+      summaryReceived.totalReturnsReceived += roundToPrecision(rtn.amount * (rtn.currencyRate ?? 1), 2);
     }
 
     return {
       numberOfTransactions,
       totalFromTransactions,
-      numberOfPayments,
-      totalFromPayments,
+      numberOfReturns,
+      totalFromReturns,
       numberOfUsers: userSummaries.size,
       personalSummaries: Array.from(userSummaries.values()),
     };

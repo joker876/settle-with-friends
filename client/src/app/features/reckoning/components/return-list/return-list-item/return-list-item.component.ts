@@ -7,10 +7,10 @@ import { CardComponent } from '@common/components/card/card.component';
 import { StatisticRowComponent } from '@common/components/statistic-row/statistic-row.component';
 import { StatisticWithValueComponent } from '@common/components/statistic-with-value/statistic-with-value.component';
 import { StatisticComponent } from '@common/components/statistic/statistic.component';
-import { IPayment } from '@shared/entities/payment';
+import { IReturn } from '@shared/entities/return';
 
 @Component({
-  selector: 'app-payment-list-item',
+  selector: 'app-return-list-item',
   imports: [
     CardComponent,
     BalanceComponent,
@@ -22,11 +22,11 @@ import { IPayment } from '@shared/entities/payment';
     StatisticRowComponent,
     ArdiumButtonModule,
   ],
-  templateUrl: './payment-list-item.component.html',
-  styleUrl: './payment-list-item.component.scss',
+  templateUrl: './return-list-item.component.html',
+  styleUrl: './return-list-item.component.scss',
 })
-export class PaymentListItemComponent {
-  readonly data = input.required<IPayment>();
+export class ReturnListItemComponent {
+  readonly data = input.required<IReturn>();
   readonly mainCurrency = input.required<string>();
 
   readonly isDetailsOpen = model<boolean>(false);
@@ -43,6 +43,6 @@ export class PaymentListItemComponent {
   readonly amountInMainCurrency = computed<number>(() => this.data().amount * (this.data().currencyRate ?? 1));
 
   readonly amountInMainCurrencyText = computed<string>(
-    () => $localize`:@@reckoning-page.payments.payment.amount-in-main:Kwota w ${this.mainCurrency()}`,
+    () => $localize`:@@reckoning-page.returns.return.amount-in-main:Kwota w ${this.mainCurrency()}`,
   );
 }

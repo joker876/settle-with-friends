@@ -1,0 +1,29 @@
+import { Component, inject } from '@angular/core';
+import { ReturnListComponent } from '@features/reckoning/components/return-list/return-list.component';
+import { ReckoningService } from '@features/reckoning/services/reckoning.service';
+import { UsersService } from '@features/reckoning/services/users.service';
+import { IReturn } from '@shared/entities/return';
+import { ReturnListService } from './return-list.service';
+
+@Component({
+  selector: 'app-return-list-view',
+  imports: [ReturnListComponent],
+  templateUrl: './return-list.view.html',
+  styleUrl: './return-list.view.scss',
+  providers: [ReturnListService],
+})
+export class ReturnListView {
+  readonly reckoningService = inject(ReckoningService);
+  readonly returnListService = inject(ReturnListService);
+  readonly usersService = inject(UsersService);
+
+  appendReturn(rtn: IReturn) {
+    this.returnListService.appendReturn(rtn);
+  }
+  refreshReturn(rtn: IReturn) {
+    this.returnListService.refreshReturn(rtn);
+  }
+  removeReturn(returnId: number) {
+    this.returnListService.removeReturn(returnId);
+  }
+}

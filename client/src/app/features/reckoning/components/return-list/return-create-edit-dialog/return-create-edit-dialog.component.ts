@@ -16,12 +16,12 @@ import { WrapInAbstractControl } from '@common/utils/form-types';
 import { UTCDate } from '@date-fns/utc';
 import { CurrencyRatesService } from '@features/reckoning/services/currency-rates.service';
 import { UsersService } from '@features/reckoning/services/users.service';
-import { IPayment, IPaymentBasicData } from '@shared/entities/payment';
+import { IReturn, IReturnBasicData } from '@shared/entities/return';
 import { startOfDay } from 'date-fns';
 import { startWith } from 'rxjs';
 
 @Component({
-  selector: 'app-payment-create-edit-dialog',
+  selector: 'app-return-create-edit-dialog',
   imports: [
     ArdiumDialogModule,
     ArdiumGridModule,
@@ -33,10 +33,10 @@ import { startWith } from 'rxjs';
     SelectComponent,
     CurrencyRateInputComponent,
   ],
-  templateUrl: './payment-create-edit-dialog.component.html',
-  styleUrl: './payment-create-edit-dialog.component.scss',
+  templateUrl: './return-create-edit-dialog.component.html',
+  styleUrl: './return-create-edit-dialog.component.scss',
 })
-export class PaymentCreateEditDialogComponent {
+export class ReturnCreateEditDialogComponent {
   private readonly _currencyRatesService = inject(CurrencyRatesService);
   private readonly _usersService = inject(UsersService);
   private readonly _authService = inject(AuthService);
@@ -50,16 +50,20 @@ export class PaymentCreateEditDialogComponent {
   readonly isOpen = input.required<boolean>();
   readonly isSubmitting = input.required<boolean>();
 
-  readonly payment = input.required<IPayment | null>();
+  readonly return = input.required<IReturn | null>();
 
-  readonly isCreatingPayment = computed<boolean>(() => this.payment() === null);
+  readonly isCreatingReturn = computed<boolean>(() => this.return() === null);
 
-  readonly submit = output<IPaymentBasicData>();
+  readonly submit = output<IReturnBasicData>();
   readonly close = output<void>();
 
-  readonly form = new FormGroup<WrapInAbstractControl<IPaymentBasicData>>({
+  readonly form = new FormGroup<WrapInAbstractControl<IReturnBasicData>>({
     name: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
-    paidByUserId: new FormControl<number>(null as unknown as number, {
+    returnedByUserId: new FormControl<number>(null as unknown as number, {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    returnedToUserId: new FormControl<number>(null as unknown as number, {
       nonNullable: true,
       validators: [Validators.required],
     }),
@@ -70,36 +74,37 @@ export class PaymentCreateEditDialogComponent {
     currencyCode: new FormControl(null as unknown as string, { nonNullable: true }),
     currencyRate: new FormControl<number | null>(null, { validators: [Validators.required, Validators.min(0)] }),
     isCurrencyRateFromApi: new FormControl<boolean | null>(null, { validators: [Validators.required] }),
-    paymentDate: new FormControl(this.TODAY, { nonNullable: true, validators: [Validators.required] }),
+    returnDate: new FormControl(this.TODAY, { nonNullable: true, validators: [Validators.required] }),
   });
   readonly formValue = toSignal(this.form.valueChanges.pipe(startWith(this.form.value)));
   readonly currencyCodeValue = computed<string>(() => this.formValue()!.currencyCode!);
-  readonly paymentDateValue = computed<Date>(() => this.formValue()!.paymentDate!);
+  readonly returnDateValue = computed<Date>(() => this.formValue()!.returnDate!);
 
   readonly currencies = this._currencyRatesService.currencies;
   readonly mainCurrency = this._currencyRatesService.mainCurrency;
   readonly isCurrencyRateLoading = signal<boolean>(false);
   readonly currencyRateFromApi = computed<number | null>(() =>
-    this._currencyRatesService.getCurrencyRate(this.currencyCodeValue(), this.paymentDateValue()),
+    this._currencyRatesService.getCurrencyRate(this.currencyCodeValue(), this.returnDateValue()),
   );
 
   readonly userOptions = this._usersService.usersOptions;
 
   constructor() {
-    // set value if is editing payment
+    // set value if is editing return
     effect(() => {
-      const v = this.payment();
+      const v = this.return();
       if (!v) return;
 
       untracked(() => {
         this.form.setValue({
           name: v.name,
-          paidByUserId: v.paidByUserId,
+          returnedByUserId: v.returnedByUserId,
+          returnedToUserId: v.returnedToUserId,
           amount: v.amount,
           currencyCode: v.currencyCode,
           currencyRate: v.currencyRate,
           isCurrencyRateFromApi: v.isCurrencyRateFromApi,
-          paymentDate: v.paymentDate,
+          returnDate: v.returnDate,
         });
         this.form.markAllAsTouched();
       });
@@ -116,8 +121,12 @@ export class PaymentCreateEditDialogComponent {
     effect(() => {
       const currentUser = this._authService.userData();
 
-      if (this.form.controls.paidByUserId.getRawValue() === null && currentUser && this.userOptions().some(opt => opt.value === currentUser.id)) {
-        untracked(() => this.form.controls.paidByUserId.setValue(currentUser.id));
+      if (
+        this.form.controls.returnedByUserId.getRawValue() === null &&
+        currentUser &&
+        this.userOptions().some(opt => opt.value === currentUser.id)
+      ) {
+        untracked(() => this.form.controls.returnedByUserId.setValue(currentUser.id));
       }
     });
     // disable currency code and rate if there's only one currency available
@@ -135,7 +144,7 @@ export class PaymentCreateEditDialogComponent {
         this.form.controls.currencyCode.enable();
       }
     });
-    // fetch currency rate when currency code or payment date changes, but only if the user hasn't manually edited the rate
+    // fetch currency rate when currency code or return date changes, but only if the user hasn't manually edited the rate
     effect(async () => {
       const currencyCode = this.currencyCodeValue();
       const mainCurrency = this._currencyRatesService.mainCurrency();
@@ -144,28 +153,28 @@ export class PaymentCreateEditDialogComponent {
         return;
       }
 
-      const pmntControls = this.form.controls;
-      const currencyRateTouched = pmntControls.currencyRate.touched;
+      const rtnControls = this.form.controls;
+      const currencyRateTouched = rtnControls.currencyRate.touched;
       // fetch currency rate for selected date
-      const date = this.paymentDateValue();
+      const date = this.returnDateValue();
       this.isCurrencyRateLoading.set(true);
       await untracked(() => this._currencyRatesService.fetchAndStoreCurrencyRate(currencyCode, date));
       this.isCurrencyRateLoading.set(false);
 
       // don't use currency rate if main currency is selected
       if (this.currencyCodeValue() === mainCurrency) {
-        pmntControls.currencyRate.disable();
-        pmntControls.isCurrencyRateFromApi.disable();
+        rtnControls.currencyRate.disable();
+        rtnControls.isCurrencyRateFromApi.disable();
         return;
       }
       // get the fetched currency rate & set the values
-      pmntControls.currencyRate.enable();
-      pmntControls.isCurrencyRateFromApi.enable();
+      rtnControls.currencyRate.enable();
+      rtnControls.isCurrencyRateFromApi.enable();
       // only set the value if it wasn't already set or wasn't touched
-      if (!currencyRateTouched || pmntControls.currencyRate.getRawValue() === null) {
+      if (!currencyRateTouched || rtnControls.currencyRate.getRawValue() === null) {
         const rate = untracked(() => this._currencyRatesService.getCurrencyRate(currencyCode, date));
-        pmntControls.currencyRate.setValue(rate, { emitEvent: false });
-        pmntControls.isCurrencyRateFromApi.setValue(rate !== null, { emitEvent: false });
+        rtnControls.currencyRate.setValue(rate, { emitEvent: false });
+        rtnControls.isCurrencyRateFromApi.setValue(rate !== null, { emitEvent: false });
       }
     });
     // every time the user changes the currency code, mark the currency rate as untouched

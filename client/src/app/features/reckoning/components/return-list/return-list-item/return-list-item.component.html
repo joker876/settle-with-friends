@@ -4,7 +4,7 @@
       <div class="name">{{ data().name }}</div>
       <app-statistic-row>
         <app-statistic>
-          {{ data().paymentDate | date }}
+          {{ data().returnDate | date }}
         </app-statistic>
       </app-statistic-row>
     </div>
@@ -27,10 +27,7 @@
     <div class="details-part">
       @if (data().currencyRate) {
         <app-statistic-row>
-          <app-statistic-with-value
-            text="Kwota oryginalna"
-            i18n-text="@@reckoning-page.payments.payment.original-amount"
-          >
+          <app-statistic-with-value text="Kwota oryginalna" i18n-text="@@reckoning-page.returns.return.original-amount">
             <app-balance [balance]="data().amount" [currency]="data().currencyCode" />
           </app-statistic-with-value>
           <app-statistic-with-value text="Kurs wymiany" i18n-text="@@common.currency-rate">

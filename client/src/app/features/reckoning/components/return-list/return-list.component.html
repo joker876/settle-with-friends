@@ -1,0 +1,49 @@
+<app-section-heading
+  i18n-heading="@@reckoning-page.returns.heading"
+  heading="Zwroty"
+  [showAllButton]="partialList()"
+  (showAllButtonClick)="showAllButtonClick.emit()"
+>
+  <ard-button (click)="onCreateReturnClick()" appearance="outlined" color="primary">
+    <ard-icon-plus class="icon" />
+    <span i18n="@@common.add">Dodaj</span>
+  </ard-button>
+</app-section-heading>
+<div class="return-list">
+  @for (rtn of returns(); track rtn.id) {
+    <app-return-list-item
+      [data]="rtn"
+      [mainCurrency]="mainCurrency() ?? ''"
+      [isDeleteLoading]="isDeleteLoading()"
+      (editClick)="onEditReturnClick(rtn)"
+      (deleteClick)="onDeleteReturnClick(rtn)"
+    />
+  } @empty {
+    <p class="empty-placeholder empty-state-g small-g" i18n="@@reckoning-page.returns.empty-placeholder">
+      Nie dodano jeszcze żadnych zwrotów.
+    </p>
+  }
+</div>
+
+<app-return-create-edit-dialog
+  [isOpen]="isCreateEditDialogOpen()"
+  [isSubmitting]="isCreateEditDialogSubmitting()"
+  [return]="createEditDialogReturnData()"
+  (submit)="onSubmitCreateEditDialog($event)"
+  (close)="isCreateEditDialogOpen.set(false)"
+/>
+
+@if (returnToBeDeleted(); as rtn) {
+  <app-confirmation-dialog
+    [open]="true"
+    heading="Usuwanie zwrotu"
+    i18n-heading="@@reckoning-page.returns.delete-confirmation.heading"
+    confirmButtonText="Usuń"
+    i18n-confirmButtonText="@@common.delete"
+    i18n="@@reckoning-page.returns.delete-confirmation.content"
+    (submit)="deleteReturn()"
+  >
+    Czy na pewno chcesz usunąć zwrot <strong>{{ rtn.name }}</strong> na kwotę
+    <strong><app-money [amount]="rtn.amount" [currency]="rtn.currencyCode" /></strong>?
+  </app-confirmation-dialog>
+}

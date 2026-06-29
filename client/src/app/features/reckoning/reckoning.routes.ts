@@ -21,22 +21,18 @@ export const reckoningRoutes: Routes = [
   },
   {
     path: 'transactions',
-    loadComponent: () =>
-      import('./views/transaction-list/transaction-list.view').then(m => m.TransactionListView),
+    loadComponent: () => import('./views/transaction-list/transaction-list.view').then(m => m.TransactionListView),
   },
   {
-    path: 'payments',
-    loadComponent: () =>
-      import('./views/payment-list/payment-list.view').then(m => m.PaymentListView),
+    path: 'returns',
+    loadComponent: () => import('./views/return-list/return-list.view').then(m => m.ReturnListView),
   },
   {
     path: 'summary',
-    loadComponent: () =>
-      import('./views/detailed-summary/detailed-summary.view').then(m => m.DetailedSummaryView),
+    loadComponent: () => import('./views/detailed-summary/detailed-summary.view').then(m => m.DetailedSummaryView),
   },
   {
     path: 'settings',
-    loadComponent: () =>
-      import('./views/settings/settings.view').then(m => m.SettingsView),
+    loadComponent: () => import('./views/settings/settings.view').then(m => m.SettingsView),
   },
 ];

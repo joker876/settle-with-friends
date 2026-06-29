@@ -17,11 +17,16 @@
 
     @let mainCurrency = reckoningService.reckoning.value()?.mainCurrency ?? ''; @let totalPaid =
     basicSummaryService.summary.value()?.totalFromPaidTransactions; @let totalToPay =
-    basicSummaryService.summary.value()?.totalFromSplitParts; @let totalReturned =
-    basicSummaryService.summary.value()?.totalFromPayments;
+    basicSummaryService.summary.value()?.totalFromSplitParts; @let totalReturnsGiven =
+    basicSummaryService.summary.value()?.totalReturnsGiven; @let totalReturnsReceived =
+    basicSummaryService.summary.value()?.totalReturnsReceived;
     <ard-grid container columns="2 lg:4">
       <ard-grid size="1">
-        <app-summary-card heading="Zapłacone">
+        <app-summary-card
+          heading="Opłacone"
+          i18n-heading="@@reckoning.summary.paid.heading"
+          [appLoadingBlocker]="basicSummaryService.isReloadingTransactions()"
+        >
           <ng-container ngProjectAs="icon">
             <ard-icon-bank-card-payment />
           </ng-container>
@@ -44,7 +49,11 @@
         </app-summary-card>
       </ard-grid>
       <ard-grid size="1">
-        <app-summary-card heading="Do zapłaty">
+        <app-summary-card
+          heading="Do zapłaty"
+          i18n-heading="@@reckoning.summary.to-pay.heading"
+          [appLoadingBlocker]="basicSummaryService.isReloadingTransactions()"
+        >
           <ng-container ngProjectAs="icon">
             <ard-icon-bank-card-x />
           </ng-container>
@@ -67,24 +76,34 @@
         </app-summary-card>
       </ard-grid>
       <ard-grid size="1">
-        <app-summary-card heading="Bilans zwrotów">
+        <app-summary-card
+          heading="Bilans zwrotów"
+          i18n-heading="@@reckoning.summary.returns-balance.heading"
+          [appLoadingBlocker]="basicSummaryService.isReloadingReturns()"
+        >
           <ng-container ngProjectAs="icon">
             <ard-icon-hand-coins />
           </ng-container>
           <ng-container ngProjectAs="value">
-            @if (totalReturned !== undefined) {
-            <app-balance [balance]="totalReturned" [currency]="mainCurrency" />
+            @if (totalReturnsGiven !== undefined && totalReturnsReceived !== undefined) {
+            <app-balance [balance]="totalReturnsGiven - totalReturnsReceived" [currency]="mainCurrency" explicitSign />
             } @else {
             <ard-spinner />
             }
           </ng-container>
           <ng-container ngProjectAs="subtext">
-            @if (basicSummaryService.summary.value()?.numberOfPayments; as amount) {
-            <pl-plural [value]="amount" forms="zwrot,zwroty,zwrotów" i18n-forms="@@common.returns-given.plural-forms" />
+            @let numberGiven = basicSummaryService.summary.value()?.numberOfReturnsGiven; @let numberReceived =
+            basicSummaryService.summary.value()?.numberOfReturnsReceived; @if (numberGiven !== undefined &&
+            numberReceived !== undefined) {
+            <pl-plural
+              [value]="numberGiven ?? 0"
+              forms="odd.,odd.,odd."
+              i18n-forms="@@common.returns-given.plural-forms"
+            />
             •
             <pl-plural
-              [value]="69"
-              forms="otrzymany,otrzymane,otrzymanych"
+              [value]="numberReceived ?? 0"
+              forms="otrz.,otrz.,otrz."
               i18n-forms="@@common.returns-received.plural-forms"
             />
             }
@@ -92,24 +111,45 @@
         </app-summary-card>
       </ard-grid>
       <ard-grid size="1">
-        <app-summary-card heading="Bilans">
+        @if (totalPaid !== undefined && totalToPay !== undefined && totalReturnsGiven !== undefined &&
+        totalReturnsReceived !== undefined) { @let balance = totalPaid - totalToPay + totalReturnsGiven -
+        totalReturnsReceived;
+        <app-summary-card
+          heading="Bilans"
+          i18n-heading="@@reckoning.summary.balance.heading"
+          [appLoadingBlocker]="basicSummaryService.isReloadingTransactions() || basicSummaryService.isReloadingReturns()"
+        >
           <ng-container ngProjectAs="icon">
             <ard-icon-coins />
           </ng-container>
           <ng-container ngProjectAs="value">
-            @if (totalPaid !== undefined && totalToPay !== undefined && totalReturned !== undefined) { @let balance =
-            totalPaid - totalToPay + totalReturned;
             <app-balance
               [balance]="balance"
               [currency]="mainCurrency"
               [coloringType]="balance < 0 ? 'negative' : 'positive'"
               explicitSign
             />
+          </ng-container>
+          <ng-container ngProjectAs="subtext">
+            @if (balance < 0) {
+            <span i18n="@@reckoning.summary.balance.subtext-when-negative">Tyle musisz zwrócić</span>
+            } @else if (balance > 0) {
+            <span i18n="@@reckoning.summary.balance.subtext-when-positive">Tyle dostaniesz zwrotu</span>
             } @else {
-            <ard-spinner />
+            <span i18n="@@reckoning.summary.balance.subtext-when-zero">Jesteś na zero</span>
             }
           </ng-container>
         </app-summary-card>
+        } @else {
+        <app-summary-card heading="Bilans">
+          <ng-container ngProjectAs="icon">
+            <ard-icon-coins />
+          </ng-container>
+          <ng-container ngProjectAs="value">
+            <ard-spinner />
+          </ng-container>
+        </app-summary-card>
+        }
       </ard-grid>
     </ard-grid>
   </section>
@@ -125,13 +165,13 @@
     />
   </section>
   <section>
-    <app-payment-list
-      [payments]="paymentListService.payments.value()"
+    <app-return-list
+      [returns]="returnListService.returns.value()"
       partialList
-      (showAllButtonClick)="navigateToPayments()"
-      (appendPayment)="appendPayment($event)"
-      (refreshPayment)="refreshPayment($event)"
-      (removePayment)="removePayment($event)"
+      (showAllButtonClick)="navigateToReturns()"
+      (appendReturn)="appendReturn($event)"
+      (refreshReturn)="refreshReturn($event)"
+      (removeReturn)="removeReturn($event)"
     />
   </section>
 </div>

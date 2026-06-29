@@ -283,7 +283,7 @@ scrollbar-thumb:hover {
 .loading-blocker {
   position: relative !important;
 
-  .loading-blocker__active {
+  &.loading-blocker__active {
     pointer-events: none;
     user-select: none;
 
@@ -311,6 +311,10 @@ scrollbar-thumb:hover {
   font-size: 1.125rem;
   color: var(--text3);
   text-align: center;
+
+  &.small-g {
+    font-size: 0.875rem;
+  }
 }
 .primary-bg-g {
   background-color: var(--primary);

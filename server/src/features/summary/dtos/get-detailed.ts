@@ -5,8 +5,8 @@ import { GetBasicSummaryResponseDto } from './get-basic';
 export class GetDetailedSummaryResponseDto implements IGetDetailedSummaryResponse {
   numberOfTransactions: number;
   totalFromTransactions: number;
-  numberOfPayments: number;
-  totalFromPayments: number;
+  numberOfReturns: number;
+  totalFromReturns: number;
   numberOfUsers: number;
 
   personalSummaries: PersonalSummaryDto[];

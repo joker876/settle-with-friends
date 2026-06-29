@@ -1,8 +1,8 @@
-import { IPaymentBasicData } from '@shared/entities/payment';
+import { IReturnBasicData } from '@shared/entities/return';
 import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TrimString } from '../../../utils/trim-string.transform';
 
-export class CreatePaymentRequestDto implements IPaymentBasicData {
+export class UpdateReturnRequestDto implements IReturnBasicData {
   @IsString()
   @IsNotEmpty()
   @TrimString()
@@ -10,7 +10,11 @@ export class CreatePaymentRequestDto implements IPaymentBasicData {
 
   @IsNumber()
   @IsNotEmpty()
-  paidByUserId: number;
+  returnedByUserId: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  returnedToUserId: number;
 
   @IsNumber()
   @IsNotEmpty()
@@ -31,5 +35,5 @@ export class CreatePaymentRequestDto implements IPaymentBasicData {
 
   @IsNotEmpty()
   @IsDate()
-  paymentDate: Date;
+  returnDate: Date;
 }

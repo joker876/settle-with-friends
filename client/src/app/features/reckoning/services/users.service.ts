@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { AuthService } from '@common/services/auth.service';
 import { HttpService } from '@common/services/http-service';
 import { hydrateAllInArray, hydrateSingleProp, MappingToken } from '@common/utils/hydration';
 import { ensureParams, isResourceResolved } from '@common/utils/resource';
@@ -13,6 +14,7 @@ import { ReckoningService } from './reckoning.service';
 @Injectable()
 export class UsersService {
   private readonly _reckoningService = inject(ReckoningService);
+  private readonly _authService = inject(AuthService);
   private readonly _http = inject(HttpService);
 
   private readonly _users = rxResource({
@@ -32,6 +34,8 @@ export class UsersService {
   public readonly usersOptions = mapResourceToSelectableIdOptions(this.users, user => user.displayName);
 
   public readonly userMap = mapResourceToIdMap(this.users);
+
+  public readonly currentUser = this._authService.userData;
 
   updateUserRole(userId: number, newRole: UserRole): UserRole | null {
     let oldRole: UserRole | null = null;

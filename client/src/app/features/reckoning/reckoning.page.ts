@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { PaymentsService } from './components/payment-list/payments.service';
+import { ReturnsService } from './components/return-list/returns.service';
 import { TransactionsService } from './components/transaction-list/transactions.service';
 import { AccessService } from './services/access.service';
 import { CurrencyRatesService } from './services/currency-rates.service';
@@ -18,7 +18,7 @@ import { BasicSummaryService } from './views/reckoning/basic-summary.service';
     TransactionsService,
     UsersService,
     CurrencyRatesService,
-    PaymentsService,
+    ReturnsService,
     BasicSummaryService,
     AccessService,
   ],

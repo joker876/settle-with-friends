@@ -1,5 +1,5 @@
-import { IPayment } from '@shared/entities/payment';
 import { IReckoning } from '@shared/entities/reckoning';
+import { IReturn } from '@shared/entities/return';
 import { IUser } from '@shared/entities/user';
 import {
   Column,
@@ -14,8 +14,8 @@ import { Reckoning } from './Reckoning';
 import { User } from './User';
 import { cascade } from './utils';
 
-@Entity({ name: 'payments' })
-export class Payment implements IPayment {
+@Entity({ name: 'returns' })
+export class Return implements IReturn {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -35,7 +35,7 @@ export class Payment implements IPayment {
   isCurrencyRateFromApi: boolean | null;
 
   @Column()
-  paymentDate: Date;
+  returnDate: Date;
 
   @CreateDateColumn()
   createdDate: Date;
@@ -44,11 +44,18 @@ export class Payment implements IPayment {
   updatedDate: Date;
 
   @Column()
-  paidByUserId: number;
+  returnedByUserId: number;
 
   @ManyToOne(() => User, cascade)
-  @JoinColumn({ name: 'paidByUserId' })
-  paidBy: IUser;
+  @JoinColumn({ name: 'returnedByUserId' })
+  returnedBy: IUser;
+
+  @Column()
+  returnedToUserId: number;
+
+  @ManyToOne(() => User, cascade)
+  @JoinColumn({ name: 'returnedToUserId' })
+  returnedTo: IUser;
 
   @Column()
   createdByUserId: number;

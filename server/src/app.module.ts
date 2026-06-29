@@ -7,8 +7,8 @@ import { AppController } from './app.controller';
 import { AuthModule } from './features/auth/auth.module';
 import { SessionAuthGuard } from './features/auth/session-auth.guard';
 import { ParticipantsModule } from './features/participants/participants.module';
-import { PaymentsModule } from './features/payments/payments.module';
 import { ReckoningsModule } from './features/reckonings/reckonings.module';
+import { ReturnsModule } from './features/returns/returns.module';
 import { SummaryModule } from './features/summary/summary.module';
 import { TransactionsModule } from './features/transactions/transactions.module';
 import { SessionEntity } from './typeorm/entities/Session';
@@ -38,7 +38,7 @@ import { DateMappingInterceptor } from './utils/date-mapping.interceptor';
     AuthModule,
     ReckoningsModule,
     TransactionsModule,
-    PaymentsModule,
+    ReturnsModule,
     SummaryModule,
     ParticipantsModule,
   ],

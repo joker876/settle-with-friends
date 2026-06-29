@@ -1,0 +1,10 @@
+<div class="page-wrapper-g">
+  <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
+
+  <app-return-list
+    [returns]="returnListService.returns.value()"
+    (appendReturn)="appendReturn($event)"
+    (refreshReturn)="refreshReturn($event)"
+    (removeReturn)="removeReturn($event)"
+  />
+</div>
