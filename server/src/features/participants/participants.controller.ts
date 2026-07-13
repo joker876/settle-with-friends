@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, ParseIntPipe, Patch, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { UserWithRoleDto } from '../../dtos/user-with-role';
 import { ReckoningAccess } from '../reckonings/reckoning-access.guard';
@@ -36,5 +36,15 @@ export class ParticipantsController {
   ): Promise<UpdateUserPseudonymResponseDto> {
     const agentUserId = req.user!.id;
     return this.participantsService.updateUserPseudonym(reckoningId, targetUserId, agentUserId, body.pseudonym);
+  }
+
+  @Delete(':userId/kick-or-leave')
+  async kickOrLeave(
+    @Param('reckoningId', ParseIntPipe) reckoningId: number,
+    @Param('userId', ParseIntPipe) targetUserId: number,
+    @Req() req: Request,
+  ): Promise<void> {
+    const agentUserId = req.user!.id;
+    return this.participantsService.kickOrLeave(reckoningId, targetUserId, agentUserId);
   }
 }

@@ -1,6 +1,7 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
+import { Router } from '@angular/router';
 import { mapSignal } from '@ardium-ui/devkit';
 import { ArdIconEditLine, ArdIconLogout, ArdIconUserEdit } from '@ardium-ui/icons';
 import { ArdiumIconButtonModule, ArdiumInputModule, ArdiumSpinnerModule, ArdiumStackModule } from '@ardium-ui/ui';
@@ -46,6 +47,7 @@ import { RoleSelectorComponent } from './role-selector/role-selector.component';
 })
 export class UsersSection {
   readonly settingsService = inject(SettingsService);
+  readonly router = inject(Router);
   readonly UserRole = UserRole;
 
   readonly userRoles = mapSignal<number, UserRole>();
@@ -98,6 +100,38 @@ export class UsersSection {
     this.settingsService.updateUserRole(userId, newRole).then(success => {
       if (!success) return;
       this.userToChangeRole.set(null);
+    });
+  }
+
+  //! kicking or leaving
+  readonly userToKickOrLeave = signal<IUserWithRole | null>(null);
+
+  readonly isUserToKickOrLeaveSelf = computed(() => {
+    const user = this.userToKickOrLeave();
+    if (!user) return false;
+    return user.id === this.settingsService.currentUser()?.id;
+  });
+
+  readonly dontShowKickOrLeaveDialog = new TimedFlag('dontShowKickOrLeaveDialog');
+
+  onUserKickOrLeave(user: IUserWithRole) {
+    if (this.dontShowKickOrLeaveDialog.isActive()) {
+      this.onConfirmUserKickOrLeave(user.id, false);
+      return;
+    }
+    this.userToKickOrLeave.set(user);
+  }
+
+  onConfirmUserKickOrLeave(userId: number, dontShowAgain: boolean) {
+    if (dontShowAgain) {
+      this.dontShowKickOrLeaveDialog.setFlag();
+    }
+    this.settingsService.userKickOrLeave(userId).then(success => {
+      if (!success) return;
+      this.userToKickOrLeave.set(null);
+      if (this.isUserToKickOrLeaveSelf()) {
+        this.router.navigateByUrl('/');
+      }
     });
   }
 }

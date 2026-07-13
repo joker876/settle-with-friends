@@ -82,4 +82,25 @@
   </p>
   <app-checkbox #dontShowChangeRoleDialogCheckbox label="Nie pytaj ponownie przez 5 minut" />
 </app-confirmation-dialog>
+} @if (userToKickOrLeave(); as userToKickOrLeaveValue) {
+<app-confirmation-dialog
+  [open]="!!userToKickOrLeaveValue"
+  heading="Opuszczenie rozliczenia"
+  i18n-heading="@@participants.leaving-reckoning"
+  confirmButtonText="Opuść"
+  i18n-confirmButtonText="@@common.leave"
+  (submit)="onConfirmUserKickOrLeave(userToKickOrLeaveValue.id, dontShowKickOrLeaveDialogCheckbox.value())"
+  (openChange)="userToKickOrLeave.set(null)"
+>
+  @if (isUserToKickOrLeaveSelf()) {
+  <p i18n="@@participants.leave-reckoning-dialog-text-self">
+    Czy na pewno chcesz opuścić rozliczenie <strong>{{ userToKickOrLeaveValue.displayName }}</strong>?
+  </p>
+  } @else {
+  <p i18n="@@participants.leave-reckoning-dialog-text-other">
+    Czy na pewno chcesz wyrzucić użytkownika <strong>{{ userToKickOrLeaveValue.displayName }}</strong>?
+  </p>
+  }
+  <app-checkbox #dontShowKickOrLeaveDialogCheckbox label="Nie pytaj ponownie przez 5 minut" />
+</app-confirmation-dialog>
 }

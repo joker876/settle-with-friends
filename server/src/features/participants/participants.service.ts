@@ -78,4 +78,23 @@ export class ParticipantsService {
 
     return { pseudonym: newPseudonym };
   }
+
+  async kickOrLeave(reckoningId: number, targetUserId: number, agentUserId: number): Promise<void> {
+    const userRole = await this.reckoningAccessService.getUserRole(reckoningId, agentUserId);
+
+    // only admins or higher can kick users, but users can leave themselves
+    if (
+      agentUserId !== targetUserId &&
+      !(await this.reckoningAccessService.isUserAuthorized(reckoningId, agentUserId, UserRole.Admin, userRole.role))
+    ) {
+      throw new ForbiddenException('Permission denied');
+    }
+
+    // cannot kick the owner
+    if (await this.reckoningAccessService.isUserAuthorized(reckoningId, targetUserId, UserRole.Owner)) {
+      throw new ForbiddenException('Permission denied');
+    }
+
+    await this.reckoningUserRepo.delete({ reckoningId, userId: targetUserId });
+  }
 }

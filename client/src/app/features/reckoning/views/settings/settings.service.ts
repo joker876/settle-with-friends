@@ -93,4 +93,46 @@ export class SettingsService {
         }),
     );
   }
+
+  //! kick or leave
+  readonly userKickOrLeaveLoadingMap = mapSignal<number, boolean>();
+
+  async userKickOrLeave(userId: number): Promise<boolean> {
+    const reckoningId = this._reckoningService.reckoningId();
+    if (!reckoningId) return false;
+
+    const isSelf = this.currentUser()?.id === userId;
+
+    this.userKickOrLeaveLoadingMap.setKey(userId, true);
+
+    return new Promise(resolve =>
+      this._http
+        .delete<void>(`/reckonings/${reckoningId}/participants/${userId}/kick-or-leave`)
+        .pipe(setLoadingFalse(this.userKickOrLeaveLoadingMap, userId))
+        .subscribe({
+          next: () => {
+            if (isSelf) {
+              this._snackbarController.openSuccess($localize`:@@participants.left-successfully:Opuszczono rozliczenie`);
+            } else {
+              this._snackbarController.openSuccess(
+                $localize`:@@participants.kicked-successfully:Wyrzucono użytkownika z rozliczenia`,
+              );
+            }
+            resolve(true);
+          },
+          error: () => {
+            if (isSelf) {
+              this._snackbarController.openError(
+                $localize`:@@participants.failed-to-leave:Nie udało się opuścić rozliczenia`,
+              );
+            } else {
+              this._snackbarController.openError(
+                $localize`:@@participants.failed-to-kick:Nie udało się wyrzucić użytkownika z rozliczenia`,
+              );
+            }
+            resolve(false);
+          },
+        }),
+    );
+  }
 }
