@@ -1,4 +1,5 @@
 import { Component, inject, input, output, signal } from '@angular/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { BooleanLike, coerceBooleanProperty } from '@ardium-ui/devkit';
 import { ArdIconPlus } from '@ardium-ui/icons';
 import { ArdiumButtonModule, ArdiumIconButtonModule } from '@ardium-ui/ui';
@@ -20,6 +21,7 @@ import { TransactionsService } from './transactions.service';
     ArdIconPlus,
     ConfirmationDialogComponent,
     MoneyComponent,
+    MatTooltipModule,
   ],
   templateUrl: './transaction-list.component.html',
   styleUrl: './transaction-list.component.scss',
@@ -29,6 +31,7 @@ export class TransactionListComponent {
   private readonly _currencyRatesService = inject(CurrencyRatesService);
 
   readonly transactions = input.required<ITransaction[]>();
+  readonly isArchived = input.required<boolean>();
   readonly partialList = input<boolean, BooleanLike>(false, { transform: v => coerceBooleanProperty(v) });
   readonly isDeleteLoading = this._transactionsService.deleteTransactionLoading;
   readonly mainCurrency = this._currencyRatesService.mainCurrency;
@@ -41,6 +44,7 @@ export class TransactionListComponent {
   readonly transactionToBeDeleted = signal<ITransaction | null>(null);
 
   onDeleteTransactionClick(t: ITransaction): void {
+    if (this.isArchived()) return;
     this.transactionToBeDeleted.set(t);
   }
   async onDeleteTransactionSubmit(id: number): Promise<void> {

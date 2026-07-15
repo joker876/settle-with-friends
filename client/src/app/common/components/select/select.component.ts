@@ -24,6 +24,9 @@ import TakeChance from 'take-chance';
     { provide: NG_VALUE_ACCESSOR, useExisting: SelectComponent, multi: true },
     { provide: ARD_FORM_FIELD_CONTROL, useExisting: SelectComponent },
   ],
+  host: {
+    '[class.disabled]': 'disabled()',
+  }
 })
 export class SelectComponent implements ControlValueAccessor, ArdFormFieldControl {
   readonly options = input.required<SelectableOption<any>[]>();

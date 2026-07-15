@@ -1,7 +1,7 @@
 <ard-dialog
   [heading]="heading()"
   [confirmButtonText]="confirmButtonTextWithTime()"
-  confirmButtonColor="danger"
+  [confirmButtonColor]="confirmButtonColor()"
   rejectButtonText="Anuluj"
   [(open)]="open"
   (confirm)="submit.emit()"

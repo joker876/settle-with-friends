@@ -1,6 +1,6 @@
 import { Component, computed, effect, input, model, output, signal, untracked } from '@angular/core';
 import { coerceNumberProperty } from '@ardium-ui/devkit';
-import { ArdiumDialogModule } from '@ardium-ui/ui';
+import { ArdiumDialogModule, ComponentColor } from '@ardium-ui/ui';
 
 @Component({
   selector: 'app-confirmation-dialog',
@@ -16,6 +16,7 @@ export class ConfirmationDialogComponent {
 
   readonly heading = input.required<string>();
   readonly confirmButtonText = input.required<string>();
+  readonly confirmButtonColor = input<ComponentColor>(ComponentColor.Danger);
 
   readonly confirmationDelaySeconds = input<number, any>(0, { transform: v => coerceNumberProperty(v, 0) });
 

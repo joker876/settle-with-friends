@@ -1,4 +1,4 @@
-import { inject, Injectable, ResourceStatus, signal } from '@angular/core';
+import { computed, inject, Injectable, ResourceStatus, signal } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { EventType, Router } from '@angular/router';
 import { HttpService } from '@common/services/http-service';
@@ -29,6 +29,8 @@ export class ReckoningService {
 
   public readonly reckoning = this._reckoning.asReadonly();
 
+  public readonly isArchived = computed(() => this.reckoning.value()?.archivedAt != null);
+
   //! creating reckoning
   private readonly _createReckoningStatus = signal<ResourceStatus>('idle');
   public readonly createReckoningStatus = this._createReckoningStatus.asReadonly();
@@ -58,6 +60,43 @@ export class ReckoningService {
   //! deleting reckoning
 
   //! archiving reckoning
+  archiveReckoning() {
+    const reckoningId = this.reckoningId();
+    if (!reckoningId) return;
+
+    return new Promise<boolean>(resolve =>
+      this._http.patch(`reckonings/${reckoningId}/archive`, {}).subscribe({
+        next: () => {
+          resolve(true);
+        },
+        error: () => {
+          this._snackbarController.openError(
+            $localize`:@@reckoning-page.archive.error:Nie udało się zarchiwizować rozliczenia`,
+          );
+          resolve(false);
+        },
+      }),
+    );
+  }
 
   //! unarchiving reckoning
+  unarchiveReckoning() {
+    const reckoningId = this.reckoningId();
+    if (!reckoningId) return;
+
+    return new Promise<boolean>(resolve =>
+      this._http.patch(`reckonings/${reckoningId}/unarchive`, {}).subscribe({
+        next: () => {
+          this._snackbarController.openSuccess($localize`:@@reckoning-page.unarchive.success:Przywrócono rozliczenie`);
+          resolve(true);
+        },
+        error: () => {
+          this._snackbarController.openError(
+            $localize`:@@reckoning-page.unarchive.error:Nie udało się przywrócić rozliczenia`,
+          );
+          resolve(false);
+        },
+      }),
+    );
+  }
 }

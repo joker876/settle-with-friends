@@ -7,7 +7,10 @@ import {
   ArdiumStackModule,
 } from '@ardium-ui/ui';
 import { CardComponent } from '@common/components/card/card.component';
+import { RoleGuardComponent } from '@features/reckoning/components/role-guard/role-guard.component';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
+import { UserRole } from '@shared/enums/user-role';
+import { ArchivingSection } from './sections/archiving/archiving.section';
 import { UsersSection } from './sections/users/users.section';
 import { SettingsService } from './settings.service';
 
@@ -21,6 +24,8 @@ import { SettingsService } from './settings.service';
     ArdiumModalModule,
     UsersSection,
     CardComponent,
+    ArchivingSection,
+    RoleGuardComponent
   ],
   templateUrl: './settings.view.html',
   styleUrl: './settings.view.scss',
@@ -29,4 +34,5 @@ import { SettingsService } from './settings.service';
 export class SettingsView {
   readonly reckoningService = inject(ReckoningService);
   readonly settingsService = inject(SettingsService);
+  readonly UserRole = UserRole;
 }

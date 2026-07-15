@@ -71,24 +71,30 @@ export class ReckoningView {
   }
 
   navigateToCreateTransaction() {
+    if (this.reckoningService.isArchived()) return;
     this._router.navigate(['create-transaction'], { relativeTo: this._activatedRoute });
   }
   navigateToEditTransaction(transactionId: number) {
+    if (this.reckoningService.isArchived()) return;
     this._router.navigate(['transaction', transactionId], { relativeTo: this._activatedRoute });
   }
   removeTransaction(transactionId: number) {
+    if (this.reckoningService.isArchived()) return;
     this.transactionListService.removeTransaction(transactionId);
   }
 
   appendReturn(rtn: IReturn) {
+    if (this.reckoningService.isArchived()) return;
     this.returnListService.appendReturn(rtn);
     this.basicSummaryService.reload({ returns: true });
   }
   refreshReturn(rtn: IReturn) {
+    if (this.reckoningService.isArchived()) return;
     this.returnListService.refreshReturn(rtn);
     this.basicSummaryService.reload({ returns: true });
   }
   removeReturn(returnId: number) {
+    if (this.reckoningService.isArchived()) return;
     this.returnListService.removeReturn(returnId);
     this.basicSummaryService.reload({ returns: true });
   }

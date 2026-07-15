@@ -156,6 +156,7 @@
 
   <section>
     <app-transaction-list
+      [isArchived]="reckoningService.isArchived()"
       [transactions]="transactionListService.transactions.value()"
       partialList
       (showAllButtonClick)="navigateToTransactions()"
@@ -167,6 +168,7 @@
   <section>
     <app-return-list
       [returns]="returnListService.returns.value()"
+      [isArchived]="reckoningService.isArchived()"
       partialList
       (showAllButtonClick)="navigateToReturns()"
       (appendReturn)="appendReturn($event)"

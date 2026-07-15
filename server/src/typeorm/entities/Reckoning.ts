@@ -13,8 +13,8 @@ export class Reckoning implements IReckoning {
   @Column()
   name: string;
 
-  @Column({ default: false })
-  isArchived: boolean;
+  @Column({ default: null, nullable: true, type: 'timestamp' })
+  archivedAt: Date | null;
 
   @Column()
   mainCurrency: string;

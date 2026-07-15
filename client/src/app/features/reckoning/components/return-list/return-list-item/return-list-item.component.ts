@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, input, model, output } from '@angular/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ArdIconChevron } from '@ardium-ui/icons';
 import { ArdiumButtonModule, ArdiumIconButtonModule } from '@ardium-ui/ui';
 import { BalanceComponent } from '@common/components/balance/balance.component';
@@ -21,12 +22,14 @@ import { IReturn } from '@shared/entities/return';
     StatisticWithValueComponent,
     StatisticRowComponent,
     ArdiumButtonModule,
+    MatTooltipModule,
   ],
   templateUrl: './return-list-item.component.html',
   styleUrl: './return-list-item.component.scss',
 })
 export class ReturnListItemComponent {
   readonly data = input.required<IReturn>();
+  readonly isArchived = input.required<boolean>();
   readonly mainCurrency = input.required<string>();
 
   readonly isDetailsOpen = model<boolean>(false);

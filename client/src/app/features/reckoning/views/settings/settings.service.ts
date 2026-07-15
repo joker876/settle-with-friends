@@ -24,6 +24,8 @@ export class SettingsService {
   public readonly users = this._usersService.users;
   public readonly currentUser = this._authService.userData;
 
+  public readonly isArchived = this._reckoningService.isArchived;
+
   //! update pseudonym
   readonly userPseudonymLoadingMap = mapSignal<number, boolean>();
 
@@ -134,5 +136,13 @@ export class SettingsService {
           },
         }),
     );
+  }
+
+  //! archiving
+  archiveReckoning() {
+    this._reckoningService.archiveReckoning();
+  }
+  restoreReckoning() {
+    this._reckoningService.unarchiveReckoning();
   }
 }

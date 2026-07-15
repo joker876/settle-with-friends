@@ -5,5 +5,5 @@ export interface IReckoning {
   updatedDate: Date;
   mainCurrency: string;
   helperCurrency: string | null;
-  isArchived: boolean;
+  archivedAt: Date | null;
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ICreateReckoningRequestDto } from '@shared/contracts/reckonings/create';
 import { GetAllReckoningsResponseDto, IReckoningTableData } from '@shared/contracts/reckonings/get-all';
@@ -7,6 +7,7 @@ import { UserRole } from '@shared/enums/user-role';
 import { roundToPrecision } from 'more-rounding';
 import { In, Repository } from 'typeorm';
 import { Reckoning, ReckoningUser, User } from '../../typeorm/entities';
+import { ReckoningAccessService } from './reckoning-access.service';
 
 @Injectable()
 export class ReckoningsService {
@@ -14,6 +15,7 @@ export class ReckoningsService {
     @InjectRepository(User) private readonly userRepo: Repository<User>,
     @InjectRepository(Reckoning) private readonly reckoningRepo: Repository<Reckoning>,
     @InjectRepository(ReckoningUser) private readonly reckoningUserRepo: Repository<ReckoningUser>,
+    @Inject(ReckoningAccessService) private readonly accessService: ReckoningAccessService,
   ) {}
 
   async getAllForUser(id: number): Promise<GetAllReckoningsResponseDto> {
@@ -31,7 +33,7 @@ export class ReckoningsService {
       select: {
         id: true,
         name: true,
-        isArchived: true,
+        archivedAt: true,
         createdDate: true,
         updatedDate: true,
         mainCurrency: true,
@@ -75,7 +77,7 @@ export class ReckoningsService {
       select: {
         id: true,
         name: true,
-        isArchived: true,
+        archivedAt: true,
         createdDate: true,
         updatedDate: true,
         mainCurrency: true,
@@ -122,5 +124,23 @@ export class ReckoningsService {
     });
 
     return this.reckoningUserRepo.save(reckoningUser);
+  }
+
+  async archive(reckoningId: number, agentUserId: number): Promise<void> {
+    // only owner can archive a reckoning
+    if (!(await this.accessService.isUserAuthorized(reckoningId, agentUserId, UserRole.Owner))) {
+      throw new ForbiddenException('Permission denied');
+    }
+
+    await this.reckoningRepo.update({ id: reckoningId }, { archivedAt: new Date() });
+  }
+
+  async unarchive(reckoningId: number, agentUserId: number): Promise<void> {
+    // only owner can unarchive a reckoning
+    if (!(await this.accessService.isUserAuthorized(reckoningId, agentUserId, UserRole.Owner))) {
+      throw new ForbiddenException('Permission denied');
+    }
+
+    await this.reckoningRepo.update({ id: reckoningId }, { archivedAt: null });
   }
 }

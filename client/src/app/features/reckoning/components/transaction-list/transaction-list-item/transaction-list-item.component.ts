@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, input, model, output } from '@angular/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ArdIconChevron, ArdIconUserArrowLeftIn_2, ArdIconUserArrowRightOut_2 } from '@ardium-ui/icons';
 import { ArdiumButtonModule, ArdiumIconButtonModule } from '@ardium-ui/ui';
 import { BalanceComponent } from '@common/components/balance/balance.component';
@@ -36,12 +37,14 @@ import { PluralizePlComponent } from 'ngx-polish-number-to-words';
     UserBalanceGridComponent,
     ArdiumButtonModule,
     PluralizePlComponent,
+    MatTooltipModule
 ],
   templateUrl: './transaction-list-item.component.html',
   styleUrl: './transaction-list-item.component.scss',
 })
 export class TransactionListItemComponent {
   readonly data = input.required<ITransaction>();
+  readonly isArchived = input.required<boolean>();
   readonly mainCurrency = input.required<string>();
 
   readonly isDetailsOpen = model<boolean>(false);

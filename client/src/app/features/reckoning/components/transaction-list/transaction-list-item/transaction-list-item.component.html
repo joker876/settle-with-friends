@@ -90,16 +90,30 @@
       </div>
     </div>
     <div class="actions">
-      <ard-button compact color="none" (click)="editClick.emit()" [disabled]="isDeleteLoading()" i18n="@@common.edit">
+      <ard-button
+        compact
+        color="none"
+        (click)="editClick.emit()"
+        [disabled]="isDeleteLoading() || isArchived()"
+        i18n="@@common.edit"
+        matTooltip="To rozliczenie jest zarchiwizowane"
+        i18n-matTooltip="@@common.archived-tooltip"
+        matTooltipPosition="above"
+        [matTooltipDisabled]="!isArchived()"
+      >
         Edytuj
       </ard-button>
       <ard-button
         compact
         color="danger"
         appearance="outlined-strong"
-        [disabled]="isDeleteLoading()"
+        [disabled]="isDeleteLoading() || isArchived()"
         (click)="deleteClick.emit()"
         i18n="@@common.delete"
+        matTooltip="To rozliczenie jest zarchiwizowane"
+        i18n-matTooltip="@@common.archived-tooltip"
+        matTooltipPosition="above"
+        [matTooltipDisabled]="!isArchived()"
       >
         Usuń
       </ard-button>

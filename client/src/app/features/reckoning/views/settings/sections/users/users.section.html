@@ -13,6 +13,7 @@
         <td>
           <ard-stack direction="row" spacing="2">
             <app-avatar [name]="user.displayName" [photo]="user.photo" showName />
+            @if (!isArchived()) {
             <app-role-guard [role]="UserRole.Admin" [userId]="user.id">
               <ard-icon-button
                 title="Zmień nazwę"
@@ -22,10 +23,12 @@
                 <ard-icon-edit-line class="edit-icon" />
               </ard-icon-button>
             </app-role-guard>
+            }
           </ard-stack>
         </td>
         <td>
           <app-role-selector
+            [disabled]="isArchived()"
             [value]="userRoles.get(user.id)!"
             (valueChange)="onUserRoleChange(user, $event)"
             [isLoading]="!!settingsService.userRoleLoadingMap.get(user.id)"
@@ -36,14 +39,20 @@
             <ard-icon-button class="more-btn" [matMenuTriggerFor]="menu"> ⋮ </ard-icon-button>
 
             <mat-menu #menu="matMenu">
-              <app-menu-item>
+              <app-menu-item
+                (click)="onEditUserPseudonym(user)"
+                [disabled]="isArchived()"
+                disabledTooltip="To rozliczenie jest zarchiwizowane"
+                i18n-disabledTooltip="@@common.archived-tooltip"
+              >
                 <ard-icon-user-edit ngProjectAs="icon" />
                 <span i18n="@@participants.change-name">Zmień nazwę</span>
               </app-menu-item>
               <app-menu-item
                 class="red"
-                [disabled]="({ role: UserRole.Owner } | roleGuard | async) && ({ userId: user.id } | roleGuard | async)"
-                disabledTooltip="Właściciel nie może opuścić rozliczenia"
+                (click)="onUserKickOrLeave(user)"
+                [disabled]="isArchived() || user.role === UserRole.Owner || ({ userId: user.id } | roleGuard | async)"
+                [disabledTooltip]="isArchived() ? kickOrLeaveTooltipArchived : user.role === UserRole.Owner ? kickOrLeaveTooltipOwner : isUserToKickOrLeaveSelf() ? kickOrLeaveTooltipSelf : ''"
               >
                 <ard-icon-logout ngProjectAs="icon" />
                 <app-role-guard [role]="null" [userId]="user.id">

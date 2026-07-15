@@ -4,7 +4,16 @@
   [showAllButton]="partialList()"
   (showAllButtonClick)="showAllButtonClick.emit()"
 >
-  <ard-button (click)="onCreateReturnClick()" appearance="outlined" color="primary">
+  <ard-button
+    (click)="onCreateReturnClick()"
+    appearance="outlined"
+    color="primary"
+    [disabled]="isArchived()"
+    matTooltip="To rozliczenie jest zarchiwizowane"
+    i18n-matTooltip="@@common.archived-tooltip"
+    matTooltipPosition="above"
+    [matTooltipDisabled]="!isArchived()"
+  >
     <ard-icon-plus class="icon" />
     <span i18n="@@common.add">Dodaj</span>
   </ard-button>
@@ -13,6 +22,7 @@
   @for (rtn of returns(); track rtn.id) {
     <app-return-list-item
       [data]="rtn"
+      [isArchived]="isArchived()"
       [mainCurrency]="mainCurrency() ?? ''"
       [isDeleteLoading]="isDeleteLoading()"
       (editClick)="onEditReturnClick(rtn)"

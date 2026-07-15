@@ -1,6 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { mapSignal } from '@ardium-ui/devkit';
 import { ArdIconEditLine, ArdIconLogout, ArdIconUserEdit } from '@ardium-ui/icons';
@@ -41,6 +42,7 @@ import { RoleSelectorComponent } from './role-selector/role-selector.component';
     ArdiumInputModule,
     ArdiumSpinnerModule,
     EditUserPseudonymDialogComponent,
+    MatTooltipModule,
   ],
   templateUrl: './users.section.html',
   styleUrl: './users.section.scss',
@@ -52,6 +54,8 @@ export class UsersSection {
 
   readonly userRoles = mapSignal<number, UserRole>();
   readonly userPseudonyms = mapSignal<number, string | null>();
+
+  readonly isArchived = this.settingsService.isArchived;
 
   constructor() {
     effect(() => {
@@ -69,10 +73,12 @@ export class UsersSection {
   readonly userToEditPseudonym = signal<IUserWithRole | null>(null);
 
   onEditUserPseudonym(user: IUserWithRole) {
+    if (this.isArchived()) return;
     this.userToEditPseudonym.set(user);
   }
 
   onConfirmUserPseudonymChange(userId: number, newPseudonym: string) {
+    if (this.isArchived()) return;
     this.settingsService.updateUserPseudonym(userId, newPseudonym).then(success => {
       if (!success) return;
       this.userToEditPseudonym.set(null);
@@ -85,6 +91,7 @@ export class UsersSection {
   readonly dontShowChangeRoleDialog = new TimedFlag('dontShowChangeRoleDialog');
 
   onUserRoleChange(user: IUserWithRole, newRole: UserRole) {
+    if (this.isArchived()) return;
     if (this.dontShowChangeRoleDialog.isActive()) {
       this.onConfirmUserRoleChange(user.id, newRole, false);
       return;
@@ -94,6 +101,7 @@ export class UsersSection {
   }
 
   onConfirmUserRoleChange(userId: number, newRole: UserRole, dontShowAgain: boolean) {
+    if (this.isArchived()) return;
     if (dontShowAgain) {
       this.dontShowChangeRoleDialog.setFlag();
     }
@@ -104,6 +112,10 @@ export class UsersSection {
   }
 
   //! kicking or leaving
+  readonly kickOrLeaveTooltipArchived = $localize`:@@common.archived-tooltip:To rozliczenie jest zarchiwizowane`;
+  readonly kickOrLeaveTooltipOwner = $localize`:@@common.owner-cant-leave-tooltip:Właściciel nie może opuścić rozliczenia`;
+  readonly kickOrLeaveTooltipSelf = $localize`:@@common.cant-kick-yourself-tooltip:Nie możesz wyrzucić samego siebie`;
+
   readonly userToKickOrLeave = signal<IUserWithRole | null>(null);
 
   readonly isUserToKickOrLeaveSelf = computed(() => {

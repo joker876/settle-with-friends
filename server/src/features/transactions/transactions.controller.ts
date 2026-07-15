@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Req } from '@nestjs/common';
 import { ITransaction } from '@shared/entities/transaction';
 import { Request } from 'express';
+import { NoArchived } from '../reckonings/no-archived.guard';
 import { ReckoningAccess } from '../reckonings/reckoning-access.guard';
 import { CreateTransactionRequestDto } from './dtos/create';
 import { UpdateTransactionRequestDto } from './dtos/update';
@@ -30,6 +31,7 @@ export class TransactionsController {
   }
 
   @Post()
+  @NoArchived()
   async createTransaction(
     @Req() req: Request,
     @Param('reckoningId', ParseIntPipe) reckoningId: number,
@@ -41,6 +43,7 @@ export class TransactionsController {
   }
 
   @Put(':transactionId')
+  @NoArchived()
   async updateTransaction(
     @Req() req: Request,
     @Param('reckoningId', ParseIntPipe) reckoningId: number,
@@ -53,6 +56,7 @@ export class TransactionsController {
   }
 
   @Delete(':transactionId')
+  @NoArchived()
   async deleteTransaction(
     @Req() req: Request,
     @Param('reckoningId', ParseIntPipe) reckoningId: number,

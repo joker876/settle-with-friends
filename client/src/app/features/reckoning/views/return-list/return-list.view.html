@@ -3,6 +3,7 @@
 
   <app-return-list
     [returns]="returnListService.returns.value()"
+    [isArchived]="reckoningService.isArchived()"
     (appendReturn)="appendReturn($event)"
     (refreshReturn)="refreshReturn($event)"
     (removeReturn)="removeReturn($event)"

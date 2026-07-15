@@ -20,12 +20,15 @@ export class TransactionListView {
   private readonly _activatedRoute = inject(ActivatedRoute);
 
   navigateToCreateTransaction() {
+    if (this.reckoningService.isArchived()) return;
     this._router.navigate(['create-transaction'], { relativeTo: this._activatedRoute });
   }
   navigateToEditTransaction(transactionId: number) {
+    if (this.reckoningService.isArchived()) return;
     this._router.navigate(['transaction', transactionId], { relativeTo: this._activatedRoute });
   }
   removeTransaction(transactionId: number) {
+    if (this.reckoningService.isArchived()) return;
     this.transactionListService.removeTransaction(transactionId);
   }
 }

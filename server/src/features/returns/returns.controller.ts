@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { Return } from '../../typeorm/entities';
+import { NoArchived } from '../reckonings/no-archived.guard';
 import { ReckoningAccess } from '../reckonings/reckoning-access.guard';
 import { CreateReturnRequestDto } from './dtos/create';
 import { UpdateReturnRequestDto } from './dtos/update';
@@ -30,6 +31,7 @@ export class ReturnsController {
   }
 
   @Post()
+  @NoArchived()
   async createReturn(
     @Req() req: Request,
     @Param('reckoningId', ParseIntPipe) reckoningId: number,
@@ -41,6 +43,7 @@ export class ReturnsController {
   }
 
   @Put(':returnId')
+  @NoArchived()
   async updateReturn(
     @Req() req: Request,
     @Param('reckoningId', ParseIntPipe) reckoningId: number,
@@ -53,6 +56,7 @@ export class ReturnsController {
   }
 
   @Delete(':returnId')
+  @NoArchived()
   async deleteReturn(
     @Req() req: Request,
     @Param('reckoningId', ParseIntPipe) reckoningId: number,

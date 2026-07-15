@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, ParseIntPipe, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, ParseIntPipe, Patch, Post, Req } from '@nestjs/common';
 import { UserRole } from '@shared/enums/user-role';
 import { Request } from 'express';
 import { CreateReckoningRequestDto } from './dtos/create';
@@ -36,5 +36,11 @@ export class ReckoningsController {
   @Get(':reckoningId/role')
   async getRole(@Param('reckoningId', ParseIntPipe) reckoningId: number, @Req() req: Request): Promise<{ role: UserRole }> {
     return this.accessService.getUserRole(reckoningId, req.user?.id);
+  }
+
+  @Patch(':reckoningId/archive')
+  @ReckoningAccess()
+  async archive(@Param('reckoningId', ParseIntPipe) reckoningId: number, @Req() req: Request): Promise<void> {
+    return this.reckoningsService.archive(reckoningId, req.user!.id);
   }
 }

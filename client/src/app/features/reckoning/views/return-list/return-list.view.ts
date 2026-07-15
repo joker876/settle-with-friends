@@ -18,12 +18,15 @@ export class ReturnListView {
   readonly usersService = inject(UsersService);
 
   appendReturn(rtn: IReturn) {
+    if (this.reckoningService.isArchived()) return;
     this.returnListService.appendReturn(rtn);
   }
   refreshReturn(rtn: IReturn) {
+    if (this.reckoningService.isArchived()) return;
     this.returnListService.refreshReturn(rtn);
   }
   removeReturn(returnId: number) {
+    if (this.reckoningService.isArchived()) return;
     this.returnListService.removeReturn(returnId);
   }
 }

@@ -8,4 +8,27 @@
       <app-settings-users-section />
     </app-card>
   </section>
+
+  <app-role-guard [role]="UserRole.Owner">
+    <section>
+      <app-card>
+        <div class="with-subtitle">
+          <h2 i18n="@@settings.archiving">Archiwizacja</h2>
+          @if (reckoningService.isArchived()) {
+          <p i18n="@@settings.archiving.archived">
+            To rozliczenie jest zarchiwizowane. Nie można wprowadzać nowych zmian ani dodawać uczestników, ale można
+            przeglądać historię transakcji i zwrotów. Rozliczenie można przywrócić w dowolnym momencie.
+          </p>
+          } @else {
+          <p i18n="@@settings.archiving.description">
+            Po zarchiwizowaniu rozliczenia nie będzie można wprowadzać nowych zmian ani dodawać uczestników, ale będzie
+            można przeglądać historię transakcji i zwrotów. Rozliczenie można przywrócić w dowolnym momencie.
+          </p>
+          }
+        </div>
+
+        <app-settings-archiving-section />
+      </app-card>
+    </section>
+  </app-role-guard>
 </div>

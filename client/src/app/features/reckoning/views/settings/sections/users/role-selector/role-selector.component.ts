@@ -17,10 +17,11 @@ export class RoleSelectorComponent {
 
   readonly userOptions = [
     { label: $localize`:@@role.admin:Administrator`, value: UserRole.Admin },
-    { label: $localize`:@@role.member:Uczestnik`, value: UserRole.Member }
+    { label: $localize`:@@role.member:Uczestnik`, value: UserRole.Member },
   ];
 
   readonly value = model<UserRole>(UserRole.Member);
 
   readonly isLoading = input<boolean>(false);
+  readonly disabled = input<boolean>(false);
 }

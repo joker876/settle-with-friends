@@ -1,4 +1,5 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { BooleanLike, coerceBooleanProperty } from '@ardium-ui/devkit';
 import { ArdIconPlus } from '@ardium-ui/icons';
 import { ArdiumButtonModule, ArdiumDialogModule, ArdiumIconButtonModule } from '@ardium-ui/ui';
@@ -23,6 +24,7 @@ import { ReturnsService } from './returns.service';
     MoneyComponent,
     ArdiumDialogModule,
     ReturnCreateEditDialogComponent,
+    MatTooltipModule,
   ],
   templateUrl: './return-list.component.html',
   styleUrl: './return-list.component.scss',
@@ -32,6 +34,7 @@ export class ReturnListComponent {
   private readonly _currencyRatesService = inject(CurrencyRatesService);
 
   readonly returns = input.required<IReturn[]>();
+  readonly isArchived = input.required<boolean>();
   readonly partialList = input<boolean, BooleanLike>(false, { transform: v => coerceBooleanProperty(v) });
 
   readonly showAllButtonClick = output<void>();
@@ -54,11 +57,13 @@ export class ReturnListComponent {
   });
 
   onCreateReturnClick(): void {
+    if (this.isArchived()) return;
     this.isCreateEditDialogOpen.set(true);
     this.createEditDialogReturnData.set(null);
   }
 
   onEditReturnClick(rtn: IReturn): void {
+    if (this.isArchived()) return;
     this.isCreateEditDialogOpen.set(true);
     this.createEditDialogReturnData.set(rtn);
   }
@@ -115,6 +120,7 @@ export class ReturnListComponent {
   readonly isDeleteLoading = computed(() => this._returnsService.deleteReturnStatus() === 'loading');
 
   onDeleteReturnClick(rtn: IReturn): void {
+    if (this.isArchived()) return;
     this.returnToBeDeleted.set(rtn);
   }
   async deleteReturn(): Promise<void> {

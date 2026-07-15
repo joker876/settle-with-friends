@@ -3,6 +3,7 @@
 
   <app-transaction-list
     [transactions]="transactionListService.transactions.value()"
+    [isArchived]="reckoningService.isArchived()"
     (createTransactionClick)="navigateToCreateTransaction()"
     (editTransactionClick)="navigateToEditTransaction($event)"
     (deleteTransactionConfirm)="removeTransaction($event)"

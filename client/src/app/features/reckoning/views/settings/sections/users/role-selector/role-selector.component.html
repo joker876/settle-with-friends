@@ -7,7 +7,7 @@
       [options]="userOptions"
       appearance="transparent"
       searchable="false"
-      [disabled]="isLoading()"
+      [disabled]="isLoading() || disabled()"
     />
 
     <app-statistic ngProjectAs="else">

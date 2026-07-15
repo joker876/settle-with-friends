@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { UserWithRoleDto } from '../../dtos/user-with-role';
+import { NoArchived } from '../reckonings/no-archived.guard';
 import { ReckoningAccess } from '../reckonings/reckoning-access.guard';
 import { UpdateUserPseudonymRequestDto, UpdateUserPseudonymResponseDto } from './dtos/update-pseudonym';
 import { UpdateUserRoleRequestDto, UpdateUserRoleResponseDto } from './dtos/update-role';
@@ -17,6 +18,7 @@ export class ParticipantsController {
   }
 
   @Patch(':userId/role')
+  @NoArchived()
   async updateRole(
     @Param('reckoningId', ParseIntPipe) reckoningId: number,
     @Param('userId', ParseIntPipe) targetUserId: number,
@@ -28,6 +30,7 @@ export class ParticipantsController {
   }
 
   @Patch(':userId/pseudonym')
+  @NoArchived()
   async updatePseudonym(
     @Param('reckoningId', ParseIntPipe) reckoningId: number,
     @Param('userId', ParseIntPipe) targetUserId: number,

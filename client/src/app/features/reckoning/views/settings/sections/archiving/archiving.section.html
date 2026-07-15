@@ -1,0 +1,30 @@
+<ard-button
+  color="warn"
+  appearance="outlined-strong"
+  (click)="toggleArchiving()"
+  [color]="isArchived() ? 'success' : 'warn'"
+>
+  @if (isArchived()) {
+  <ng-container i18n="@@settings.archiving.restore">Przywróć rozliczenie</ng-container>
+  } @else {
+  <ng-container i18n="@@settings.archiving.archive">Archiwizuj rozliczenie</ng-container>
+  }
+</ard-button>
+
+<app-confirmation-dialog
+  [(open)]="isArchiveDialogOpen"
+  heading="Archiwizacja rozliczenia"
+  i18n-heading="@@settings.archiving.heading"
+  confirmButtonText="Archiwizuj"
+  i18n-confirmButtonText="@@settings.archiving.confirm"
+  confirmButtonColor="warn"
+  (submit)="onConfirmArchive()"
+>
+  <p i18n="@@settings.archiving.dialog-text">
+    Czy na pewno chcesz archiwizować rozliczenie <strong>{{ reckoningService.reckoning.value()?.name }}</strong>?
+  </p>
+  <p i18n="@@settings.archiving.dialog-warning">
+    Uczestnicy rozliczenia nie będą mogli dodawać nowych wydatków ani edytować istniejących. Przywrócenie rozliczenia
+    jest możliwe w dowolnym momencie.
+  </p>
+</app-confirmation-dialog>
