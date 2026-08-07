@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Post, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { UserWithRoleDto } from '../../dtos/user-with-role';
 import { NoArchived } from '../reckonings/no-archived.guard';
 import { ReckoningAccess } from '../reckonings/reckoning-access.guard';
+import { GenerateInviteLinkRequestDto, GenerateInviteLinkResponseDto } from './dtos/generate-invite-link';
 import { UpdateUserPseudonymRequestDto, UpdateUserPseudonymResponseDto } from './dtos/update-pseudonym';
 import { UpdateUserRoleRequestDto, UpdateUserRoleResponseDto } from './dtos/update-role';
 import { ParticipantsService } from './participants.service';
@@ -49,5 +50,15 @@ export class ParticipantsController {
   ): Promise<void> {
     const agentUserId = req.user!.id;
     return this.participantsService.kickOrLeave(reckoningId, targetUserId, agentUserId);
+  }
+
+  @Post('invite-link')
+  async generateInviteLink(
+    @Param('reckoningId', ParseIntPipe) reckoningId: number,
+    @Req() req: Request,
+    @Body() payload: GenerateInviteLinkRequestDto,
+  ): Promise<GenerateInviteLinkResponseDto> {
+    const agentUserId = req.user!.id;
+    return this.participantsService.generateInviteLink(reckoningId, agentUserId, payload);
   }
 }

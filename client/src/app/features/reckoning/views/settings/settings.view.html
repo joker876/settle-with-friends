@@ -1,11 +1,26 @@
 <div class="page-wrapper-g">
-  <h1 i18n="@@settings.settings">Ustawienia</h1>
+  <div class="main-heading">
+    <app-back-button link="../" />
+    <h1 i18n="@@settings.settings">Ustawienia</h1>
+  </div>
 
   <section>
     <app-card>
-      <h2 i18n="@@common.participants">Uczestnicy</h2>
+      <div class="users-heading">
+        <h2 i18n="@@common.participants">Uczestnicy</h2>
 
-      <app-settings-users-section />
+        <ard-icon-button
+          (click)="isInviteDialogOpen.set(true)"
+          title="Wygeneruj link do zaproszenia"
+          i18n-title="@@settings.invite-link-button"
+          aria-label="Wygeneruj link do zaproszenia"
+          i18n-aria-label="@@settings.invite-link-button"
+        >
+          <ard-icon-link-2 class="icon" />
+        </ard-icon-button>
+      </div>
+
+      <app-settings-users-section [(inviteLinkDialogOpen)]="isInviteDialogOpen" />
     </app-card>
   </section>
 

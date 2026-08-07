@@ -1,11 +1,11 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ICreateReckoningRequestDto } from '@shared/contracts/reckonings/create';
 import { GetAllReckoningsResponseDto, IReckoningTableData } from '@shared/contracts/reckonings/get-all';
 import { IReckoning } from '@shared/entities/reckoning';
 import { UserRole } from '@shared/enums/user-role';
 import { roundToPrecision } from 'more-rounding';
-import { In, Repository } from 'typeorm';
+import { In, IsNull, Not, Repository } from 'typeorm';
 import { Reckoning, ReckoningUser, User } from '../../typeorm/entities';
 import { ReckoningAccessService } from './reckoning-access.service';
 
@@ -132,6 +132,10 @@ export class ReckoningsService {
       throw new ForbiddenException('Permission denied');
     }
 
+    if (await this.reckoningRepo.findOneBy({ id: reckoningId, archivedAt: Not(IsNull()) })) {
+      throw new ConflictException('Reckoning is already archived');
+    }
+
     await this.reckoningRepo.update({ id: reckoningId }, { archivedAt: new Date() });
   }
 
@@ -139,6 +143,10 @@ export class ReckoningsService {
     // only owner can unarchive a reckoning
     if (!(await this.accessService.isUserAuthorized(reckoningId, agentUserId, UserRole.Owner))) {
       throw new ForbiddenException('Permission denied');
+    }
+
+    if (!(await this.reckoningRepo.findOneBy({ id: reckoningId, archivedAt: Not(IsNull()) }))) {
+      throw new ConflictException('Reckoning is not archived');
     }
 
     await this.reckoningRepo.update({ id: reckoningId }, { archivedAt: null });

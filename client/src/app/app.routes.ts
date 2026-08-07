@@ -7,6 +7,10 @@ export const routes: Routes = [
     loadChildren: () => import('./features/login/login.routes').then(r => r.loginRoutes),
   },
   {
+    path: 'invite/:token',
+    loadComponent: () => import('./features/invite/invite.page').then(c => c.InvitePage),
+  },
+  {
     path: '',
     loadComponent: () => import('./features/main/main.page').then(c => c.MainPage),
     loadChildren: () => import('./features/main/main.routes').then(r => r.mainRoutes),

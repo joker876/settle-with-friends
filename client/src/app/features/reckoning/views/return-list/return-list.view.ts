@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { BackButtonComponent } from "@common/components/back-button/back-button.component";
 import { ReturnListComponent } from '@features/reckoning/components/return-list/return-list.component';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
 import { UsersService } from '@features/reckoning/services/users.service';
@@ -7,7 +8,7 @@ import { ReturnListService } from './return-list.service';
 
 @Component({
   selector: 'app-return-list-view',
-  imports: [ReturnListComponent],
+  imports: [ReturnListComponent, BackButtonComponent],
   templateUrl: './return-list.view.html',
   styleUrl: './return-list.view.scss',
   providers: [ReturnListService],

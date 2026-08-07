@@ -1,3 +1,4 @@
+import { InviteLink } from './InviteLink';
 import { Reckoning } from './Reckoning';
 import { ReckoningUser } from './ReckoningUser';
 import { Return } from './Return';
@@ -8,6 +9,7 @@ import { TransactionSplitPart } from './TransactionSplitPart';
 import { TransactionSplitPartIncludee } from './TransactionSplitPartIncludee';
 import { User } from './User';
 
+export * from './InviteLink';
 export * from './Reckoning';
 export * from './ReckoningUser';
 export * from './Return';
@@ -28,4 +30,5 @@ export const entities = [
   TransactionPayer,
   TransactionSplitPart,
   TransactionSplitPartIncludee,
+  InviteLink,
 ];

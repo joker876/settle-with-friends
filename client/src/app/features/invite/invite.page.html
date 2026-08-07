@@ -1,0 +1,34 @@
+<app-card>
+  @if (inviteService.inviteLinkData.value(); as data) {
+  <p>Zostałeś zaproszony do rozliczenia</p>
+  <h1>{{ data.reckoning.name }}</h1>
+
+  <p>
+    <app-plural
+      [value]="data.reckoning.users.length"
+      forms="osoba,osoby,osób"
+      i18n-forms="@@common.people.plural-forms"
+    />
+  </p>
+  <app-avatar-list [users]="data.reckoning.users" avatarLimit="5" />
+
+  <ard-button
+    (click)="inviteService.joinFromInviteLink()"
+    [disabled]="inviteService.isJoinFromInviteLinkLoading()"
+    i18n="@invite.join-button"
+    appearance="raised-strong"
+    color="primary"
+  >
+    @if (inviteService.isJoinFromInviteLinkLoading()) {
+      <ard-spinner />
+    } @else {
+    Zaakceptuj zaproszenie
+    }
+  </ard-button>
+  } @else if (inviteService.inviteLinkData.isLoading()) {
+    <ard-spinner />
+  } @else if (inviteService.inviteLinkData.error(); as error) {
+    <ard-icon-x-circle-filled class="error-icon" />
+    <p i18n="@invite.error-message">Nie udało się pobrać zaproszenia</p>
+  }
+</app-card>

@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { ArdIconBankCardPayment, ArdIconChevron_2, ArdIconCoins, ArdIconHandCoins, ArdIconUsers } from '@ardium-ui/icons';
 import { ArdiumGridModule, ArdiumIconButtonModule, ArdiumModalModule, ArdiumSpinnerModule, ArdiumStackModule } from '@ardium-ui/ui';
 import { AvatarComponent } from '@common/components/avatar/avatar.component';
+import { BackButtonComponent } from "@common/components/back-button/back-button.component";
 import { BalanceComponent } from '@common/components/balance/balance.component';
 import { CardComponent } from '@common/components/card/card.component';
 import { StatisticComponent } from '@common/components/statistic/statistic.component';
@@ -30,6 +31,7 @@ import { DetailedSummaryService } from './detailed-summary.service';
     ArdIconChevron_2,
     ArdiumIconButtonModule,
     ArdiumModalModule,
+    BackButtonComponent
 ],
   templateUrl: './detailed-summary.view.html',
   styleUrl: './detailed-summary.view.scss',

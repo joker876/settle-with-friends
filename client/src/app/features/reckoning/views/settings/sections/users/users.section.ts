@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, model, signal } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
@@ -18,6 +18,7 @@ import { IUserWithRole } from '@shared/entities/user';
 import { UserRole } from '@shared/enums/user-role';
 import { SettingsService } from '../../settings.service';
 import { EditUserPseudonymDialogComponent } from './edit-user-pseudonym-dialog/edit-user-pseudonym-dialog.component';
+import { InviteLinkDialogComponent } from "./invite-link-dialog/invite-link-dialog.component";
 import { RoleSelectorComponent } from './role-selector/role-selector.component';
 
 @Component({
@@ -43,7 +44,8 @@ import { RoleSelectorComponent } from './role-selector/role-selector.component';
     ArdiumSpinnerModule,
     EditUserPseudonymDialogComponent,
     MatTooltipModule,
-  ],
+    InviteLinkDialogComponent
+],
   templateUrl: './users.section.html',
   styleUrl: './users.section.scss',
 })
@@ -51,6 +53,8 @@ export class UsersSection {
   readonly settingsService = inject(SettingsService);
   readonly router = inject(Router);
   readonly UserRole = UserRole;
+
+  readonly inviteLinkDialogOpen = model.required<boolean>();
 
   readonly userRoles = mapSignal<number, UserRole>();
   readonly userPseudonyms = mapSignal<number, string | null>();

@@ -4,6 +4,11 @@ section {
   margin-top: 2rem;
 }
 
+.main-heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 .users-section {
   app-card {
     padding: 0;

@@ -1,5 +1,6 @@
 import { IReckoning } from '@shared/entities/reckoning';
 import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { InviteLink } from './InviteLink';
 import { ReckoningUser } from './ReckoningUser';
 import { Return } from './Return';
 import { Transaction } from './Transaction';
@@ -36,4 +37,7 @@ export class Reckoning implements IReckoning {
 
   @OneToMany(() => Return, returnEntity => returnEntity.reckoning)
   returns: Return[];
+
+  @OneToMany(() => InviteLink, inviteLink => inviteLink.reckoning)
+  inviteLinks: InviteLink[];
 }

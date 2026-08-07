@@ -43,4 +43,10 @@ export class ReckoningsController {
   async archive(@Param('reckoningId', ParseIntPipe) reckoningId: number, @Req() req: Request): Promise<void> {
     return this.reckoningsService.archive(reckoningId, req.user!.id);
   }
+
+  @Patch(':reckoningId/unarchive')
+  @ReckoningAccess()
+  async unarchive(@Param('reckoningId', ParseIntPipe) reckoningId: number, @Req() req: Request): Promise<void> {
+    return this.reckoningsService.unarchive(reckoningId, req.user!.id);
+  }
 }

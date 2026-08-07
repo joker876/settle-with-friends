@@ -4,6 +4,12 @@ section {
   }
 }
 
+.main-heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .summary-section {
   p {
     text-align: right;

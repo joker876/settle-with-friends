@@ -67,12 +67,23 @@ export class ReckoningService {
     return new Promise<boolean>(resolve =>
       this._http.patch(`reckonings/${reckoningId}/archive`, {}).subscribe({
         next: () => {
+          this._reckoning.update(v => ({
+            ...v!,
+            archivedAt: new Date(),
+          }));
+          this._snackbarController.openSuccess($localize`:@@reckoning-page.archive.success:Zarchiwizowano rozliczenie`);
           resolve(true);
         },
-        error: () => {
-          this._snackbarController.openError(
-            $localize`:@@reckoning-page.archive.error:Nie udało się zarchiwizować rozliczenia`,
-          );
+        error: err => {
+          if (err.status === 409) {
+            this._snackbarController.openError(
+              $localize`:@@reckoning-page.archive.error.already-archived:Rozliczenie jest już zarchiwizowane`,
+            );
+          } else {
+            this._snackbarController.openError(
+              $localize`:@@reckoning-page.archive.error:Nie udało się zarchiwizować rozliczenia`,
+            );
+          }
           resolve(false);
         },
       }),
@@ -87,13 +98,23 @@ export class ReckoningService {
     return new Promise<boolean>(resolve =>
       this._http.patch(`reckonings/${reckoningId}/unarchive`, {}).subscribe({
         next: () => {
+          this._reckoning.update(v => ({
+            ...v!,
+            archivedAt: null,
+          }));
           this._snackbarController.openSuccess($localize`:@@reckoning-page.unarchive.success:Przywrócono rozliczenie`);
           resolve(true);
         },
-        error: () => {
-          this._snackbarController.openError(
-            $localize`:@@reckoning-page.unarchive.error:Nie udało się przywrócić rozliczenia`,
-          );
+        error: err => {
+          if (err.status === 409) {
+            this._snackbarController.openError(
+              $localize`:@@reckoning-page.unarchive.error.not-archived:Rozliczenie nie jest zarchiwizowane`,
+            );
+          } else {
+            this._snackbarController.openError(
+              $localize`:@@reckoning-page.unarchive.error:Nie udało się przywrócić rozliczenia`,
+            );
+          }
           resolve(false);
         },
       }),

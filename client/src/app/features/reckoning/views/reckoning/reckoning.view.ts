@@ -9,6 +9,7 @@ import {
   ArdIconSettings,
 } from '@ardium-ui/icons';
 import { ArdiumGridModule, ArdiumIconButtonModule, ArdiumSpinnerModule, ArdiumStackModule } from '@ardium-ui/ui';
+import { BackButtonComponent } from "@common/components/back-button/back-button.component";
 import { BalanceComponent } from '@common/components/balance/balance.component';
 import { TextBtnComponent } from '@common/components/text-btn/text-btn.component';
 import { LoadingBlockerDirective } from "@common/directives/loading-blocker.directive";
@@ -42,7 +43,8 @@ import { RecentTransactionListService } from './recent-transaction-list.service'
     ArdiumStackModule,
     ArdiumIconButtonModule,
     ArdIconSettings,
-    LoadingBlockerDirective
+    LoadingBlockerDirective,
+    BackButtonComponent
 ],
   templateUrl: './reckoning.view.html',
   styleUrl: './reckoning.view.scss',

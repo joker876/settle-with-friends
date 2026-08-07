@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { BackButtonComponent } from "@common/components/back-button/back-button.component";
 import { TransactionListComponent } from '@features/reckoning/components/transaction-list/transaction-list.component';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
 import { UsersService } from '@features/reckoning/services/users.service';
@@ -7,7 +8,7 @@ import { TransactionListService } from './transaction-list.service';
 
 @Component({
   selector: 'app-transaction-list-view',
-  imports: [TransactionListComponent],
+  imports: [TransactionListComponent, BackButtonComponent],
   templateUrl: './transaction-list.view.html',
   styleUrl: './transaction-list.view.scss',
   providers: [TransactionListService],

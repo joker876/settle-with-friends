@@ -4,6 +4,11 @@ section {
   margin-top: 2rem;
 }
 
+.main-heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 h2 {
   padding-bottom: 1rem;
 }
@@ -18,5 +23,20 @@ h2 {
   p {
     font-size: 0.875rem;
     color: var(--text3);
+  }
+}
+.users-heading {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  padding-bottom: 1rem;
+
+  h2 {
+    padding: 0;
+  }
+  .icon {
+    width: 1.375rem;
+    height: 1.375rem;
   }
 }

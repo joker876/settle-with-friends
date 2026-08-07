@@ -1,5 +1,8 @@
 <div class="page-wrapper-g">
-  <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
+  <div class="main-heading">
+    <app-back-button link="../" />
+    <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
+  </div>
 
   <app-return-list
     [returns]="returnListService.returns.value()"

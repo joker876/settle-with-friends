@@ -1,10 +1,11 @@
 import { computed, effect, inject, Injectable, RendererFactory2, ResourceStatus, signal } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router } from '@angular/router';
 import { HttpService } from '@common/services/http-service';
 import { setResourceStatusAfterLoaded } from '@common/utils/rxjs';
 import { IAuthRegisterRequestDto } from '@shared/contracts/auth/register';
 import { IAuthStatusResponseDto } from '@shared/contracts/auth/status';
+import { map } from 'rxjs';
 import { SnackbarController } from './snackbar-controller.service';
 
 export const LogoutReason = {
@@ -18,8 +19,20 @@ export type LogoutReason = (typeof LogoutReason)[keyof typeof LogoutReason];
 export class AuthService {
   private readonly _http = inject(HttpService);
   private readonly _router = inject(Router);
-  private readonly rendererFactory = inject(RendererFactory2);
+  private readonly _rendererFactory = inject(RendererFactory2);
   private readonly _snackbarController = inject(SnackbarController);
+
+  private readonly _redirectUrl = toSignal(
+    this._router.events.pipe(
+      map(event => {
+        if (!(event instanceof NavigationEnd)) {
+          return null;
+        }
+        return event.urlAfterRedirects.split('?redirectUrl=')[1]?.split('&')[0] ?? null;
+      }),
+    ),
+    { initialValue: null },
+  );
 
   private readonly _authStatus = rxResource({
     stream: () => this._http.get<IAuthStatusResponseDto>('/auth/status'),
@@ -43,7 +56,7 @@ export class AuthService {
   private _redirectToLoginTimeout: any = null;
   private unlistenWindowFocus?: () => void;
   constructor() {
-    const renderer = this.rendererFactory.createRenderer(null, null);
+    const renderer = this._rendererFactory.createRenderer(null, null);
     this.unlistenWindowFocus = renderer.listen('window', 'focus', () => this._checkLoginStatusOnWindowFocus());
 
     effect(() => {
@@ -64,6 +77,13 @@ export class AuthService {
     effect(() => {
       if (this.isLoggedIn() && !this.isRegistered()) {
         this.navigateToRegister();
+      }
+    });
+    effect(() => {
+      if (this.isLoggedIn() && localStorage.getItem('redirectUrl')) {
+        const redirectUrl = localStorage.getItem('redirectUrl')!;
+        localStorage.removeItem('redirectUrl');
+        this._router.navigateByUrl(redirectUrl);
       }
     });
   }
@@ -95,13 +115,15 @@ export class AuthService {
   }
 
   //! navigation
-  navigateToLoginOnSessionExpired() {
+  navigateToLoginOnSessionExpired(redirectUrl?: string) {
     this._authStatus.set(undefined);
     this._logoutReason.set(LogoutReason.SessionExpired);
-    this.navigateToLogin();
+    this.navigateToLogin(redirectUrl);
   }
-  navigateToLogin() {
-    this._router.navigateByUrl('/login');
+  navigateToLogin(redirectUrl?: string) {
+    this._router.navigateByUrl(
+      '/login?redirectUrl=' + encodeURIComponent(redirectUrl ?? window.location.pathname + window.location.search),
+    );
   }
   navigateToRegister() {
     this._router.navigateByUrl('/login/register');
@@ -117,6 +139,10 @@ export class AuthService {
   login(): void {
     this._isLoginLoading.set(true);
 
+    if (this._redirectUrl()) {
+      localStorage.setItem('redirectUrl', decodeURIComponent(this._redirectUrl()!));
+    }
+
     window.location.href = this._http.apiUrl + `auth/google/login`;
   }
 
@@ -126,7 +152,7 @@ export class AuthService {
       next: () => {
         this._authStatus.set(undefined);
         this._logoutReason.set(LogoutReason.LoggedOut);
-        this.navigateToLogin();
+        this.navigateToLogin('');
       },
       error: error => {
         console.error('Logout failed:', error);
