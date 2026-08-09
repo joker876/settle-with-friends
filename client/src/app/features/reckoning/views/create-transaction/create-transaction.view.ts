@@ -21,6 +21,7 @@ import { CurrencyRatesService } from '@features/reckoning/services/currency-rate
 import { PayersAdderComponent } from '@features/reckoning/views/create-transaction/components/payers-adder/payers-adder.component';
 import { ICreateTransactionRequestDto } from '@shared/contracts/transactions/create';
 import { IUpdateTransactionRequestDto } from '@shared/contracts/transactions/update';
+import { CurrencyCode } from '@shared/enums/currency-code';
 import { map, startWith } from 'rxjs';
 import { SplitPartsAdderComponent } from './components/split-parts-adder/split-parts-adder.component';
 import { CreateTransactionService } from './create-transaction.service';
@@ -75,7 +76,7 @@ export class CreateTransactionView {
         nonNullable: true,
         validators: [Validators.required, Validators.min(0)],
       }),
-      currencyCode: new FormControl(null as unknown as string, { nonNullable: true }),
+      currencyCode: new FormControl(null as unknown as CurrencyCode, { nonNullable: true }),
       currencyRate: new FormControl<number | null>(null, { validators: [Validators.required, Validators.min(0)] }),
       isCurrencyRateFromApi: new FormControl<boolean | null>(null, { validators: [Validators.required] }),
       transactionDate: new FormControl(this.TODAY, { nonNullable: true, validators: [Validators.required] }),
@@ -90,7 +91,7 @@ export class CreateTransactionView {
     }),
   });
   readonly formValue = toSignal(this.form.valueChanges.pipe(startWith(this.form.value)));
-  readonly currencyCodeValue = computed<string>(() => this.formValue()!.transaction!.currencyCode!);
+  readonly currencyCodeValue = computed<CurrencyCode>(() => this.formValue()!.transaction!.currencyCode!);
   readonly transactionDateValue = computed<Date>(() => this.formValue()!.transaction!.transactionDate!);
 
   readonly currencies = this._currencyRatesService.currencies;

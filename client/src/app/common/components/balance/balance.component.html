@@ -1,1 +1,1 @@
-{{ explicitSign() && balance() >= 0 ? '+' : '' }}{{ balance() | number : '1.'+ places() }} {{ currency() }}
+{{ explicitSign() && balance() > 0 ? '+' : '' }}{{ balance() | number : '1.'+ places() }} {{ currency() }}

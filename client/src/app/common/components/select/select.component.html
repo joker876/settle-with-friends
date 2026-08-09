@@ -8,10 +8,13 @@
   [id]="htmlId()"
   [isLoading]="areOptionsLoading()"
   [searchable]="searchable()"
+  [clearable]="false"
   [addCustom]="addCustomFn()"
   [compareWith]="compareWithFn()"
   [appearance]="appearance()"
   [hasError]="hasError()"
+  [multiselectable]="multiselectable()"
+  [keepOpen]="multiselectable()"
   (close)="close.emit()"
   (valueChange)="change.emit($event)"
   (blur)="emitTouched()"
@@ -21,10 +24,11 @@
       <ng-content />
     </ng-template>
   }
-  <ng-template ard-value-tmp let-itemData="itemData">
-    <span class="select-value" [class.searchable]="searchable()">{{
-      dynamicLabelMap() ? dynamicLabelMap()![itemData.value] : (itemData.selectedLabel ?? itemData.label)
-    }}</span>
+  <ng-template ard-value-tmp let-itemData="itemData" let-index="index" let-totalItems="itemsSelectedCount">
+    <span class="select-value" [class.searchable]="searchable()">
+      {{ dynamicLabelMap() ? dynamicLabelMap()![itemData.value] : (itemData.selectedLabel ?? itemData.label)
+      }}{{ totalItems > 1 && index < totalItems ? ', ' : '' }}
+    </span>
   </ng-template>
 
   <ng-template ard-option-tmp let-label="label" let-itemData="itemData" let-selected="selected">

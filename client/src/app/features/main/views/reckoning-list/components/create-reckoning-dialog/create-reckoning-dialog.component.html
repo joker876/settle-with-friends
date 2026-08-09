@@ -8,10 +8,34 @@
   [canConfirm]="form.valid"
 >
   <form [formGroup]="form">
-    <ard-form-field>
-      <ard-label i18n="@@create-reckoning.field.name">Nazwa rozliczenia</ard-label>
-      <ard-input [formControl]="form.controls.name" />
-      <ard-auto-error [control]="form.controls.name" />
-    </ard-form-field>
+    <ard-stack>
+      <ard-form-field>
+        <ard-label i18n="@@create-reckoning.field.name">Nazwa rozliczenia</ard-label>
+        <ard-input [formControl]="form.controls.name" />
+        <ard-auto-error [control]="form.controls.name" />
+      </ard-form-field>
+      <ard-grid container columns="1 md:2">
+        <ard-grid size="1">
+          <ard-form-field>
+            <ard-label i18n="@@create-reckoning.field.main-currency">Waluta główna</ard-label>
+            <app-select [formControl]="form.controls.mainCurrency" [options]="ALL_CURRENCY_OPTIONS" />
+            <ard-auto-error [control]="form.controls.mainCurrency" />
+          </ard-form-field>
+        </ard-grid>
+        <ard-grid size="1">
+          <ard-form-field>
+            <ard-label i18n="@@create-reckoning.field.helper-currencies">Waluty pomocnicze</ard-label>
+            <app-select
+              [formControl]="form.controls.helperCurrencies"
+              [options]="currencyOptionsWithoutMain()"
+              multiselectable
+              placeholder="Wybierz waluty..."
+              i18n-placeholder="@@create-reckoning.field.helper-currencies.placeholder"
+            />
+            <ard-auto-error [control]="form.controls.helperCurrencies" />
+          </ard-form-field>
+        </ard-grid>
+      </ard-grid>
+    </ard-stack>
   </form>
 </ard-dialog>

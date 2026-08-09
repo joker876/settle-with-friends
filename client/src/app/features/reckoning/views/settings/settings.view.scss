@@ -11,6 +11,23 @@ section {
 }
 h2 {
   padding-bottom: 1rem;
+
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--primary);
+
+    &.warn {
+      color: var(--warn);
+    }
+    &.danger {
+      color: var(--red);
+    }
+  }
 }
 .with-subtitle {
   display: flex;

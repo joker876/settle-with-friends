@@ -5,6 +5,7 @@ import { setResourceStatusAfterLoaded } from '@common/utils/rxjs';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
 import { UsersService } from '@features/reckoning/services/users.service';
 import { hydrateReturn } from '@features/reckoning/utils/hydration/return';
+import { BasicSummaryService } from '@features/reckoning/views/reckoning/basic-summary.service';
 import { IReturn, IReturnBasicData } from '@shared/entities/return';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class ReturnsService {
   private readonly _usersService = inject(UsersService);
   private readonly _http = inject(HttpService);
   private readonly _snackbarController = inject(SnackbarController);
+  private readonly _summaryService = inject(BasicSummaryService, { optional: true });
 
   //! create
   private readonly _createReturnStatus = signal<ResourceStatus>('idle');
@@ -30,6 +32,7 @@ export class ReturnsService {
         .subscribe({
           next: rtn => {
             this._snackbarController.openSuccess($localize`:@@returns.created-return:Dodano zwrot`);
+            this._summaryService?.reload();
             resolve(rtn);
           },
           error: () => {

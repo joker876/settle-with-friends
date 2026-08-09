@@ -12,6 +12,6 @@ export interface SelectableOption<T = any> {
   selectedLabel?: string;
 }
 
-export function createSelectableOptions(options: string[]): SelectableOption<string>[] {
+export function createSelectableOptions<T extends string>(options: T[]): SelectableOption<T>[] {
   return options.map(option => ({ label: option, value: option }));
 }

@@ -1,5 +1,6 @@
 import { inject, Injectable, ResourceStatus, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { HttpService } from '@common/services/http-service';
 import { SnackbarController } from '@common/services/snackbar-controller.service';
 import { setResourceStatusAfterLoaded } from '@common/utils/rxjs';
@@ -11,6 +12,7 @@ import { GetAllReckoningsResponseDto, IReckoningTableData } from '@shared/contra
 })
 export class ReckoningsService {
   private readonly _http = inject(HttpService);
+  private readonly _router = inject(Router);
   private readonly _snackbarController = inject(SnackbarController);
 
   private readonly _reckonings = rxResource({
@@ -40,7 +42,10 @@ export class ReckoningsService {
           next: res => {
             resolve(true);
             this._addReckoningToList(res);
-            console.log("%cChange URL to reckoning's page", 'color:lime');
+            this._snackbarController.openSuccess(
+              $localize`:@@create-reckoning.snackbar.success:Rozliczenie zostało utworzone`,
+            );
+            this._router.navigate(['r', res.id]);
           },
           error: () => {
             resolve(false);

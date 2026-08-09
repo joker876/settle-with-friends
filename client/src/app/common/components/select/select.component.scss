@@ -29,3 +29,6 @@
     cursor: pointer;
   }
 }
+::ng-deep .ard-select-value-container {
+  flex-wrap: wrap;
+}

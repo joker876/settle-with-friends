@@ -105,12 +105,16 @@
   --ard-icon-button-margin: 0;
   --ard-icon-button-size: 1.75rem;
   --ard-icon-button-size-compact: 1.5rem;
-  --ard-icon-button-disabled-opacity: 0;
+  --ard-icon-button-disabled-opacity: 50%;
+  --ard-icon-button-overlay-disabled-opacity: 0;
 
   --ard-form-field-font-size: 0.875rem;
   --ard-form-field-height: 1.875rem;
   --ard-form-field-error-color: var(--red);
   --ard-form-field-disabled-transparent-overlay-opacity: 0;
+  --ard-form-field-gap: 0.25rem;
+  --ard-form-field-label-font-weight: 600;
+  --ard-horizontal-form-field-gap: 0.75rem;
   --ard-select-font-size: 0.875rem;
   --ard-select-padding: 0 0.375rem;
   --ard-select-dropdown-padding: 0.75rem;
@@ -125,6 +129,7 @@
 
   //! Colors derived from Ardium UI
   --primary: rgb(var(--ard-primary-500));
+  --warn: rgb(var(--ard-warn-700));
 
   --red: rgb(var(--ard-danger-500));
   --red-bg: rgba(var(--ard-danger-500), 0.2);
@@ -519,12 +524,9 @@ ard-icon-button {
   padding-top: 2rem;
 }
 // form field
-.ard-form-field {
-  gap: 0.25rem;
-
+.ard-form-field, .ard-horizontal-form-field {
   .ard-label {
     font-size: 0.875rem;
-    font-weight: 600;
     padding-top: 0;
     padding-bottom: 0;
     line-height: 1.25rem;
@@ -542,6 +544,10 @@ ard-icon-button {
       display: none;
     }
   }
+}
+.ard-horizontal-form-field {
+  flex-direction: row;
+  align-items: center;
 }
 ard-error,
 .ard-error {
@@ -715,4 +721,8 @@ ard-radio-group {
 // grid
 ard-grid[container] {
   align-items: stretch;
+}
+// grid
+.ard-grid__container {
+  width: 100%;
 }

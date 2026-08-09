@@ -1,3 +1,4 @@
+import { CurrencyCode } from '../enums/currency-code';
 import { ITransactionSplitPart } from './transaction-includee';
 import { ITransactionPayer } from './transaction-payer';
 import { IUser } from './user';
@@ -5,7 +6,7 @@ import { IUser } from './user';
 export interface ITransactionBasicData {
   name: string;
   amount: number;
-  currencyCode: string;
+  currencyCode: CurrencyCode;
   currencyRate: number | null;
   isCurrencyRateFromApi: boolean | null;
   transactionDate: Date;

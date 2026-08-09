@@ -28,9 +28,9 @@ export class CreateTransactionService {
     params: () => ({ reckoningId: this._reckoningService.reckoningId(), transactionId: this._transactionId() }),
     stream: ({ params }) =>
       ensureParams(
-        params.reckoningId && params.transactionId,
+        !!params.reckoningId && !!params.transactionId,
         this._http
-          .get<ITransaction>(['reckonings', params.reckoningId!, 'transactions', params.transactionId!.toString()])
+          .get<ITransaction>(['reckonings', params.reckoningId!, 'transactions', params.transactionId?.toString()!])
           .pipe(this._usersService.waitForUsersLoaded(), hydrateTransaction(this._usersService)),
         null,
       ),

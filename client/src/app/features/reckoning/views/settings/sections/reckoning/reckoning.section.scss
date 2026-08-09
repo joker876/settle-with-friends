@@ -1,0 +1,37 @@
+:host {
+  --ard-horizontal-form-field-label-width: max-content;
+  --ard-horizontal-form-field-label-min-width: max-content;
+  --ard-horizontal-form-field-gap: 0.75rem;
+  --ard-form-field-label-font-weight: 400;
+}
+
+.edit-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+.main-currency-select {
+  max-width: 7ch;
+}
+app-select span {
+  font-size: var(--ard-select-font-size);
+}
+ard-stack {
+  width: 100%;
+}
+ard-button {
+  ard-spinner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    --ard-spinner-margin: 0;
+    --ard-spinner-size: 1rem;
+
+    & + span {
+      opacity: 0;
+      user-select: none;
+      appearance: none;
+    }
+  }
+}

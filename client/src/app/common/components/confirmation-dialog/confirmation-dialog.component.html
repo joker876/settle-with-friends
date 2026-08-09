@@ -6,6 +6,7 @@
   [(open)]="open"
   (confirm)="submit.emit()"
   [canConfirm]="!isSubmitLoading() && canConfirm()"
+  (reject)="open.set(false)"
 >
   <div class="content">
     <ng-content />

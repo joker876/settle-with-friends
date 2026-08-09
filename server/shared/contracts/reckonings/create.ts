@@ -1,3 +1,3 @@
 import { IReckoning } from '../../entities/reckoning';
 
-export interface ICreateReckoningRequestDto extends Pick<IReckoning, 'name'> {}
+export interface ICreateReckoningRequestDto extends Pick<IReckoning, 'name' | 'mainCurrency' | 'helperCurrencies'> {}

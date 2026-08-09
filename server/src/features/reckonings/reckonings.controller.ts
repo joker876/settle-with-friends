@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Inject, Param, ParseIntPipe, Patch, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Post, Req } from '@nestjs/common';
 import { UserRole } from '@shared/enums/user-role';
 import { Request } from 'express';
 import { CreateReckoningRequestDto } from './dtos/create';
+import { UpdateReckoningRequestDto } from './dtos/update';
 import { ReckoningAccess } from './reckoning-access.guard';
 import { ReckoningAccessService } from './reckoning-access.service';
 import { ReckoningsService } from './reckonings.service';
@@ -25,6 +26,23 @@ export class ReckoningsController {
     const userId = req.user!.id;
 
     return this.reckoningsService.create(body, userId);
+  }
+
+  @Patch(':reckoningId')
+  update(
+    @Param('reckoningId', ParseIntPipe) reckoningId: number,
+    @Req() req: Request,
+    @Body() body: UpdateReckoningRequestDto,
+  ) {
+    const userId = req.user!.id;
+
+    return this.reckoningsService.update(reckoningId, { ...body }, userId);
+  }
+
+  @Delete(':reckoningId')
+  @ReckoningAccess()
+  delete(@Param('reckoningId', ParseIntPipe) reckoningId: number, @Req() req: Request) {
+    return this.reckoningsService.delete(reckoningId, req.user!.id);
   }
 
   @Get(':reckoningId')

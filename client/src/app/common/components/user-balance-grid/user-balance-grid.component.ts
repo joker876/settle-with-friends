@@ -46,13 +46,13 @@ export class UserBalanceGridComponent {
   readonly isMainCurrency = computed<boolean>(() =>
     this.usersAndValues().some(v => v.currencyCode === this.mainCurrency()),
   );
-  readonly helperCurrency = computed<string>(
-    () => this.usersAndValues().find(v => v.currencyCode !== this.mainCurrency())?.currencyCode ?? this.mainCurrency(),
+  readonly helperCurrencies = computed<string[]>(
+    () => deduplicate(this.usersAndValues().map(v => v.currencyCode).filter(v => v !== this.mainCurrency())),
   );
 
   //! currency selector
   readonly currencyOptions = computed(() =>
-    expandToLabelValue(deduplicate([this.mainCurrency(), this.helperCurrency()])),
+    expandToLabelValue(deduplicate([this.mainCurrency(), ...this.helperCurrencies()])),
   );
   readonly currentCurrency = linkedSignal<string>(() => this.mainCurrency());
 }

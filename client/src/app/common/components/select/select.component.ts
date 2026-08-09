@@ -32,6 +32,7 @@ export class SelectComponent implements ControlValueAccessor, ArdFormFieldContro
   readonly options = input.required<SelectableOption<any>[]>();
   readonly areOptionsLoading = input<boolean>(false);
   readonly searchable = input<boolean, BooleanLike>(true, { transform: v => coerceBooleanProperty(v) });
+  readonly multiselectable = input<boolean, BooleanLike>(false, { transform: v => coerceBooleanProperty(v) });
   readonly _disabled = input<boolean, BooleanLike>(false, {
     transform: v => coerceBooleanProperty(v),
     alias: 'disabled',

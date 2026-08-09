@@ -6,8 +6,22 @@
 
   <section>
     <app-card>
+      <h2>
+        <ard-icon-coins class="icon" />
+        <ng-container i18n="@@settings.reckoning">Rozliczenie</ng-container>
+      </h2>
+
+      <app-settings-reckoning-section />
+    </app-card>
+  </section>
+
+  <section>
+    <app-card>
       <div class="users-heading">
-        <h2 i18n="@@common.participants">Uczestnicy</h2>
+        <h2>
+          <ard-icon-user-2 class="icon" />
+          <ng-container i18n="@@common.participants">Uczestnicy</ng-container>
+        </h2>
 
         <ard-icon-button
           (click)="isInviteDialogOpen.set(true)"
@@ -28,7 +42,11 @@
     <section>
       <app-card>
         <div class="with-subtitle">
-          <h2 i18n="@@settings.archiving">Archiwizacja</h2>
+          <h2>
+            <ard-icon-cardboard-box class="icon warn" />
+            <ng-container i18n="@@settings.archiving">Archiwizacja</ng-container>
+          </h2>
+
           @if (reckoningService.isArchived()) {
           <p i18n="@@settings.archiving.archived">
             To rozliczenie jest zarchiwizowane. Nie można wprowadzać nowych zmian ani dodawać uczestników, ale można
@@ -43,6 +61,26 @@
         </div>
 
         <app-settings-archiving-section />
+      </app-card>
+    </section>
+  </app-role-guard>
+
+  <app-role-guard [role]="UserRole.Owner">
+    <section>
+      <app-card>
+        <div class="with-subtitle">
+          <h2>
+            <ard-icon-trash-can-2 class="icon danger" />
+            <ng-container i18n="@@settings.deleting">Usuwanie</ng-container>
+          </h2>
+
+          <p i18n="@@settings.deleting.description">
+            Usunięcie rozliczenia spowoduje trwałe usunięcie wszystkich danych związanych z tym rozliczeniem, w tym
+            transakcji, zwrotów i uczestników. Ta operacja jest nieodwracalna i nie można jej cofnąć.
+          </p>
+        </div>
+
+        <app-settings-deleting-section />
       </app-card>
     </section>
   </app-role-guard>

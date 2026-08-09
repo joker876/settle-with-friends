@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { ArdIconLink_2 } from "@ardium-ui/icons";
+import { ArdIconCardboardBox, ArdIconCoins, ArdIconLink_2, ArdIconTrashCan_2, ArdIconUser_2 } from "@ardium-ui/icons";
 import {
   ArdiumDialogModule,
   ArdiumGridModule,
@@ -14,6 +14,8 @@ import { RoleGuardComponent } from '@features/reckoning/components/role-guard/ro
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
 import { UserRole } from '@shared/enums/user-role';
 import { ArchivingSection } from './sections/archiving/archiving.section';
+import { DeletingSection } from "./sections/deleting/deleting.section";
+import { ReckoningSection } from "./sections/reckoning/reckoning.section";
 import { UsersSection } from './sections/users/users.section';
 import { SettingsService } from './settings.service';
 
@@ -31,7 +33,13 @@ import { SettingsService } from './settings.service';
     RoleGuardComponent,
     ArdIconLink_2,
     ArdiumDialogModule,
-    BackButtonComponent
+    BackButtonComponent,
+    DeletingSection,
+    ReckoningSection,
+    ArdIconCoins,
+    ArdIconUser_2,
+    ArdIconCardboardBox,
+    ArdIconTrashCan_2
 ],
   templateUrl: './settings.view.html',
   styleUrl: './settings.view.scss',

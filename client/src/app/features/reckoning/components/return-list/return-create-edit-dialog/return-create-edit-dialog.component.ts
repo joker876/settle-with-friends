@@ -24,6 +24,7 @@ import { UTCDate } from '@date-fns/utc';
 import { CurrencyRatesService } from '@features/reckoning/services/currency-rates.service';
 import { UsersService } from '@features/reckoning/services/users.service';
 import { IReturn, IReturnBasicData } from '@shared/entities/return';
+import { CurrencyCode } from '@shared/enums/currency-code';
 import { startOfDay } from 'date-fns';
 import { startWith } from 'rxjs';
 
@@ -79,7 +80,7 @@ export class ReturnCreateEditDialogComponent {
         nonNullable: true,
         validators: [Validators.required, Validators.min(0)],
       }),
-      currencyCode: new FormControl(null as unknown as string, { nonNullable: true }),
+      currencyCode: new FormControl(null as unknown as CurrencyCode, { nonNullable: true }),
       currencyRate: new FormControl<number | null>(null, { validators: [Validators.required, Validators.min(0)] }),
       isCurrencyRateFromApi: new FormControl<boolean | null>(null, { validators: [Validators.required] }),
       returnDate: new FormControl(this.TODAY, { nonNullable: true, validators: [Validators.required] }),
@@ -99,7 +100,7 @@ export class ReturnCreateEditDialogComponent {
     },
   );
   readonly formValue = toSignal(this.form.valueChanges.pipe(startWith(this.form.value)));
-  readonly currencyCodeValue = computed<string>(() => this.formValue()!.currencyCode!);
+  readonly currencyCodeValue = computed<CurrencyCode>(() => this.formValue()!.currencyCode!);
   readonly returnDateValue = computed<Date>(() => this.formValue()!.returnDate!);
 
   readonly currencies = this._currencyRatesService.currencies;

@@ -1,0 +1,22 @@
+<ard-button color="danger" appearance="outlined-strong" (click)="deleteReckoning()">
+  <ng-container i18n="@@settings.deleting.delete">Usuń rozliczenie</ng-container>
+</ard-button>
+
+<app-confirmation-dialog
+  [(open)]="isDeleteDialogOpen"
+  heading="Usuwanie rozliczenia"
+  i18n-heading="@@settings.deleting.heading"
+  confirmButtonText="Usuń"
+  i18n-confirmButtonText="@@settings.deleting.confirm"
+  confirmButtonColor="danger"
+  (submit)="onConfirmDelete()"
+  confirmationDelaySeconds="5"
+>
+  <p i18n="@@settings.deleting.dialog-text">
+    Czy na pewno chcesz usunąć rozliczenie <strong>{{ reckoningService.reckoning.value()?.name }}</strong>?
+  </p>
+  <p i18n="@@settings.deleting.description">
+    Usunięcie rozliczenia spowoduje trwałe usunięcie wszystkich danych związanych z tym rozliczeniem, w tym transakcji,
+    zwrotów i uczestników. Ta operacja jest nieodwracalna i nie można jej cofnąć.
+  </p>
+</app-confirmation-dialog>

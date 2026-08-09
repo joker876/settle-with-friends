@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { computed, effect, inject, Injectable, untracked } from '@angular/core';
 import { mapSignal } from '@ardium-ui/devkit';
 import { createSelectableOptions } from '@common/utils/options';
+import { CurrencyCode } from '@shared/enums/currency-code';
 import { format } from 'date-fns';
 import { ReckoningService } from './reckoning.service';
 
@@ -21,17 +22,26 @@ type NBPCurrencyRateResponse = {
   ];
 };
 
+const ALLOWED_CURRENCY_CODES = Object.values(CurrencyCode);
+
 @Injectable({ providedIn: 'root' })
 export class CurrencyRatesService {
   private readonly _http = inject(HttpClient);
   private readonly _reckoningService = inject(ReckoningService);
 
-  readonly mainCurrency = computed<string | null>(() => this._reckoningService.reckoning.value()?.mainCurrency ?? null);
+  readonly mainCurrency = computed<CurrencyCode | null>(
+    () => this._reckoningService.reckoning.value()?.mainCurrency ?? null,
+  );
   readonly currencies = computed(() => {
     const reckoning = this._reckoningService.reckoning.value();
-    return reckoning
-      ? createSelectableOptions([reckoning.mainCurrency, reckoning.helperCurrency].filter(Boolean) as string[])
-      : [];
+    if (!reckoning) {
+      return [];
+    }
+
+    const currencies = Array.from(
+      new Set([reckoning.mainCurrency, ...reckoning.helperCurrencies].filter(Boolean)),
+    ).filter(v => ALLOWED_CURRENCY_CODES.includes(v));
+    return createSelectableOptions(currencies);
   });
   readonly isMoreThanOneCurrency = computed<boolean>(() => this.currencies().length > 1);
 
@@ -49,16 +59,16 @@ export class CurrencyRatesService {
 
   private readonly _currencyRates = mapSignal<CurrencyCodeDate, number>();
 
-  getCurrencyRate(currencyCode: string, date: Date): number | null {
+  getCurrencyRate(currencyCode: CurrencyCode, date: Date): number | null {
     const key = this._generateKey(currencyCode, date);
     return this._currencyRates.get(key) ?? null;
   }
 
-  private _generateKey(currencyCode: string, date: Date): CurrencyCodeDate {
+  private _generateKey(currencyCode: CurrencyCode, date: Date): CurrencyCodeDate {
     return `${currencyCode}-${format(date, 'yyyy-MM-dd')}`;
   }
 
-  async fetchAndStoreCurrencyRate(currencyCode: string, date: Date, recursionIndex = 0): Promise<void> {
+  async fetchAndStoreCurrencyRate(currencyCode: CurrencyCode, date: Date, recursionIndex = 0): Promise<void> {
     const key = this._generateKey(currencyCode, date);
 
     if (currencyCode === this.mainCurrency()) {

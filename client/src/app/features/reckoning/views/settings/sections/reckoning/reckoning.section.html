@@ -1,0 +1,104 @@
+<ard-stack>
+  <ard-horizontal-form-field>
+    <ard-label i18n="@@settings.reckoning.name-label">Nazwa rozliczenia:</ard-label>
+    @if (!isEditingName()) {
+    <ard-stack direction="row" spacing="1" alignItems="center">
+      <strong>{{ reckoningService.reckoning.value()?.name }}</strong>
+      <app-role-guard [role]="UserRole.Admin">
+        <ard-icon-button
+          (click)="isEditingName.set(true)"
+          aria-label="Edytuj nazwę rozliczenia"
+          i18n-aria-label="@@settings.reckoning.edit-name-button"
+        >
+          <ard-icon-edit-line-2 class="edit-icon" />
+        </ard-icon-button>
+      </app-role-guard>
+    </ard-stack>
+    }
+    <ard-input [formControl]="form.controls.name" [class.hidden]="!isEditingName()" />
+    <ard-auto-error [control]="form.controls.name" />
+  </ard-horizontal-form-field>
+  <ard-grid container columns="1 md:2">
+    <ard-grid size="1">
+      <ard-horizontal-form-field>
+        <ard-label i18n="@@settings.reckoning.main-currency-label">Waluta główna:</ard-label>
+        <ard-stack direction="row" spacing="1" alignItems="center">
+          <strong>{{ reckoningService.reckoning.value()?.mainCurrency }}</strong>
+          <app-role-guard [role]="UserRole.Admin">
+            <div
+              matTooltip="Nie można edytować waluty głównej"
+              i18n-matTooltip="@@settings.reckoning.edit-main-currency-button"
+            >
+              <ard-icon-button disabled>
+                <ard-icon-edit-line-2 class="edit-icon" />
+              </ard-icon-button>
+            </div>
+          </app-role-guard>
+        </ard-stack>
+        <app-select class="hidden" [options]="[]" />
+      </ard-horizontal-form-field>
+    </ard-grid>
+    <ard-grid size="1">
+      <ard-horizontal-form-field>
+        <ard-label i18n="@@settings.reckoning.helper-currencies-label">Waluty pomocnicze:</ard-label>
+        @if (!isEditingHelperCurrencies()) {
+        <ard-stack direction="row" spacing="1" alignItems="center">
+          <strong>{{ reckoningService.reckoning.value()?.helperCurrencies?.join(', ') }}</strong>
+          <app-role-guard [role]="UserRole.Admin">
+            <ard-icon-button
+              (click)="isEditingHelperCurrencies.set(true)"
+              aria-label="Edytuj waluty pomocnicze"
+              i18n-aria-label="@@settings.reckoning.edit-helper-currencies-button"
+            >
+              <ard-icon-edit-line-2 class="edit-icon" />
+            </ard-icon-button>
+          </app-role-guard>
+        </ard-stack>
+        }
+        <app-select
+          [class.hidden]="!isEditingHelperCurrencies()"
+          [formControl]="form.controls.helperCurrencies"
+          [options]="currencyOptionsWithoutExisting()"
+          withPrefix
+        >
+          <span>
+            <abbr
+              matTooltip="Nie można usunąć wcześniej wybranych walut pomocniczych"
+              i18n-matTooltip="@@settings.reckoning.cannot-remove-existing-helper-currencies"
+            >
+              {{ existingHelperCurrencies().join(', ') }}</abbr
+            >,
+          </span>
+        </app-select>
+      </ard-horizontal-form-field>
+    </ard-grid>
+  </ard-grid>
+  @if (isEditingName() || isEditingHelperCurrencies()) {
+  <ard-stack direction="row" justifyContent="flex-end">
+    <ard-button
+      (click)="discardChanges()"
+      i18n="@@settings.reckoning.discard-changes-button"
+      appearance="outlined"
+      color="none"
+      compact
+      [disabled]="reckoningService.updateReckoningLoading()"
+    >
+      Odrzuć
+    </ard-button>
+    <ard-button
+      [disabled]="!form.dirty || form.invalid"
+      (click)="saveChanges()"
+      i18n="@@settings.reckoning.save-changes-button"
+      appearance="raised-strong"
+      color="primary"
+      compact
+      [disabled]="reckoningService.updateReckoningLoading()"
+    >
+      @if (reckoningService.updateReckoningLoading()) {
+      <ard-spinner color="currentColor" />
+      }
+      <span>Zapisz</span>
+    </ard-button>
+  </ard-stack>
+  }
+</ard-stack>

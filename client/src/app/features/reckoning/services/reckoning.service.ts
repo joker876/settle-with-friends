@@ -4,15 +4,17 @@ import { EventType, Router } from '@angular/router';
 import { HttpService } from '@common/services/http-service';
 import { SnackbarController } from '@common/services/snackbar-controller.service';
 import { ensureParams } from '@common/utils/resource';
-import { setResourceStatusAfterLoaded } from '@common/utils/rxjs';
+import { setLoadingFalse, setResourceStatusAfterLoaded } from '@common/utils/rxjs';
 import { ICreateReckoningRequestDto } from '@shared/contracts/reckonings/create';
 import { IReckoningTableData } from '@shared/contracts/reckonings/get-all';
+import { IUpdateReckoningRequestDto } from '@shared/contracts/reckonings/update';
 import { IReckoning } from '@shared/entities/reckoning';
 import { filter, map } from 'rxjs';
 
 @Injectable()
 export class ReckoningService {
   private readonly _http = inject(HttpService);
+  private readonly _router = inject(Router);
   private readonly _snackbarController = inject(SnackbarController);
 
   public readonly reckoningId = toSignal(
@@ -56,8 +58,63 @@ export class ReckoningService {
   }
 
   //! updating reckoning
+  private readonly _updateReckoningLoading = signal<boolean>(false);
+  public readonly updateReckoningLoading = this._updateReckoningLoading.asReadonly();
+
+  public async updateReckoning(data: IUpdateReckoningRequestDto): Promise<boolean> {
+    const reckoningId = this.reckoningId();
+    if (!reckoningId) return false;
+
+    if (this._updateReckoningLoading()) return false;
+
+    this._updateReckoningLoading.set(true);
+
+    return new Promise<boolean>(resolve => {
+      this._http
+        .patch<void, IUpdateReckoningRequestDto>(`reckonings/${reckoningId}`, data)
+        .pipe(setLoadingFalse(this._updateReckoningLoading))
+        .subscribe({
+          next: () => {
+            this._snackbarController.openSuccess(
+              $localize`:@@reckoning-page.update.success:Zaktualizowano rozliczenie`,
+            );
+            this._reckoning.update(v => ({
+              ...v!,
+              ...data,
+            }));
+            resolve(true);
+          },
+          error: () => {
+            this._snackbarController.openError(
+              $localize`:@@reckoning-page.update.error:Nie udało się zaktualizować rozliczenia`,
+            );
+            resolve(false);
+          },
+        });
+    });
+  }
 
   //! deleting reckoning
+  deleteReckoning() {
+    const reckoningId = this.reckoningId();
+    if (!reckoningId) return;
+
+    return new Promise<boolean>(resolve =>
+      this._http.delete(`reckonings/${reckoningId}`).subscribe({
+        next: () => {
+          this._snackbarController.openSuccess($localize`:@@reckoning-page.delete.success:Usunięto rozliczenie`);
+          this._router.navigate(['/']);
+          resolve(true);
+        },
+        error: () => {
+          this._snackbarController.openError(
+            $localize`:@@reckoning-page.delete.error:Nie udało się usunąć rozliczenia`,
+          );
+          resolve(false);
+        },
+      }),
+    );
+  }
 
   //! archiving reckoning
   archiveReckoning() {

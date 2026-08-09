@@ -3,12 +3,14 @@ import { HttpService } from '@common/services/http-service';
 import { SnackbarController } from '@common/services/snackbar-controller.service';
 import { setLoadingFalse } from '@common/utils/rxjs';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
+import { BasicSummaryService } from '@features/reckoning/views/reckoning/basic-summary.service';
 
 @Injectable()
 export class TransactionsService {
   private readonly _reckoningService = inject(ReckoningService);
   private readonly _http = inject(HttpService);
   private readonly _snackbarController = inject(SnackbarController);
+  private readonly _summaryService = inject(BasicSummaryService, { optional: true });
 
   //! delete
   private readonly _deleteTransactionLoading = signal<boolean>(false);
@@ -26,6 +28,7 @@ export class TransactionsService {
         .subscribe({
           next: () => {
             this._snackbarController.openSuccess($localize`:@@transactions.deleted-transaction:Usunięto transakcję`);
+            this._summaryService?.reload();
             resolve(true);
           },
           error: () => {

@@ -1,3 +1,4 @@
+import { CurrencyCode } from "../enums/currency-code";
 import { IUser } from "./user";
 
 export interface IReturnBasicData {
@@ -5,7 +6,7 @@ export interface IReturnBasicData {
   returnedByUserId: number;
   returnedToUserId: number;
   amount: number;
-  currencyCode: string;
+  currencyCode: CurrencyCode;
   currencyRate: number | null;
   isCurrencyRateFromApi: boolean | null;
   returnDate: Date;

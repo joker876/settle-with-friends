@@ -1,12 +1,13 @@
 import { ConflictException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ICreateReckoningRequestDto } from '@shared/contracts/reckonings/create';
 import { GetAllReckoningsResponseDto, IReckoningTableData } from '@shared/contracts/reckonings/get-all';
 import { IReckoning } from '@shared/entities/reckoning';
 import { UserRole } from '@shared/enums/user-role';
 import { roundToPrecision } from 'more-rounding';
 import { In, IsNull, Not, Repository } from 'typeorm';
 import { Reckoning, ReckoningUser, User } from '../../typeorm/entities';
+import { CreateReckoningRequestDto } from './dtos/create';
+import { UpdateReckoningRequestDto } from './dtos/update';
 import { ReckoningAccessService } from './reckoning-access.service';
 
 @Injectable()
@@ -37,7 +38,7 @@ export class ReckoningsService {
         createdDate: true,
         updatedDate: true,
         mainCurrency: true,
-        helperCurrency: true,
+        helperCurrencies: true,
         reckoningUsers: { userId: true, role: true },
       },
     });
@@ -81,19 +82,13 @@ export class ReckoningsService {
         createdDate: true,
         updatedDate: true,
         mainCurrency: true,
-        helperCurrency: true,
+        helperCurrencies: true,
         reckoningUsers: { userId: true, role: true },
       },
     });
   }
 
-  async create(data: ICreateReckoningRequestDto, userId: number): Promise<IReckoningTableData> {
-    const v = 5 as number;
-    if (v !== 6) {
-      console.log(data);
-      throw new Error('Reckoning name is required');
-    }
-
+  async create(data: CreateReckoningRequestDto, userId: number): Promise<IReckoningTableData> {
     const reckoning = this.reckoningRepo.create(data);
     await this.reckoningRepo.save(reckoning);
 
@@ -104,6 +99,31 @@ export class ReckoningsService {
       currentBalance: 0,
       numberOfTransactions: 0,
     };
+  }
+
+  async update(reckoningId: number, data: UpdateReckoningRequestDto, userId: number): Promise<void> {
+    // only admin or higher can update a reckoning
+    if (!(await this.accessService.isUserAuthorized(reckoningId, userId, UserRole.Admin))) {
+      throw new ForbiddenException('Permission denied');
+    }
+
+    const reckoning = await this.reckoningRepo.findOneBy({ id: reckoningId });
+    if (!reckoning) {
+      throw new Error('Reckoning not found');
+    }
+
+    Object.assign(reckoning, data);
+    await this.reckoningRepo.save(reckoning);
+  }
+
+  async delete(reckoningId: number, agentUserId: number): Promise<void> {
+    // only owner can delete a reckoning
+    if (!(await this.accessService.isUserAuthorized(reckoningId, agentUserId, UserRole.Owner))) {
+      throw new ForbiddenException('Permission denied');
+    }
+
+    // soft delete the reckoning
+    await this.reckoningRepo.softDelete({ id: reckoningId });
   }
 
   async addUser(reckoningId: number, userId: number, role: UserRole) {
