@@ -1,5 +1,6 @@
 import { IReturnBasicData } from '@shared/entities/return';
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { CurrencyCode } from '@shared/enums/currency-code';
+import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TrimString } from '../../../utils/trim-string.transform';
 
 export class CreateReturnRequestDto implements IReturnBasicData {
@@ -23,7 +24,8 @@ export class CreateReturnRequestDto implements IReturnBasicData {
   @IsString()
   @IsNotEmpty()
   @TrimString()
-  currencyCode: string;
+  @IsEnum(CurrencyCode)
+  currencyCode: CurrencyCode;
 
   @IsNumber()
   @IsOptional()

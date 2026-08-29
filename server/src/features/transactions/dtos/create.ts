@@ -4,7 +4,8 @@ import {
   ICreateTransactionRequestSplitPartDto,
 } from '@shared/contracts/transactions/create';
 import { ITransactionBasicData } from '@shared/entities/transaction';
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { CurrencyCode } from '@shared/enums/currency-code';
+import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TrimString } from '../../../utils/trim-string.transform';
 import { Nested, NestedArray } from '../../../utils/validation.decorators';
 
@@ -21,7 +22,8 @@ export class CreateTransactionBasicDataDto implements ITransactionBasicData {
   @IsString()
   @IsNotEmpty()
   @TrimString()
-  currencyCode: string;
+  @IsEnum(CurrencyCode)
+  currencyCode: CurrencyCode;
 
   @IsNumber()
   @IsOptional()

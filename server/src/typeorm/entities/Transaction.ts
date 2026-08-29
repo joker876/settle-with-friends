@@ -3,6 +3,7 @@ import { ITransaction } from '@shared/entities/transaction';
 import { ITransactionSplitPartInternal } from '@shared/entities/transaction-includee';
 import { ITransactionPayer } from '@shared/entities/transaction-payer';
 import { IUser } from '@shared/entities/user';
+import { CurrencyCode } from '@shared/enums/currency-code';
 import {
   Column,
   CreateDateColumn,
@@ -33,7 +34,7 @@ export class Transaction implements ITransaction {
   amount: number;
 
   @Column()
-  currencyCode: string;
+  currencyCode: CurrencyCode;
 
   @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
   currencyRate: number | null;
