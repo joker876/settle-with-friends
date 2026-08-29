@@ -17,8 +17,8 @@ export class User implements IUser {
   @Column({ nullable: true, type: 'text' })
   photo: string | null;
 
-  @Column({ default: false })
-  registered: boolean;
+  @Column({ default: null, nullable: true })
+  registeredAt?: Date;
 
   @OneToMany(() => ReckoningUser, reckoningUser => reckoningUser.user)
   reckoningUsers: ReckoningUser[];

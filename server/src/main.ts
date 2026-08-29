@@ -51,5 +51,5 @@ void (async () => {
     startLoginProxy(await app.getUrl());
   }
 
-  console.log(`Server is running on: ${await app.getUrl()}`);
+  console.log(`Server is running on: ${await app.getUrl()}, frontend: ${process.env.FRONTEND_URL ?? 'http://localhost:4200'}`);
 })();

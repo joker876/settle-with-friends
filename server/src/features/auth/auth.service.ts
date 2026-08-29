@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { User } from '../../typeorm/entities';
 import { fileUrlToFileBase64 } from '../../utils/file-url-to-file-base64';
 import { UserDetails } from '../../utils/types';
@@ -28,7 +28,7 @@ export class AuthService {
   }
 
   async isUserRegistered(id: number): Promise<boolean> {
-    return this.userRepository.existsBy({ id, registered: true });
+    return this.userRepository.existsBy({ id, registeredAt: Not(IsNull()) });
   }
 
   async existsUser(id: number, otherData?: Partial<Omit<User, 'id' | 'photo' | 'reckoningUsers'>>): Promise<boolean> {
@@ -40,8 +40,8 @@ export class AuthService {
       userData.displayName = (await this.findUser(id))!.displayName;
     }
     if (userData.acceptsPhoto) {
-      await this.userRepository.update({ id }, { registered: true, displayName: userData.displayName });
+      await this.userRepository.update({ id }, { registeredAt: new Date(), displayName: userData.displayName });
     }
-    await this.userRepository.update({ id }, { registered: true, displayName: userData.displayName, photo: undefined });
+    await this.userRepository.update({ id }, { registeredAt: new Date(), displayName: userData.displayName, photo: undefined });
   }
 }
