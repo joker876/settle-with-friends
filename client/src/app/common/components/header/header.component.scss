@@ -14,18 +14,19 @@ header {
   align-items: center;
   justify-content: space-between;
   position: relative;
-  padding-left: 3rem;
-  padding-right: 2rem;
+  padding-inline: 2rem;
   margin: 0 auto;
 }
 
 .logo-container {
   display: flex;
   align-items: center;
-  height: 60%;
+  height: 100%;
+  width: calc(var(--sidebar-width) - 2rem);
+  border-right: 1px solid var(--ard-detail-ultralight);
 
   img {
-    height: 100%;
+    height: 60%;
     object-fit: contain;
     filter: drop-shadow(0 clamp(0.5px, 0.1vh, 2px) clamp(1px, 0.3vh, 4px) rgba(0, 0, 0, 0.1));
   }

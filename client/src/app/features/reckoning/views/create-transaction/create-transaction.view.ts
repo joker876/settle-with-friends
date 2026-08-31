@@ -51,10 +51,9 @@ import { CreateTransactionService } from './create-transaction.service';
 })
 export class CreateTransactionView {
   private readonly _router = inject(Router);
-  private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _route = inject(ActivatedRoute);
   private readonly _currencyRatesService = inject(CurrencyRatesService);
   private readonly _createTransactionService = inject(CreateTransactionService);
-  private readonly _route = inject(ActivatedRoute);
 
   readonly TODAY = new Date();
 
@@ -199,7 +198,7 @@ export class CreateTransactionView {
   }
 
   private _navigateToTransactionList() {
-    this._router.navigate([this.isCreateMode() ? '../' : '../../'], { relativeTo: this._activatedRoute });
+    this._router.navigate([this.isCreateMode() ? '../' : '../../'], { relativeTo: this._route });
   }
 
   onCancelClick() {

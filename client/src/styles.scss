@@ -47,10 +47,12 @@
   --text: black;
   --text2: #222222;
   --text3: rgba(0, 0, 0, 0.5);
+  --sidebar-text: #484848;
 
   --color-link: #0066ff;
   --light-gray: #cccccc;
 
+  --sidebar-width: 13rem;
   --header-height: 4.5rem;
   --avatar-size: 2rem;
   --loading-blocker-top: 50%;
@@ -129,6 +131,7 @@
 
   //! Colors derived from Ardium UI
   --primary: rgb(var(--ard-primary-500));
+  --primary-rgb: var(--ard-primary-500);
   --warn: rgb(var(--ard-warn-700));
 
   --red: rgb(var(--ard-danger-500));

@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from '@common/components/header/header.component';
+import { SidebarComponent } from "@common/components/sidebar/sidebar.component";
+import { SidebarService } from '@common/services/sidebar.service';
 import { TitleService } from '@common/services/title.service';
 import { TimeagoIntl } from 'ngx-timeago';
 import { strings as plStrings } from 'ngx-timeago/language-strings/pl.js';
@@ -9,7 +11,7 @@ import { filter, map, mergeMap } from 'rxjs';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent],
+  imports: [RouterOutlet, HeaderComponent, SidebarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -17,6 +19,7 @@ export class AppComponent {
   private readonly _titleService = inject(TitleService);
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
+  readonly sidebarService = inject(SidebarService);
 
   ngOnInit(): void {
     this._router.events

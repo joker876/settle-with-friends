@@ -1,0 +1,71 @@
+<section>
+  <ul>
+    <li>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <ard-icon-home class="icon" />
+        <span class="text" i18n="@@sidebar.home">Rozliczenia</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/account" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <ard-icon-user-2 class="icon" />
+        <span class="text" i18n="@@sidebar.account">Konto</span>
+      </a>
+    </li>
+  </ul>
+</section>
+@if (sidebarService.reckoningId(); as reckoningId) {
+  <section>
+    <p class="section-label">Rozliczenie</p>
+    <ul>
+      <li>
+        <a [routerLink]="['/r', reckoningId]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <ard-icon-clipboard-two-lines class="icon" />
+          <span class="text" i18n="@@sidebar.reckoning">Rozliczenie</span>
+        </a>
+      </li>
+      <li>
+        <a
+          [routerLink]="['/r', reckoningId, 'transactions']"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <ard-icon-bank-card-payment class="icon" />
+          <span class="text" i18n="@@sidebar.transactions">Transakcje</span>
+        </a>
+      </li>
+      <li>
+        <a
+          [routerLink]="['/r', reckoningId, 'returns']"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <ard-icon-hand-coins class="icon" />
+          <span class="text" i18n="@@sidebar.returns">Zwroty</span>
+        </a>
+      </li>
+      <li>
+        <a
+          [routerLink]="['/r', reckoningId, 'summary']"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <ard-icon-coins class="icon" />
+          <span class="text" i18n="@@sidebar.summary">Podsumowanie</span>
+        </a>
+      </li>
+      <li>
+        <a
+          [routerLink]="['/r', reckoningId, 'settings']"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <ard-icon-settings class="icon" />
+          <span class="text" i18n="@@sidebar.settings">Ustawienia</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+}
+
+<span class="version">v1.0.0</span>

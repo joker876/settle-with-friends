@@ -1,6 +1,11 @@
 <div class="header-wrapper">
   <app-header />
 </div>
-<main>
-  <router-outlet />
-</main>
+<div class="main-content">
+  <aside [class.open]="sidebarService.isOpen()">
+    <app-sidebar />
+  </aside>
+  <main>
+    <router-outlet />
+  </main>
+</div>
