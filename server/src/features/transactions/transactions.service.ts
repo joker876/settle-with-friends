@@ -111,12 +111,12 @@ export class TransactionsService {
     if (!tx) {
       throw new NotFoundException('Transaction not found');
     }
-    if (
-      tx.createdByUserId !== userId &&
-      !(await this.accessService.isUserAuthorized(reckoningId, userId, UserRole.Admin))
-    ) {
-      throw new UnauthorizedException('Unauthorized');
-    }
+    // if (
+    //   tx.createdByUserId !== userId &&
+    //   !(await this.accessService.isUserAuthorized(reckoningId, userId, UserRole.Admin))
+    // ) {
+    //   throw new BadRequestException('Unauthorized');
+    // }
 
     // update basic fields
     Object.assign(tx, transactionData.transaction);

@@ -4,13 +4,9 @@ section {
   }
 }
 
-.main-heading {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
 .summary-section {
+  margin-top: -1rem;
+
   p {
     text-align: right;
     padding-top: 0;

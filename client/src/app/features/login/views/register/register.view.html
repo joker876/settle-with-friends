@@ -4,13 +4,14 @@
 
 <ard-form-field>
   <ard-label i18n="@@register.display-name.label">Pseudonim</ard-label>
-  <p i18n="@@register.display-name.description">Inne osoby zobaczą tą nazwę obok twojego profilu.</p>
   <ard-input
     [formControl]="form.controls.displayName"
+    appearance="outlined"
     (focus)="onDisplayNameFocus()"
     (blur)="onDisplayNameBlur()"
     maxLength="40"
   />
+  <ard-hint i18n="@@register.display-name.description">Inne osoby zobaczą tą nazwę obok twojego profilu.</ard-hint>
 </ard-form-field>
 
-<ard-button (click)="onAcceptClick()" i18n="@@common.accept">Akceptuj</ard-button>
+<ard-button appearance="flat" color="primary" (click)="onAcceptClick()" i18n="@@common.accept">Akceptuj</ard-button>

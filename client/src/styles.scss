@@ -169,6 +169,7 @@
   }
   html {
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
   }
   body {
     line-height: 1.5;
@@ -229,13 +230,14 @@
 }
 //! Global styles
 .page-wrapper-g {
-  padding: 1rem;
-  max-width: 90ch;
-  box-sizing: content-box;
+  --_padding: 1rem;
+  padding: var(--_padding);
+  max-width: min(calc(90ch + var(--_padding)), 100%);
+  width: 100%;
   margin: 0 auto;
 
   @media (width > $bp-sm) {
-    padding: 1.5rem 3rem;
+    --_padding: 1.5rem;
   }
 }
 $hr-border: 1px solid var(--ard-detail-ultralight);
@@ -251,6 +253,12 @@ hr {
     width: 0;
     height: 100%;
   }
+}
+.red-g {
+  color: var(--red);
+}
+.green-g {
+  color: var(--green);
 }
 
 //! Global scrollbar styles
@@ -337,7 +345,8 @@ scrollbar-thumb:hover {
   thead {
     background-color: var(--bg3);
   }
-  th, td {
+  th,
+  td {
     padding: 0.5rem 0.75rem;
     text-align: left;
     border-bottom: 1px solid var(--border);
@@ -527,7 +536,8 @@ ard-icon-button {
   padding-top: 2rem;
 }
 // form field
-.ard-form-field, .ard-horizontal-form-field {
+.ard-form-field,
+.ard-horizontal-form-field {
   .ard-label {
     font-size: 0.875rem;
     padding-top: 0;

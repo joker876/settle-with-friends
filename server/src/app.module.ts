@@ -4,6 +4,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
+import { AccountSettingsModule } from './features/account-settings/account-settings.module';
 import { AuthModule } from './features/auth/auth.module';
 import { SessionAuthGuard } from './features/auth/session-auth.guard';
 import { ParticipantsModule } from './features/participants/participants.module';
@@ -41,6 +42,7 @@ import { DateMappingInterceptor } from './utils/date-mapping.interceptor';
     ReturnsModule,
     SummaryModule,
     ParticipantsModule,
+    AccountSettingsModule,
   ],
   controllers: [AppController],
   providers: [

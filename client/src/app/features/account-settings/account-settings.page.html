@@ -1,0 +1,133 @@
+<app-card>
+  <h2 i18n="@@account-settings.my-account">Mój profil</h2>
+
+  <div class="avatar-settings">
+    <div class="avatar-container">
+      @if (accountService.accountData.value()?.photo; as photo) {
+      <app-avatar [photo]="photo" name="" />
+
+      @if (accountService.isUpdateAccountSettingsLoading()) {
+      <div class="avatar-spinner-overlay">
+        <ard-spinner color="currentColor" />
+      </div>
+      } }
+    </div>
+
+    <div class="avatar-controls">
+      <div class="avatar-actions">
+        <ard-button
+          appearance="flat"
+          color="none"
+          [disabled]="accountService.isUpdateAccountSettingsLoading()"
+          (click)="onChangePhotoClick()"
+        >
+          <ard-icon-plus />
+          <ng-container i18n="@@account-settings.change-avatar">Zmień zdjęcie</ng-container>
+        </ard-button>
+        <ard-button
+          appearance="outlined"
+          color="none"
+          [disabled]="accountService.isUpdateAccountSettingsLoading()"
+          (click)="onDeletePhotoClick()"
+        >
+          <ng-container i18n="@@account-settings.delete-avatar">Usuń zdjęcie</ng-container>
+        </ard-button>
+      </div>
+      <app-statistic i18n="@@account-settings.avatar-requirements"> Pliki JPEG lub PNG poniżej 256kB </app-statistic>
+    </div>
+  </div>
+
+  <ard-divider />
+
+  <h2 i18n="@@account-settings.account-data">Dane konta</h2>
+
+  <ard-grid container columns="1 md:2" rowSpacing="3 md:6">
+    <ard-grid size="1">
+      <div class="form-field">
+        <label i18n="@@account-settings.display-name.label" for="account-display-name">Pseudonim</label>
+        <input
+          palceholder="Wpisz pseudonim..."
+          i18n-placeholder="@@account-settings.display-name.placeholder"
+          [readOnly]="!isEditingDisplayName()"
+          [value]="accountService.accountData.value()?.displayName ?? ''"
+          id="account-display-name"
+          #displayNameInput
+        />
+      </div>
+    </ard-grid>
+    <ard-grid size="1" class="button-wrapper">
+      @if (isEditingDisplayName()) {
+      <ard-button
+        appearance="outlined"
+        square
+        i18n-ariaLabel="@@common.save"
+        ariaLabel="Zapisz"
+        i18n-title="@@common.save"
+        title="Zapisz"
+        (click)="onDisplayNameSave(displayNameInput)"
+      >
+        <ard-icon-check class="green-g" />
+      </ard-button>
+      <ard-button
+        appearance="outlined"
+        square
+        i18n-ariaLabel="@@common.cancel"
+        ariaLabel="Anuluj"
+        i18n-title="@@common.cancel"
+        title="Anuluj"
+        (click)="onDisplayNameCancel(displayNameInput)"
+      >
+        <ard-icon-x-2 class="red-g" />
+      </ard-button>
+      } @else {
+      <ard-button appearance="outlined" i18n="@@common.change" (click)="activateDisplayNameChange(displayNameInput)">
+        Zmień
+      </ard-button>
+      }
+    </ard-grid>
+
+    <ard-grid size="1">
+      <div class="form-field">
+        <label i18n="@@account-settings.email.label" for="account-email">Email</label>
+        <input readonly [value]="accountService.accountData.value()?.email ?? ''" id="account-email" />
+      </div>
+    </ard-grid>
+    <ard-grid size="1"></ard-grid>
+  </ard-grid>
+
+  <ard-divider />
+
+  <ard-grid container columns="2">
+    <ard-grid size="grow">
+      <ard-stack spacing="2">
+        <strong class="red-g" i18n="@@account-settings.delete-my-account">Usuń moje konto</strong>
+        <app-statistic i18n="@@account-settings.delete-account-description">
+          Trwale usuń konto i usuń dostęp ze wszystkich urządzeń.
+        </app-statistic>
+      </ard-stack>
+    </ard-grid>
+    <ard-grid size="auto" class="button-center">
+      <ard-button
+        appearance="outlined-strong"
+        color="danger"
+        i18n="@@account-settings.delete-account"
+        (click)="deleteAccountConfirmationOpen.set(true)"
+      >
+        Usuń konto
+      </ard-button>
+    </ard-grid>
+  </ard-grid>
+</app-card>
+
+<app-confirmation-dialog
+  [(open)]="deleteAccountConfirmationOpen"
+  confirmationDelaySeconds="5"
+  heading="Usuwanie konta"
+  i18n-heading="@@account-settings.deleting-account"
+  confirmButtonText="Usuń"
+  i18n-confirmButtonText="@@common.delete"
+  (submit)="onConfirmDeleteAccount()"
+>
+  <p>Czy na pewno chcesz usunąć swoje konto?</p>
+  <p>Usunięcie konta jest <strong>nieodwracalne</strong></p>
+</app-confirmation-dialog>

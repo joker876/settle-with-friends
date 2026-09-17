@@ -1,15 +1,4 @@
 <div class="page-wrapper-g">
-  <ard-stack direction="row" alignItems="center" spacing="8">
-    <div class="main-heading">
-      <app-back-button link="../../" />
-      <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
-    </div>
-
-    <ard-icon-button (click)="navigateToSettings()">
-      <ard-icon-settings />
-    </ard-icon-button>
-  </ard-stack>
-
   <section class="summary-section">
     <p>
       <app-text-btn (click)="navigateToSummary()">
@@ -29,6 +18,7 @@
           heading="Opłacone"
           i18n-heading="@@reckoning.summary.paid.heading"
           [appLoadingBlocker]="basicSummaryService.isReloadingTransactions()"
+          withSubtext
         >
           <ng-container ngProjectAs="icon">
             <ard-icon-bank-card-payment />
@@ -56,6 +46,7 @@
           heading="Do zapłaty"
           i18n-heading="@@reckoning.summary.to-pay.heading"
           [appLoadingBlocker]="basicSummaryService.isReloadingTransactions()"
+          withSubtext
         >
           <ng-container ngProjectAs="icon">
             <ard-icon-bank-card-x />
@@ -83,6 +74,7 @@
           heading="Bilans zwrotów"
           i18n-heading="@@reckoning.summary.returns-balance.heading"
           [appLoadingBlocker]="basicSummaryService.isReloadingReturns()"
+          withSubtext
         >
           <ng-container ngProjectAs="icon">
             <ard-icon-hand-coins />
@@ -121,6 +113,7 @@
           heading="Bilans"
           i18n-heading="@@reckoning.summary.balance.heading"
           [appLoadingBlocker]="basicSummaryService.isReloadingTransactions() || basicSummaryService.isReloadingReturns()"
+          withSubtext
         >
           <ng-container ngProjectAs="icon">
             <ard-icon-coins />

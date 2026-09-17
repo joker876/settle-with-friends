@@ -5,4 +5,5 @@ export interface IAuthStatusResponseDto {
   user?: IUser | null;
   expiresAt?: Date | null;
   isRegistered?: boolean;
+  canRegister?: boolean;
 }

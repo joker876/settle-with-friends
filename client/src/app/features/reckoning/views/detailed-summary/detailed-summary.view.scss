@@ -1,14 +1,9 @@
 @use '../../../../../breakpoints.scss' as *;
 
-section {
-  margin-top: 2rem;
+section:not(:first-child) {
+  margin-top: 1.5rem;
 }
 
-.main-heading {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
 .users-section {
   app-card {
     padding: 0;

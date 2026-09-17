@@ -5,6 +5,7 @@ import { HttpService } from '@common/services/http-service';
 import { setResourceStatusAfterLoaded } from '@common/utils/rxjs';
 import { IAuthRegisterRequestDto } from '@shared/contracts/auth/register';
 import { IAuthStatusResponseDto } from '@shared/contracts/auth/status';
+import { IUser } from '@shared/entities/user';
 import { map } from 'rxjs';
 import { SnackbarController } from './snackbar-controller.service';
 
@@ -12,6 +13,7 @@ export const LogoutReason = {
   LoggedOut: 'LOGGED_OUT',
   RegistrationUnavailable: 'REGISTRATION_UNAVAILABLE',
   SessionExpired: 'SESSION_EXPIRED',
+  AccountDeleted: 'ACCOUNT_DELETED',
 } as const;
 export type LogoutReason = (typeof LogoutReason)[keyof typeof LogoutReason];
 
@@ -43,6 +45,10 @@ export class AuthService {
   public readonly isRegistered = computed<boolean>(() => !!this._authStatus.value()?.isRegistered);
 
   public readonly userData = computed(() => this._authStatus.value()?.user ?? null);
+
+  public updateUserData(partialData: Partial<IUser>): void {
+    this._authStatus.update(v => (v ? { ...v, user: { ...v.user, ...partialData } as Required<IUser> } : v));
+  }
 
   public readonly sessionExpiryDate = computed(() => {
     const timestamp = this._authStatus.value()?.expiresAt;
@@ -119,6 +125,11 @@ export class AuthService {
     this._authStatus.set(undefined);
     this._logoutReason.set(LogoutReason.SessionExpired);
     this.navigateToLogin(redirectUrl);
+  }
+  navigateToLoginOnAccountDeleted() {
+    this._authStatus.set(undefined);
+    this._logoutReason.set(LogoutReason.AccountDeleted);
+    this.navigateToLogin();
   }
   navigateToLogin(redirectUrl?: string) {
     this._router.navigateByUrl(

@@ -1,9 +1,4 @@
 <div class="page-wrapper-g">
-  <div class="main-heading">
-    <app-back-button link="../" />
-    <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }}</h1>
-  </div>
-
   <app-transaction-list
     [transactions]="transactionListService.transactions.value()"
     [isArchived]="reckoningService.isArchived()"

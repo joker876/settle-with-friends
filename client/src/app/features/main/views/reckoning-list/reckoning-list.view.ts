@@ -2,8 +2,9 @@ import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ArdIconPlus } from '@ardium-ui/icons';
 import { ArdiumButtonModule } from '@ardium-ui/ui';
-import { SectionHeadingComponent } from "@common/components/section-heading/section-heading.component";
+import { SectionHeadingComponent } from '@common/components/section-heading/section-heading.component';
 import { AuthService } from '@common/services/auth.service';
+import { TitleService } from '@common/services/title.service';
 import { ReckoningsService } from '@features/main/services/reckonings.service';
 import { ICreateReckoningRequestDto } from '@shared/contracts/reckonings/create';
 import { IReckoning } from '@shared/entities/reckoning';
@@ -17,15 +18,20 @@ import { ReckoningListItemComponent } from './components/reckoning-list-item/rec
     ArdiumButtonModule,
     ArdIconPlus,
     CreateReckoningDialogComponent,
-    SectionHeadingComponent
-],
+    SectionHeadingComponent,
+  ],
   templateUrl: './reckoning-list.view.html',
   styleUrl: './reckoning-list.view.scss',
 })
 export class ReckoningListView {
   readonly authService = inject(AuthService);
   readonly reckoningsService = inject(ReckoningsService);
+  private readonly _titleService = inject(TitleService);
   private readonly _router = inject(Router);
+
+  constructor() {
+    this._titleService.currentBaseTitle.set(null);
+  }
 
   onReckoningClick(reckoning: IReckoning) {
     this._router.navigate(['r', reckoning.id]);

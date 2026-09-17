@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRole } from '@shared/enums/user-role';
 import { Repository } from 'typeorm';
@@ -84,7 +84,7 @@ export class ReturnsService {
       rtn.returnedToUserId !== userId &&
       !(await this.accessService.isUserAuthorized(reckoningId, userId, UserRole.Admin))
     ) {
-      throw new UnauthorizedException('Unauthorized');
+      throw new BadRequestException('Unauthorized');
     }
 
     Object.assign(rtn, returnData);

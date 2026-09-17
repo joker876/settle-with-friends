@@ -46,12 +46,11 @@
         compact
         color="none"
         (click)="editClick.emit()"
-        [disabled]="isDeleteLoading() || isArchived()"
+        [disabled]="areButtonsDisabled()"
         i18n="@@common.edit"
-        matTooltip="To rozliczenie jest zarchiwizowane"
-        i18n-matTooltip="@@common.archived-tooltip"
+        [matTooltip]="disabledButtonTooltip()"
         matTooltipPosition="above"
-        [matTooltipDisabled]="!isArchived()"
+        [matTooltipDisabled]="!areButtonsDisabled()"
       >
         Edytuj
       </ard-button>
@@ -59,13 +58,12 @@
         compact
         color="danger"
         appearance="outlined-strong"
-        [disabled]="isDeleteLoading() || isArchived()"
+        [disabled]="areButtonsDisabled()"
         (click)="deleteClick.emit()"
         i18n="@@common.delete"
-        matTooltip="To rozliczenie jest zarchiwizowane"
-        i18n-matTooltip="@@common.archived-tooltip"
+        [matTooltip]="disabledButtonTooltip()"
         matTooltipPosition="above"
-        [matTooltipDisabled]="!isArchived()"
+        [matTooltipDisabled]="!areButtonsDisabled()"
       >
         Usuń
       </ard-button>

@@ -51,6 +51,7 @@ export class AuthController {
       },
       expiresAt: req.session.cookie.expires ?? null,
       isRegistered: userIsRegistered,
+      canRegister: process.env.CAN_CREATE_NEW_ACCOUNTS === '1',
     };
   }
 

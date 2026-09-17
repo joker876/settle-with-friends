@@ -16,8 +16,11 @@ import { CurrencyRateInputComponent } from '@common/components/currency-rate-inp
 import { SelectComponent } from '@common/components/select/select.component';
 import { StackComponent } from '@common/components/stack/stack.component';
 import { ViewH1Component } from '@common/components/view-h1/view-h1.component';
+import { HeaderService } from '@common/services/header.service';
+import { TitleService } from '@common/services/title.service';
 import { WrapInAbstractControl } from '@common/utils/form-types';
 import { CurrencyRatesService } from '@features/reckoning/services/currency-rates.service';
+import { ReckoningService } from '@features/reckoning/services/reckoning.service';
 import { PayersAdderComponent } from '@features/reckoning/views/create-transaction/components/payers-adder/payers-adder.component';
 import { ICreateTransactionRequestDto } from '@shared/contracts/transactions/create';
 import { IUpdateTransactionRequestDto } from '@shared/contracts/transactions/update';
@@ -54,6 +57,9 @@ export class CreateTransactionView {
   private readonly _route = inject(ActivatedRoute);
   private readonly _currencyRatesService = inject(CurrencyRatesService);
   private readonly _createTransactionService = inject(CreateTransactionService);
+  private readonly _reckoningService = inject(ReckoningService);
+  private readonly _headerService = inject(HeaderService);
+  private readonly _titleService = inject(TitleService);
 
   readonly TODAY = new Date();
 
@@ -100,6 +106,13 @@ export class CreateTransactionView {
   );
 
   constructor() {
+    // set header and title
+    effect(() => {
+      const name = this._reckoningService.reckoning.value()?.name ?? null;
+      this._headerService.setText(name);
+      this._headerService.setGoBack('../');
+      this._titleService.currentBaseTitle.set($localize`:@@titles.reckoning.new-transaction:Nowa transakcja - ${name}`);
+    });
     // sync transaction id with service
     effect(() => {
       const id = this._editedTransactionId();

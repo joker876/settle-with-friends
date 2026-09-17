@@ -1,15 +1,3 @@
-h2 {
-  font-size: 1.25rem;
-  color: var(--ard-text4);
-  text-align: center;
-  font-weight: 500;
-
-  @media (width > 45rem) {
-    font-size: 1.5rem;
-  }
-}
-.main-heading {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+app-return-list {
+  padding: 0;
 }

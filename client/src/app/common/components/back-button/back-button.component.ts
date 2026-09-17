@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ArdIconArrowLeft } from "@ardium-ui/icons";
+import { ArdIconArrowLeft } from '@ardium-ui/icons';
 import { ArdiumButtonModule } from '@ardium-ui/ui';
 
 @Component({

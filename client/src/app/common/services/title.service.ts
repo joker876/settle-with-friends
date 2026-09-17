@@ -10,13 +10,13 @@ export class TitleService {
   readonly currentBaseTitle = signal<string | null>(null);
 
   private readonly _titlePrefix = environment.envPrefix;
-  private readonly _titleSuffix = $localize`:@@page-title-suffix: :: Settle with Friends`;
+  private readonly _titleSuffix = $localize`:@@page-title-suffix: :: Rozlicznik`;
 
   constructor() {
     effect(() => {
       const title = this.currentBaseTitle()
         ? this._titlePrefix + this.currentBaseTitle() + this._titleSuffix
-        : $localize`:@@page-title-fallback:Settle with Friends`;
+        : this._titlePrefix + $localize`:@@page-title-fallback:Rozlicznik`;
       this._title.setTitle(title);
     });
   }

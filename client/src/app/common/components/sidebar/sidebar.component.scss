@@ -1,3 +1,5 @@
+@use '../../../../breakpoints.scss' as *;
+
 :host {
   position: fixed;
   inset: 0;
@@ -5,8 +7,16 @@
   flex-direction: column;
   width: var(--sidebar-width);
   height: 100%;
-  border-right: 1px solid var(--ard-detail-ultralight);
+  border-left: 1px solid var(--ard-detail-ultralight);
   background-color: var(--bg);
+  padding-top: 4rem;
+  box-shadow: 0 -3px 15px 8px rgba(0, 0, 0, 0.1);
+
+  @media (width > $bp-sm) {
+    border-right: 1px solid var(--ard-detail-ultralight);
+    padding-top: 0;
+    box-shadow: none;
+  }
 }
 
 section {
@@ -71,4 +81,9 @@ a {
   color: var(--text2);
   padding: 0.5rem 1.25rem;
   border-top: 1px solid var(--ard-detail-ultralight);
+  text-align: right;
+
+  @media (width > $bp-sm) {
+    text-align: left;
+  }
 }

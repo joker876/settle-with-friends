@@ -10,6 +10,12 @@
   <br />
   <span i18n="@@login.log-in-to-access-app">Zaloguj się, aby zacząć się rozliczać.</span>
 </p>
+} @case (LogoutReason.AccountDeleted) {
+<p>
+  <strong class="red" i18n="@@login.account-deleted">Twoje konto zostało usunięte.</strong>
+  <br />
+  <span i18n="@@login.log-in-to-access-app-another-account">Zaloguj się na inne, aby zacząć się rozliczać.</span>
+</p>
 } @case (LogoutReason.RegistrationUnavailable) {
 <p>
   <strong class="red" i18n="@@login.registration-unavailable">

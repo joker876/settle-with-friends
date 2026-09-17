@@ -1,16 +1,11 @@
 <div class="page-wrapper-g">
-  <div class="main-heading">
-    <app-back-button link="../" />
-    <h1>{{ reckoningService.reckoning.value()?.name ?? '&nbsp;' }} — podsumowanie</h1>
-  </div>
-
   <section>
     @let mainCurrency = reckoningService.reckoning.value()?.mainCurrency ?? ''; @let totalTransactions =
     detailedSummaryService.summary.value()?.totalFromTransactions; @let totalReturned =
     detailedSummaryService.summary.value()?.totalFromReturns;
     <ard-grid container columns="2 lg:4">
       <ard-grid size="1">
-        <app-summary-card heading="Zapłacone" i18n-heading="@@summary.paid">
+        <app-summary-card heading="Zapłacone" i18n-heading="@@summary.paid" withSubtext>
           <ng-container ngProjectAs="icon">
             <ard-icon-bank-card-payment />
           </ng-container>
@@ -33,7 +28,7 @@
         </app-summary-card>
       </ard-grid>
       <ard-grid size="1">
-        <app-summary-card heading="Zwrócone" i18n-heading="@@summary.returned">
+        <app-summary-card heading="Zwrócone" i18n-heading="@@summary.returned" withSubtext>
           <ng-container ngProjectAs="icon">
             <ard-icon-hand-coins />
           </ng-container>
@@ -71,7 +66,6 @@
             <ard-spinner />
             }
           </ng-container>
-          <ng-container ngProjectAs="subtext"> &nbsp; </ng-container>
         </app-summary-card>
       </ard-grid>
       <ard-grid size="1">

@@ -38,12 +38,21 @@ export class AccountSettingsService {
   }
 
   async deleteAccount(userId: number): Promise<void> {
-    const userExists = await this.userRepo.existsBy({ id: userId });
+    const user = await this.userRepo.findOneBy({ id: userId });
 
-    if (!userExists) {
+    if (!user) {
       throw new NotFoundException('Cannot find user');
     }
 
-    await this.userRepo.delete({ id: userId });
+    const emailParts = user.email.split('@');
+    const firstPart = emailParts[0].split('+');
+    if (firstPart.length === 1) firstPart.push('');
+
+    await this.userRepo.update(
+      { id: userId },
+      { email: `${firstPart[0]}+${firstPart[1]}-del${Date.now()}@${emailParts[1]}` },
+    );
+
+    await this.userRepo.softDelete({ id: userId });
   }
 }

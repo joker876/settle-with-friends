@@ -51,7 +51,7 @@
               <app-menu-item
                 class="red"
                 (click)="onUserKickOrLeave(user)"
-                [disabled]="isArchived() || user.role === UserRole.Owner || ({ userId: user.id } | roleGuard | async)"
+                [disabled]="isArchived() || user.role === UserRole.Owner || !({ userId: user.id } | roleGuard | async)"
                 [disabledTooltip]="isArchived() ? kickOrLeaveTooltipArchived : user.role === UserRole.Owner ? kickOrLeaveTooltipOwner : isUserToKickOrLeaveSelf() ? kickOrLeaveTooltipSelf : ''"
               >
                 <ard-icon-logout ngProjectAs="icon" />

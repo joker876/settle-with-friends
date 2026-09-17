@@ -1,23 +1,36 @@
 <header>
-  <div class="logo-container">
+  <a class="logo-container" routerLink="/" [class.has-header-text]="headerService.headerText()">
     <img src="logo.svg" alt="Logo Rozlicznik" i18n-alt="@@header.logo-alt" />
-    <span class="logo-text">
-      Rozlicznik
-    </span>
-  </div>
-  <div class="avatar-container">
-    @if (authService.isLoggedIn()) {
-      <div class="menu-container">
-        <ard-button appearance="outlined" variant="pill" color="none" [matMenuTriggerFor]="menu">
-          <app-avatar
-            [photo]="authService.userData()?.photo ?? null"
-            [name]="authService.userData()?.displayName ?? ''"
-            withStatus
-          />
-          <ard-icon-chevron down class="icon" />
-        </ard-button>
+    <span class="logo-text"> Rozlicznik </span>
+  </a>
+  <div class="main-content">
+    <div class="header-text">
+      @if (headerService.goBackUrl(); as link) {
+        <app-back-button [link]="link" />
+      }
+      @if (headerService.headerText(); as text) {
+        <h1>{{ text }}</h1>
+      }
+    </div>
+    <div class="buttons">
+      <div class="avatar-container">
+        @if (authService.isLoggedIn()) {
+          <div class="menu-container">
+            <ard-button appearance="outlined" variant="pill" color="none" [matMenuTriggerFor]="menu">
+              <app-avatar
+                [photo]="authService.userData()?.photo ?? null"
+                [name]="authService.userData()?.displayName ?? ''"
+                withStatus
+              />
+              <ard-icon-chevron down class="icon" />
+            </ard-button>
+          </div>
+        }
       </div>
-    }
+      <button class="sidebar-button" [class.open]="sidebarService.isOpen()" (click)="sidebarService.toggle()">
+        <div class="menu-toggle"></div>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -33,7 +46,7 @@
   <mat-divider />
   <app-menu-item>
     <ard-icon-settings ngProjectAs="icon" />
-    <span i18n="@@header.user-menu.account-settings">Ustawienia konta</span>
+    <a routerLink="/account-settings" i18n="@@header.user-menu.account-settings">Ustawienia konta</a>
   </app-menu-item>
   <app-menu-item (click)="logout()">
     <ard-icon-logout ngProjectAs="icon" />

@@ -17,6 +17,9 @@ import { SidebarService } from '@common/services/sidebar.service';
 ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
+  host: {
+    // '[class.visible]': 'sidebarService.'
+  }
 })
 export class SidebarComponent {
   readonly sidebarService = inject(SidebarService);

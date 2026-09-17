@@ -23,4 +23,12 @@ export class SnackbarController {
       queueHandling: ArdSnackbarQueueHandling.Overwrite,
     });
   }
+  openInfo(message: string, action?: string): void {
+    this._snackbarService.open(message, action, {
+      type: ArdSnackbarType.Success,
+      color: ComponentColor.Success,
+      duration: 3000,
+      queueHandling: ArdSnackbarQueueHandling.Overwrite,
+    });
+  }
 }

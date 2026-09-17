@@ -1,18 +1,18 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   ArdIconBankCardPayment,
   ArdIconBankCardX,
   ArdIconChevron,
   ArdIconCoins,
-  ArdIconHandCoins,
-  ArdIconSettings,
+  ArdIconHandCoins
 } from '@ardium-ui/icons';
 import { ArdiumGridModule, ArdiumIconButtonModule, ArdiumSpinnerModule, ArdiumStackModule } from '@ardium-ui/ui';
-import { BackButtonComponent } from "@common/components/back-button/back-button.component";
 import { BalanceComponent } from '@common/components/balance/balance.component';
 import { TextBtnComponent } from '@common/components/text-btn/text-btn.component';
-import { LoadingBlockerDirective } from "@common/directives/loading-blocker.directive";
+import { LoadingBlockerDirective } from '@common/directives/loading-blocker.directive';
+import { HeaderService } from '@common/services/header.service';
+import { TitleService } from '@common/services/title.service';
 import { ReturnListComponent } from '@features/reckoning/components/return-list/return-list.component';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
 import { UsersService } from '@features/reckoning/services/users.service';
@@ -42,10 +42,8 @@ import { RecentTransactionListService } from './recent-transaction-list.service'
     ArdIconBankCardX,
     ArdiumStackModule,
     ArdiumIconButtonModule,
-    ArdIconSettings,
     LoadingBlockerDirective,
-    BackButtonComponent
-],
+  ],
   templateUrl: './reckoning.view.html',
   styleUrl: './reckoning.view.scss',
   providers: [RecentTransactionListService, RecentReturnListService],
@@ -58,6 +56,17 @@ export class ReckoningView {
   readonly usersService = inject(UsersService);
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _headerService = inject(HeaderService);
+  private readonly _titleService = inject(TitleService);
+
+  constructor() {
+    effect(() => {
+      const name = this.reckoningService.reckoning.value()?.name ?? null;
+      this._headerService.setText(name);
+      this._headerService.setGoBack('../../');
+      this._titleService.currentBaseTitle.set(name);
+    });
+  }
 
   navigateToTransactions() {
     this._router.navigate(['transactions'], { relativeTo: this._activatedRoute });

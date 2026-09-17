@@ -1,4 +1,5 @@
 import { Component, input } from '@angular/core';
+import { BooleanLike, coerceBooleanProperty } from '@ardium-ui/devkit';
 import { CardComponent } from "@common/components/card/card.component";
 import { StatisticComponent } from '@common/components/statistic/statistic.component';
 
@@ -10,4 +11,6 @@ import { StatisticComponent } from '@common/components/statistic/statistic.compo
 })
 export class SummaryCardComponent {
   readonly heading = input.required<string>();
+
+  readonly withSubtext = input<boolean, BooleanLike>(false, { transform: v => coerceBooleanProperty(v) });
 }

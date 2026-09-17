@@ -1,13 +1,37 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { EventType, Router } from '@angular/router';
-import { filter, map } from 'rxjs';
+import { Data, EventType, NavigationEnd, Router } from '@angular/router';
+import { filter, map, startWith } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SidebarService {
   private readonly _router = inject(Router);
+
+  private readonly _data = toSignal(
+    this._router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      startWith(null),
+      map(() => {
+        let route = this._router.routerState.root;
+
+        let data = route.snapshot.data;
+
+        while (route.firstChild) {
+          route = route.firstChild;
+          
+          data = { ...data, ...route.snapshot.data}
+        }
+
+        return data;
+      }),
+    ),
+    {
+      initialValue: {} as Data,
+    },
+  );
+  public readonly isVisible = computed(() => !!this._data()['sidebar']);
 
   private readonly _isOpen = signal<boolean>(false);
   public readonly isOpen = this._isOpen.asReadonly();
