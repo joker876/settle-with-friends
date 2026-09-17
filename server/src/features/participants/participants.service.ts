@@ -84,12 +84,21 @@ export class ParticipantsService {
   }
 
   async kickOrLeave(reckoningId: number, targetUserId: number, agentUserId: number): Promise<void> {
-    const userRole = await this.reckoningAccessService.getUserRole(reckoningId, agentUserId);
+    const agentUserRole = await this.reckoningAccessService.getUserRole(reckoningId, agentUserId);
+    const targetUserRole = await this.reckoningAccessService.getUserRole(reckoningId, targetUserId);
 
     // only admins or higher can kick users, but users can leave themselves
     if (
       agentUserId !== targetUserId &&
-      !(await this.reckoningAccessService.isUserAuthorized(reckoningId, agentUserId, UserRole.Admin, userRole.role))
+      !(await this.reckoningAccessService.isUserAuthorized(reckoningId, agentUserId, UserRole.Admin, agentUserRole.role))
+    ) {
+      throw new ForbiddenException('Permission denied');
+    }
+
+    // cannot kick users with equal or higher role
+    if (
+      agentUserId !== targetUserId &&
+      !(await this.reckoningAccessService.isUserAuthorized(reckoningId, agentUserId, targetUserRole.role, agentUserRole.role))
     ) {
       throw new ForbiddenException('Permission denied');
     }
