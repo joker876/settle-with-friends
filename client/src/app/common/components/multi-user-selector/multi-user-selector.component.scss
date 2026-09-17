@@ -37,7 +37,7 @@ app-multi-user-selector {
   .checkbox-list-wrapper {
     border: 1px solid var(--border);
     border-radius: 1rem;
-    overflow: hidden;
+    overflow: auto;
   }
   .ard-checkbox-list {
     max-height: calc(var(--ard-checkbox-list-item-height) * 5.5);

@@ -14,11 +14,12 @@ import { MenuItemComponent } from '@common/components/menu-item/menu-item.compon
 import { TimedFlag } from '@common/utils/timed-flag';
 import { RoleGuardComponent, RoleGuardPipe } from '@features/reckoning/components/role-guard/role-guard.component';
 import { UserRolePipe } from '@features/reckoning/pipes/user-role.pipe';
+import { ReckoningService } from '@features/reckoning/services/reckoning.service';
 import { IUserWithRole } from '@shared/entities/user';
 import { UserRole } from '@shared/enums/user-role';
 import { SettingsService } from '../../settings.service';
 import { EditUserPseudonymDialogComponent } from './edit-user-pseudonym-dialog/edit-user-pseudonym-dialog.component';
-import { InviteLinkDialogComponent } from "./invite-link-dialog/invite-link-dialog.component";
+import { InviteLinkDialogComponent } from './invite-link-dialog/invite-link-dialog.component';
 import { RoleSelectorComponent } from './role-selector/role-selector.component';
 
 @Component({
@@ -44,13 +45,14 @@ import { RoleSelectorComponent } from './role-selector/role-selector.component';
     ArdiumSpinnerModule,
     EditUserPseudonymDialogComponent,
     MatTooltipModule,
-    InviteLinkDialogComponent
-],
+    InviteLinkDialogComponent,
+  ],
   templateUrl: './users.section.html',
   styleUrl: './users.section.scss',
 })
 export class UsersSection {
   readonly settingsService = inject(SettingsService);
+  readonly reckoningService = inject(ReckoningService);
   readonly router = inject(Router);
   readonly UserRole = UserRole;
 
@@ -144,10 +146,11 @@ export class UsersSection {
     }
     this.settingsService.userKickOrLeave(userId).then(success => {
       if (!success) return;
-      this.userToKickOrLeave.set(null);
+      
       if (this.isUserToKickOrLeaveSelf()) {
         this.router.navigateByUrl('/');
       }
+      this.userToKickOrLeave.set(null);
     });
   }
 }

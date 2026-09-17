@@ -13,6 +13,7 @@
   [(open)]="isDialogOpen"
   [canConfirm]="tempValue() !== null"
   (confirm)="onConfirmDialog()"
+  (reject)="onRejectDialog()"
 >
   <div class="dialog-content">
     <ard-number-input [(value)]="tempValue" maxDecimalPlaces="4">

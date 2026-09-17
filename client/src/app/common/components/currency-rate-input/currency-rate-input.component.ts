@@ -52,6 +52,9 @@ export class CurrencyRateInputComponent implements ControlValueAccessor {
     this.isDialogOpen.set(false);
     this.isCurrencyRateFromApiControl().setValue(this.currencyRateFromApi() === this.tempValue());
   }
+  onRejectDialog(): void {
+    this.isDialogOpen.set(false);
+  }
 
   writeValue(value: number | null): void {
     this.value.set(value);

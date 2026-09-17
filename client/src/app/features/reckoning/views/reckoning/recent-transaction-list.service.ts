@@ -19,7 +19,7 @@ export class RecentTransactionListService {
       ensureParams(
         params.reckoningId,
         this._http
-          .get<ITransaction[]>(['reckonings', params.reckoningId!, 'transactions'])
+          .get<ITransaction[]>(['reckonings', params.reckoningId!, 'transactions', 'recent'])
           .pipe(this._usersService.waitForUsersLoaded(), hydrateTransaction(this._usersService, true)),
         [],
       ),

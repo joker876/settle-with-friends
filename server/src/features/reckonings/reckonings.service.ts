@@ -41,6 +41,7 @@ export class ReckoningsService {
         helperCurrencies: true,
         reckoningUsers: { userId: true, role: true },
       },
+      order: { updatedDate: 'DESC' },
     });
 
     const transactionData: Pick<GetAllReckoningsResponseDto[number], 'currentBalance' | 'numberOfTransactions'>[] =

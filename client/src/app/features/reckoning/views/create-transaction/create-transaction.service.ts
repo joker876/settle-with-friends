@@ -10,6 +10,7 @@ import { hydrateTransaction } from '@features/reckoning/utils/hydration/transact
 import { ICreateTransactionRequestDto } from '@shared/contracts/transactions/create';
 import { IUpdateTransactionRequestDto } from '@shared/contracts/transactions/update';
 import { ITransaction } from '@shared/entities/transaction';
+import { BasicSummaryService } from '../reckoning/basic-summary.service';
 
 @Injectable()
 export class CreateTransactionService {
@@ -17,6 +18,7 @@ export class CreateTransactionService {
   private readonly _reckoningService = inject(ReckoningService);
   private readonly _usersService = inject(UsersService);
   private readonly _snackbarController = inject(SnackbarController);
+  private readonly _summaryService = inject(BasicSummaryService);
 
   private readonly _transactionId = signal<number | null>(null);
 
@@ -61,6 +63,7 @@ export class CreateTransactionService {
         .subscribe({
           next: transaction => {
             this._snackbarController.openSuccess($localize`:@@transactions.created-transaction:Dodano transakcję`);
+            this._summaryService.reload({ transactions: true });
             resolve(transaction);
           },
           error: () => {
@@ -93,6 +96,7 @@ export class CreateTransactionService {
         .subscribe({
           next: transaction => {
             this._snackbarController.openSuccess($localize`:@@transactions.updated-transaction:Zapisano transakcję`);
+            this._summaryService.reload({ transactions: true });
             resolve(transaction);
           },
           error: () => {

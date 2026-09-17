@@ -44,10 +44,6 @@ header {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-
-    @media (width > $bp-sm) {
-      padding: 1.5rem;
-    }
   }
 }
 

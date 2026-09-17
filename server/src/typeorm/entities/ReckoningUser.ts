@@ -1,5 +1,5 @@
 import { UserRole } from '@shared/enums/user-role';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Reckoning } from './Reckoning';
 import { User } from './User';
 import { cascade } from './utils';
@@ -28,4 +28,7 @@ export class ReckoningUser {
 
   @Column({ nullable: true })
   pseudonym?: string;
+
+  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
+  deletedAt?: Date;
 }

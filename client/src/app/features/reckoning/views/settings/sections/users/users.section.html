@@ -103,14 +103,18 @@
 >
   @if (isUserToKickOrLeaveSelf()) {
   <p i18n="@@participants.leave-reckoning-dialog-text-self">
-    Czy na pewno chcesz opuścić rozliczenie <strong>{{ userToKickOrLeaveValue.displayName }}</strong>?
+    Czy na pewno chcesz opuścić rozliczenie <strong>{{ reckoningService.reckoning.value()?.name }}</strong>?
   </p>
   } @else {
   <p i18n="@@participants.leave-reckoning-dialog-text-other">
     Czy na pewno chcesz wyrzucić użytkownika <strong>{{ userToKickOrLeaveValue.displayName }}</strong>?
   </p>
   }
-  <app-checkbox #dontShowKickOrLeaveDialogCheckbox label="Nie pytaj ponownie przez 5 minut" />
+  <app-checkbox
+    #dontShowKickOrLeaveDialogCheckbox
+    label="Nie pytaj ponownie przez 5 minut"
+    [class.hidden]="isUserToKickOrLeaveSelf()"
+  />
 </app-confirmation-dialog>
 }
 

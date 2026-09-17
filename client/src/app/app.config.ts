@@ -110,7 +110,7 @@ export const appConfig: ApplicationConfig = {
     provideSpinnerDefaults({ color: ComponentColor.None }),
     provideErrorMap(ERROR_MAP),
     provideBreakpoints({
-      sm: '37.5rem',
+      sm: '37rem',
       md: '48rem',
       lg: '60rem',
       xl: '72rem',

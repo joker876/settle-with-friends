@@ -1,7 +1,7 @@
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRole } from '@shared/enums/user-role';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { UserWithRoleDto } from '../../dtos/user-with-role';
 import { InviteLink, Reckoning, ReckoningUser } from '../../typeorm/entities';
 import { ReckoningAccessService } from '../reckonings/reckoning-access.service';
@@ -26,13 +26,15 @@ export class ParticipantsService {
         relations: ['user'],
       })
       .then(reckUsers =>
-        reckUsers.map(reckUser => ({
-          id: reckUser.userId,
-          displayName: reckUser.pseudonym ?? reckUser.user.displayName,
-          email: reckUser.user.email,
-          photo: reckUser.user.photo,
-          role: reckUser.role,
-        })),
+        reckUsers
+          .map(reckUser => ({
+            id: reckUser.userId,
+            displayName: reckUser.pseudonym ?? reckUser.user.displayName,
+            email: reckUser.user.email,
+            photo: reckUser.user.photo,
+            role: reckUser.role,
+          }))
+          .sort((a, b) => a.displayName.localeCompare(b.displayName)),
       );
   }
 
@@ -90,7 +92,12 @@ export class ParticipantsService {
     // only admins or higher can kick users, but users can leave themselves
     if (
       agentUserId !== targetUserId &&
-      !(await this.reckoningAccessService.isUserAuthorized(reckoningId, agentUserId, UserRole.Admin, agentUserRole.role))
+      !(await this.reckoningAccessService.isUserAuthorized(
+        reckoningId,
+        agentUserId,
+        UserRole.Admin,
+        agentUserRole.role,
+      ))
     ) {
       throw new ForbiddenException('Permission denied');
     }
@@ -98,7 +105,12 @@ export class ParticipantsService {
     // cannot kick users with equal or higher role
     if (
       agentUserId !== targetUserId &&
-      !(await this.reckoningAccessService.isUserAuthorized(reckoningId, agentUserId, targetUserRole.role, agentUserRole.role))
+      !(await this.reckoningAccessService.isUserAuthorized(
+        reckoningId,
+        agentUserId,
+        targetUserRole.role,
+        agentUserRole.role,
+      ))
     ) {
       throw new ForbiddenException('Permission denied');
     }
@@ -108,7 +120,36 @@ export class ParticipantsService {
       throw new ForbiddenException('Permission denied');
     }
 
-    await this.reckoningUserRepo.delete({ reckoningId, userId: targetUserId });
+    const isInAnyTransactionsOrReturns = await this.reckoningUserRepo
+      .createQueryBuilder('ru')
+      .leftJoin('reckonings', 'r', 'r.id = ru.reckoningId')
+      .leftJoin('transactions', 't', 'r.id = t.reckoningId')
+      .leftJoin('transaction_payers', 'tp', 't.id = tp.transactionId')
+      .leftJoin('transaction_split_parts', 'tsp', 't.id = tsp.transactionId')
+      .leftJoin('transaction_split_part_includees', 'tspi', 'tsp.id = tspi.splitPartId')
+      .leftJoin('returns', 'ret', 'r.id = ret.reckoningId')
+      .where('r.id = :reckoningId', { reckoningId })
+      .andWhere('ru.userId = :userId', { userId: targetUserId })
+      .andWhere(
+        `(
+          t.createdByUserId = :userId
+          OR t.updatedByUserId = :userId
+          OR tp.userId = :userId
+          OR tspi.userId = :userId
+          OR ret.createdByUserId = :userId
+          OR ret.updatedByUserId = :userId
+          OR ret.returnedByUserId = :userId
+          OR ret.returnedToUserId = :userId
+        )`,
+      )
+      .getExists();
+
+    // only soft delete if the user is involved in any transactions or returns, otherwise hard delete
+    if (isInAnyTransactionsOrReturns) {
+      await this.reckoningUserRepo.softDelete({ reckoningId, userId: targetUserId });
+    } else {
+      await this.reckoningUserRepo.delete({ reckoningId, userId: targetUserId });
+    }
   }
 
   async generateInviteLink(
@@ -204,18 +245,26 @@ export class ParticipantsService {
 
     const reckoningId = link.reckoningId;
 
-    const alreadyJoined = await this.reckoningUserRepo.exists({ where: { reckoningId, userId } });
+    const alreadyJoined = await this.reckoningUserRepo.exists({ where: { reckoningId, userId, deletedAt: undefined } });
     if (alreadyJoined) {
       throw new ConflictException('Already joined the reckoning');
     }
 
-    const newReckoningUser = this.reckoningUserRepo.create({
-      reckoningId,
-      userId,
-      role: UserRole.Member,
-      pseudonym: undefined,
+    const deletedUser = await this.reckoningUserRepo.findOne({
+      where: { reckoningId, userId, deletedAt: Not(IsNull()) },
     });
-    await this.reckoningUserRepo.save(newReckoningUser);
+
+    if (deletedUser) {
+      await this.reckoningUserRepo.restore(deletedUser.id);
+    } else {
+      const newReckoningUser = this.reckoningUserRepo.create({
+        reckoningId,
+        userId,
+        role: UserRole.Member,
+        pseudonym: undefined,
+      });
+      await this.reckoningUserRepo.save(newReckoningUser);
+    }
 
     await this.inviteLinkRepo.update(link.id, { usesLeft: link.usesLeft - 1, lastUsedAt: new Date() });
   }

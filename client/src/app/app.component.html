@@ -1,11 +1,12 @@
 <div class="header-wrapper">
+  <div class="header-spacer"></div>
   <app-header />
 </div>
 <div class="main-content">
   <aside [class.open]="sidebarService.isOpen()" [class.hidden]="!sidebarService.isVisible()">
     <app-sidebar />
   </aside>
-  <main>
+  <main [class.sidebar-hidden]="!sidebarService.isVisible()">
     <router-outlet />
   </main>
 </div>

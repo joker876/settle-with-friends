@@ -19,7 +19,7 @@ export class RecentReturnListService {
       ensureParams(
         params.reckoningId,
         this._http
-          .get<IReturn[]>(['reckonings', params.reckoningId!, 'returns'])
+          .get<IReturn[]>(['reckonings', params.reckoningId!, 'returns', 'recent'])
           .pipe(this._usersService.waitForUsersLoaded(), hydrateReturn(this._usersService, true)),
         [],
       ),

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { roundToPrecision } from 'more-rounding';
 import { In, Repository } from 'typeorm';
-import { Return, Transaction } from '../../typeorm/entities';
+import { ReckoningUser, Return, Transaction } from '../../typeorm/entities';
 import { GetBasicSummaryResponseDto } from './dtos/get-basic';
 import { GetDetailedSummaryResponseDto, PersonalSummaryDto } from './dtos/get-detailed';
 
@@ -11,6 +11,7 @@ export class SummaryService {
   constructor(
     @InjectRepository(Return) private readonly returnRepo: Repository<Return>,
     @InjectRepository(Transaction) private readonly transactionRepo: Repository<Transaction>,
+    @InjectRepository(ReckoningUser) private readonly reckoningUserRepo: Repository<ReckoningUser>,
   ) {}
 
   async getBasic(reckoningId: number, userId: number): Promise<GetBasicSummaryResponseDto> {
@@ -139,6 +140,16 @@ export class SummaryService {
     const returns = await this.returnRepo.find({
       where: { reckoning: { id: reckoningId } },
     });
+    const reckoningUsers = await this.reckoningUserRepo.find({
+      where: { reckoning: { id: reckoningId } },
+      relations: ['user'],
+    });
+
+    const userIdToUserNameMap = new Map<number, string>();
+
+    for (const reckoningUser of reckoningUsers) {
+      userIdToUserNameMap.set(reckoningUser.userId, reckoningUser.pseudonym ?? reckoningUser.user.displayName);
+    }
 
     const numberOfTransactions = transactions.length;
     const totalFromTransactions = roundToPrecision(
@@ -229,13 +240,20 @@ export class SummaryService {
       summaryReceived.totalReturnsReceived += roundToPrecision(rtn.amount * (rtn.currencyRate ?? 1), 2);
     }
 
+    const personalSummaries = Array.from(userSummaries.values());
+    personalSummaries.sort((a, b) => {
+      const nameA = userIdToUserNameMap.get(a.userId) ?? '';
+      const nameB = userIdToUserNameMap.get(b.userId) ?? '';
+      return nameA.localeCompare(nameB);
+    });
+
     return {
       numberOfTransactions,
       totalFromTransactions,
       numberOfReturns,
       totalFromReturns,
       numberOfUsers: userSummaries.size,
-      personalSummaries: Array.from(userSummaries.values()),
+      personalSummaries,
     };
   }
 }

@@ -1,6 +1,14 @@
 @use '../breakpoints.scss' as *;
 
-.header-wrapper {
+app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  z-index: 10;
+}
+.header-spacer {
   height: var(--header-height);
 }
 .main-content {
@@ -43,6 +51,10 @@ main {
   
   @media (width > $bp-sm) {
     padding-left: var(--sidebar-width);
+
+    &.sidebar-hidden {
+      padding-left: 0;
+    }
   }
 }
 router-outlet {

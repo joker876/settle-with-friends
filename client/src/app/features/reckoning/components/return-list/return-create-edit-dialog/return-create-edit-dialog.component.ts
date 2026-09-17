@@ -51,10 +51,6 @@ export class ReturnCreateEditDialogComponent {
 
   readonly TODAY = startOfDay(new UTCDate());
 
-  fjkdf = effect(() => {
-    console.log(this.TODAY);
-  });
-
   readonly isOpen = input.required<boolean>();
   readonly isSubmitting = input.required<boolean>();
 
@@ -204,6 +200,16 @@ export class ReturnCreateEditDialogComponent {
         const rate = untracked(() => this._currencyRatesService.getCurrencyRate(currencyCode, date));
         rtnControls.currencyRate.setValue(rate, { emitEvent: false });
         rtnControls.isCurrencyRateFromApi.setValue(rate !== null, { emitEvent: false });
+      }
+    });
+    // reset currency rate and isCurrencyRateFromApi when currency code changes back to main
+    effect(() => {
+      const currencyCode = this.currencyCodeValue();
+      const mainCurrency = this._currencyRatesService.mainCurrency();
+
+      if (currencyCode === mainCurrency) {
+        this.form.controls.currencyRate.setValue(null, { emitEvent: false });
+        this.form.controls.isCurrencyRateFromApi.setValue(null, { emitEvent: false });
       }
     });
     // every time the user changes the currency code, mark the currency rate as untouched
