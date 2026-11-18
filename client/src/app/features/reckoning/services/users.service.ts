@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { DELETED_USER_DISPLAY_NAME } from '@common/pipes/username.pipe';
 import { AuthService } from '@common/services/auth.service';
 import { HttpService } from '@common/services/http-service';
 import { hydrateAllInArray, hydrateSingleProp, MappingToken } from '@common/utils/hydration';
@@ -8,7 +9,7 @@ import { mapResourceToIdMap, mapResourceToSelectableIdOptions } from '@common/ut
 import { bufferLastUntil } from '@common/utils/rxjs';
 import { IUser, IUserWithRole } from '@shared/entities/user';
 import { UserRole } from '@shared/enums/user-role';
-import { OperatorFunction } from 'rxjs';
+import { map, OperatorFunction } from 'rxjs';
 import { ReckoningService } from './reckoning.service';
 
 @Injectable()
@@ -22,7 +23,16 @@ export class UsersService {
     stream: ({ params }) =>
       ensureParams(
         params.reckoningId,
-        this._http.get<IUserWithRole[]>(['reckonings', params.reckoningId!, 'participants']),
+        this._http
+          .get<IUserWithRole[]>(['reckonings', params.reckoningId!, 'participants'])
+          .pipe(
+            map(users =>
+              users.map(user => ({
+                ...user,
+                displayName: user.displayName === '[DELETED]' ? DELETED_USER_DISPLAY_NAME : user.displayName,
+              })),
+            ),
+          ),
         [],
       ),
     defaultValue: [],

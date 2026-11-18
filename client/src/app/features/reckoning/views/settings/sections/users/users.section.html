@@ -8,7 +8,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (user of settingsService.users.value(); track user.id) {
+      @for (user of settingsService.users.value(); track user.id) { @if (!user.deletedAt) {
       <tr>
         <td>
           <ard-stack direction="row" spacing="2">
@@ -64,7 +64,7 @@
           </app-role-guard>
         </td>
       </tr>
-      }
+      } }
     </tbody>
   </table>
 </app-card>

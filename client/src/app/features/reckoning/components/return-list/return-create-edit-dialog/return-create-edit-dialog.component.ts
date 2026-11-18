@@ -109,7 +109,7 @@ export class ReturnCreateEditDialogComponent {
     this._currencyRatesService.isCurrencyRateLoading(this.currencyCodeValue(), this.returnDateValue()),
   );
 
-  readonly userOptions = this._usersService.usersOptions;
+  readonly userOptions = computed(() => this._usersService.usersOptions().filter(option => !option.isDeleted));
 
   constructor() {
     // reset value every time the form is opened

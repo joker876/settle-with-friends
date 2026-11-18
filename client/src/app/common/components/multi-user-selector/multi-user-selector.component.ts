@@ -14,11 +14,11 @@ import {
 } from '@ardium-ui/ui';
 import { DeviceService } from '@common/services/device.service';
 import { mapResourceToIdMap } from '@common/utils/resource-mappers';
-import { IUserPublicData } from '@shared/entities/user';
+import { IUserPublicData, IUserWithRole } from '@shared/entities/user';
 import { isEqual } from 'lodash';
 import TakeChance from 'take-chance';
 import { AvatarListComponent } from '../avatar-list/avatar-list.component';
-import { PluralComponent } from "../plural/plural.component";
+import { PluralComponent } from '../plural/plural.component';
 
 @Component({
   selector: 'app-multi-user-selector',
@@ -34,8 +34,8 @@ import { PluralComponent } from "../plural/plural.component";
     ArdiumButtonModule,
     ArdiumCheckboxModule,
     PluralComponent,
-    ArdIconEditLine_2
-],
+    ArdIconEditLine_2,
+  ],
   templateUrl: './multi-user-selector.component.html',
   styleUrl: './multi-user-selector.component.scss',
   encapsulation: ViewEncapsulation.None,
@@ -47,7 +47,7 @@ import { PluralComponent } from "../plural/plural.component";
 export class MultiUserSelectorComponent implements ArdFormFieldControl, ControlValueAccessor, OnInit, OnDestroy {
   readonly deviceService = inject(DeviceService);
 
-  readonly users = input.required<IUserPublicData[]>();
+  readonly users = input.required<IUserWithRole[]>();
   readonly usersMap = mapResourceToIdMap(this.users);
 
   readonly value = signal<IUserPublicData[]>([], { equal: isEqual });
@@ -57,6 +57,12 @@ export class MultiUserSelectorComponent implements ArdFormFieldControl, ControlV
   readonly isDialogOpen = signal<boolean>(false);
 
   readonly dialogValue = signal<number[]>([]);
+
+  readonly usersInCheckboxList = computed(() => {
+    const valueSet = new Set(this.value().map(v => v.id));
+
+    return this.users().filter(user => user.deletedAt === null || valueSet.has(user.id));
+  });
 
   openDialog() {
     this.isDialogOpen.set(true);

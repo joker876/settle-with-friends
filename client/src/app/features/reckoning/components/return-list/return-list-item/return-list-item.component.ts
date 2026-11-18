@@ -1,11 +1,12 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, input, model, output } from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ArdIconChevron } from '@ardium-ui/icons';
+import { ArdIconChevron, ArdIconUserArrowRightIn_2, ArdIconUserArrowRightOut_2 } from '@ardium-ui/icons';
 import { ArdiumButtonModule, ArdiumIconButtonModule } from '@ardium-ui/ui';
 import { BalanceComponent } from '@common/components/balance/balance.component';
 import { CardComponent } from '@common/components/card/card.component';
 import { StatisticRowComponent } from '@common/components/statistic-row/statistic-row.component';
+import { StatisticWithIconComponent } from '@common/components/statistic-with-icon/statistic-with-icon.component';
 import { StatisticWithValueComponent } from '@common/components/statistic-with-value/statistic-with-value.component';
 import { StatisticComponent } from '@common/components/statistic/statistic.component';
 import { AccessService } from '@features/reckoning/services/access.service';
@@ -25,7 +26,10 @@ import { UserRole } from '@shared/enums/user-role';
     StatisticRowComponent,
     ArdiumButtonModule,
     MatTooltipModule,
-  ],
+    StatisticWithIconComponent,
+    ArdIconUserArrowRightOut_2,
+    ArdIconUserArrowRightIn_2
+],
   templateUrl: './return-list-item.component.html',
   styleUrl: './return-list-item.component.scss',
 })

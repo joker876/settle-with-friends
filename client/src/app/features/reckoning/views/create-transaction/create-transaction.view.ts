@@ -113,7 +113,7 @@ export class CreateTransactionView {
     effect(() => {
       const name = this._reckoningService.reckoning.value()?.name ?? null;
       this._headerService.setText(name);
-      this._headerService.setGoBack('../');
+      this._headerService.setGoBack(this.isCreateMode() ? '../' : '../../');
       this._titleService.currentBaseTitle.set($localize`:@@titles.reckoning.new-transaction:Nowa transakcja - ${name}`);
     });
     // sync transaction id with service

@@ -7,4 +7,5 @@ export class UserWithRoleDto implements IUserWithRole {
   displayName: string;
   photo: string | null;
   role: UserRole;
+  deletedAt: Date | null;
 }

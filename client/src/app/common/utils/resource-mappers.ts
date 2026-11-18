@@ -5,12 +5,14 @@ export function mapResourceToSelectableIdOptions<T extends { id: number }, V = T
   resource: Resource<T[] | null>,
   getLabel: (item: T) => string,
   getValue: (item: T) => V = item => item.id as unknown as V,
+  getDeleted: (item: T) => boolean = item => !!(item as any).deletedAt,
 ): Signal<SelectableOption<V>[]> {
   return computed<SelectableOption<V>[]>(() => {
     const values = resource.value() ?? [];
     return values.map(item => ({
       label: getLabel(item) ?? '',
       value: getValue(item),
+      isDeleted: getDeleted?.(item) ?? false,
     }));
   });
 }

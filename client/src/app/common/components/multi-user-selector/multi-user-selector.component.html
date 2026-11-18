@@ -65,7 +65,7 @@
     }
   </label>
   <div class="checkbox-list-wrapper">
-    <ard-checkbox-list [(value)]="dialogValue" [items]="users()" labelFrom="displayName" valueFrom="id">
+    <ard-checkbox-list [items]="usersInCheckboxList()" [(value)]="dialogValue"  labelFrom="displayName" valueFrom="id">
       <ng-template ard-checkbox-tmp>
         <ard-icon-checkbox-filled class="icon icon-selected" />
         <ard-icon-checkbox-empty class="icon icon-unselected" />

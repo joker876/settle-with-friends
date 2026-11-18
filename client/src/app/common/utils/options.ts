@@ -10,6 +10,8 @@ export interface SelectableOption<T = any> {
   value: T;
   /** Optional label to show when the option is selected. */
   selectedLabel?: string;
+  /** Is deleted */
+  isDeleted?: boolean;
 }
 
 export function createSelectableOptions<T extends string>(options: T[]): SelectableOption<T>[] {

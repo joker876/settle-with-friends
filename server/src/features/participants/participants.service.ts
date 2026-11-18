@@ -1,6 +1,7 @@
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRole } from '@shared/enums/user-role';
+import crypto from 'crypto';
 import { IsNull, Not, Repository } from 'typeorm';
 import { UserWithRoleDto } from '../../dtos/user-with-role';
 import { InviteLink, Reckoning, ReckoningUser } from '../../typeorm/entities';
@@ -24,6 +25,7 @@ export class ParticipantsService {
       .find({
         where: { reckoningId },
         relations: ['user'],
+        withDeleted: true,
       })
       .then(reckUsers =>
         reckUsers
@@ -33,8 +35,19 @@ export class ParticipantsService {
             email: reckUser.user.email,
             photo: reckUser.user.photo,
             role: reckUser.role,
+            deletedAt: reckUser.deletedAt ?? null,
           }))
-          .sort((a, b) => a.displayName.localeCompare(b.displayName)),
+          .sort((a, b) => a.displayName.localeCompare(b.displayName))
+          .map(user =>
+            !user.deletedAt
+              ? user
+              : {
+                  ...user,
+                  displayName: '[DELETED]',
+                  email: '',
+                  photo: null,
+                },
+          ),
       );
   }
 
@@ -167,7 +180,7 @@ export class ParticipantsService {
     }
 
     // Generate a unique invite token
-    const inviteToken = require('crypto').randomBytes(16).toString('base64url');
+    const inviteToken = crypto.randomBytes(16).toString('base64url');
 
     const link = this.inviteLinkRepo.create({
       reckoningId,
@@ -198,7 +211,7 @@ export class ParticipantsService {
 
     if (!link || link.expiresAt < new Date() || link.usesLeft <= 0) {
       if (link) {
-        this.inviteLinkRepo.delete(link.id);
+        await this.inviteLinkRepo.delete(link.id);
       }
       throw new NotFoundException('Invite link not found or expired');
     }
@@ -238,7 +251,7 @@ export class ParticipantsService {
     });
     if (!link || link.expiresAt < new Date() || link.usesLeft <= 0) {
       if (link) {
-        this.inviteLinkRepo.delete(link.id);
+        await this.inviteLinkRepo.delete(link.id);
       }
       throw new NotFoundException('Invite link not found or expired');
     }

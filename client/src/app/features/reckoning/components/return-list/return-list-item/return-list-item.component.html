@@ -6,6 +6,18 @@
         <app-statistic>
           {{ data().returnDate | date }}
         </app-statistic>
+        <app-statistic-with-icon>
+          <ard-icon-user-arrow-right-out-2 />
+          <ng-container ngProjectAs="value">
+            {{ data().returnedBy.displayName }}
+          </ng-container>
+        </app-statistic-with-icon>
+        <app-statistic-with-icon>
+          <ard-icon-user-arrow-right-in-2 />
+          <ng-container ngProjectAs="value">
+            {{ data().returnedTo.displayName }}
+          </ng-container>
+        </app-statistic-with-icon>
       </app-statistic-row>
     </div>
     <div class="right-side">

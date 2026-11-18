@@ -9,8 +9,8 @@ import { coerceBooleanProperty } from '@ardium-ui/devkit';
 })
 export class AvatarComponent {
   readonly name = input.required<string>();
-  readonly photo = input<string | null, string | null>(null, {
-    transform: v => v && `data:image/png;base64,${v}`,
+  readonly photo = input<string | null, string | null | undefined>(null, {
+    transform: v => v ? `data:image/png;base64,${v}` : null,
   });
 
   readonly showName = input<boolean, any>(false, { transform: v => coerceBooleanProperty(v) });

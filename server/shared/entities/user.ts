@@ -12,4 +12,5 @@ export interface IUser extends IUserPublicData {
 
 export interface IUserWithRole extends IUser {
   role: UserRole;
+  deletedAt: Date | null;
 }

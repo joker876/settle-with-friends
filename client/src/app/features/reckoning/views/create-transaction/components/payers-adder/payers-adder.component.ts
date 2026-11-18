@@ -111,8 +111,10 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
     return this.usersOptions().filter(option => !usedIds.has(option.value));
   });
   readonly remainingUsersOptionsWithEditedUser = computed(() => {
-    const usedIds = new Set(this._payersValue().map(payer => payer.userId));
-    return this.usersOptions().filter(option => !usedIds.has(option.value) || this.editedUserId() === option.value);
+    const valueIds = new Set(this._payersValue().map(payer => payer.userId));
+    return this.usersOptions().filter(
+      option => (!valueIds.has(option.value) && !option.isDeleted) || this.editedUserId() === option.value,
+    );
   });
 
   readonly remainingAmount = computed(() => {
