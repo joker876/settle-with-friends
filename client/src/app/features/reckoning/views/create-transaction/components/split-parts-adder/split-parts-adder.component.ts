@@ -37,6 +37,7 @@ import { UsersService } from '@features/reckoning/services/users.service';
 import { AmountType, amountTypeOptions, createAmountTypeLabelMap } from '@features/reckoning/utils/amount-type';
 import { ICreateTransactionRequestSplitPartDto } from '@shared/contracts/transactions/create';
 import { IUpdateTransactionRequestSplitPartDto } from '@shared/contracts/transactions/update';
+import { roundToPrecision } from 'more-rounding';
 import { map, startWith, Subscription, tap } from 'rxjs';
 import TakeChance from 'take-chance';
 
@@ -128,7 +129,7 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
       const amount = v.amount ?? 0;
       return acc + amount;
     }, 0);
-    return total - sum;
+    return roundToPrecision(total - sum, 5);
   });
   readonly hasUnassignedRemainingAmount = computed<boolean>(() => {
     const remaining = this.remainingAmount();

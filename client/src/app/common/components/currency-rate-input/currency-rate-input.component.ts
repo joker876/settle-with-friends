@@ -5,6 +5,7 @@ import { ArdIconEditLine_2 } from '@ardium-ui/icons';
 import { ArdiumDialogModule, ArdiumIconButtonModule, ArdiumNumberInputModule } from '@ardium-ui/ui';
 import { BalanceComponent } from '../balance/balance.component';
 import { StatisticWithValueComponent } from '../statistic-with-value/statistic-with-value.component';
+import { StatisticComponent } from '../statistic/statistic.component';
 
 @Component({
   selector: 'app-currency-rate-input',
@@ -16,7 +17,8 @@ import { StatisticWithValueComponent } from '../statistic-with-value/statistic-w
     ArdiumIconButtonModule,
     ArdiumNumberInputModule,
     DatePipe,
-  ],
+    StatisticComponent
+],
   templateUrl: './currency-rate-input.component.html',
   styleUrl: './currency-rate-input.component.scss',
   providers: [
@@ -34,6 +36,7 @@ export class CurrencyRateInputComponent implements ControlValueAccessor {
 
   readonly selectedTransactionDate = input.required<Date>();
   readonly currencyRateFromApi = input.required<number | null>();
+  readonly isCurrencyRateFromApiLoading = input.required<boolean>();
   readonly isCurrencyRateFromApiControl = input.required<FormControl<boolean | null>>();
 
   readonly value = signal<number | null>(null);

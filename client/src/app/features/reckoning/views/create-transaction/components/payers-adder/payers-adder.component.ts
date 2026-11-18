@@ -32,6 +32,7 @@ import { UsersService } from '@features/reckoning/services/users.service';
 import { AmountType, amountTypeOptions, createAmountTypeLabelMap } from '@features/reckoning/utils/amount-type';
 import { ICreateTransactionRequestPayerDto } from '@shared/contracts/transactions/create';
 import { IUpdateTransactionRequestPayerDto } from '@shared/contracts/transactions/update';
+import { roundToPrecision } from 'more-rounding';
 import { map, startWith, Subscription } from 'rxjs';
 import TakeChance from 'take-chance';
 
@@ -123,7 +124,7 @@ export class PayersAdderComponent implements ControlValueAccessor, ArdFormFieldC
       const amount = v.amount ?? 0;
       return acc + amount;
     }, 0);
-    return total - sum;
+    return roundToPrecision(total - sum, 5);
   });
   readonly noPayerHasRemainingAmount = computed<boolean>(() => {
     const remaining = this.remainingAmount();

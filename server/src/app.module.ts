@@ -29,7 +29,7 @@ import { DateMappingInterceptor } from './utils/date-mapping.interceptor';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities,
-      synchronize: true,
+      synchronize: false,
       extra: {
         decimalNumbers: true,
       },

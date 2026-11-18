@@ -3,9 +3,9 @@
 
   <div class="avatar-settings">
     <div class="avatar-container">
-      @if (accountService.accountData.value()?.photo; as photo) {
-      <app-avatar [photo]="photo" name="" />
-
+      <app-avatar [photo]="accountService.accountData.value()?.photo ?? null" name="" />
+      
+      @if (accountService.accountData.value()?.photo) {
       @if (accountService.isUpdateAccountSettingsLoading()) {
       <div class="avatar-spinner-overlay">
         <ard-spinner color="currentColor" />

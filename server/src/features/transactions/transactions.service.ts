@@ -1,9 +1,11 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ICreateTransactionRequestDto } from '@shared/contracts/transactions/create';
 import { IUpdateTransactionRequestDto } from '@shared/contracts/transactions/update';
 import { UserRole } from '@shared/enums/user-role';
+import { roundToPrecision } from 'more-rounding';
 import { Repository } from 'typeorm';
+import { Transactional } from 'typeorm-transactional';
 import { ReckoningAccessService } from '../reckonings/reckoning-access.service';
 import { Transaction } from './../../typeorm/entities/Transaction';
 import { TransactionPayersService } from './transaction-payers.service';
@@ -67,12 +69,28 @@ export class TransactionsService {
     return tx;
   }
 
+  @Transactional()
   async createTransaction(
     reckoningId: number,
     userId: number,
     transactionData: ICreateTransactionRequestDto,
   ): Promise<Transaction> {
     const { transaction: txBasic, payers, splitParts } = transactionData;
+
+    if (payers.every(p => p.amount !== null)) {
+      const payersSum =  payers.reduce((sum, p) => sum + p.amount!, 0);
+
+      if (roundToPrecision(payersSum, 5) !== txBasic.amount) {
+        throw new BadRequestException(`Sum of payers amounts (${payersSum}) does not match transaction amount (${txBasic.amount})`);
+      }
+    }
+    if (splitParts.every(p => p.amount !== null)) {
+      const splitPartsSum =  splitParts.reduce((sum, p) => sum + p.amount!, 0);
+
+      if (roundToPrecision(splitPartsSum, 5) !== txBasic.amount) {
+        throw new BadRequestException(`Sum of split parts amounts (${splitPartsSum}) does not match transaction amount (${txBasic.amount})`);
+      }
+    }
 
     // create base transaction record
     const tx = this.transactionRepo.create({
@@ -99,6 +117,7 @@ export class TransactionsService {
     }))!;
   }
 
+  @Transactional()
   async updateTransaction(
     reckoningId: number,
     transactionId: number,
@@ -111,12 +130,6 @@ export class TransactionsService {
     if (!tx) {
       throw new NotFoundException('Transaction not found');
     }
-    // if (
-    //   tx.createdByUserId !== userId &&
-    //   !(await this.accessService.isUserAuthorized(reckoningId, userId, UserRole.Admin))
-    // ) {
-    //   throw new BadRequestException('Unauthorized');
-    // }
 
     // update basic fields
     Object.assign(tx, transactionData.transaction);

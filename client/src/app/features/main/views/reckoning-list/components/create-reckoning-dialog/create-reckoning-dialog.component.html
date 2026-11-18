@@ -5,6 +5,7 @@
   confirmButtonText="Utwórz"
   i18n-confirmButtonText="@@common.create"
   (confirm)="onConfirm()"
+  (reject)="onReject()"
   [canConfirm]="form.valid"
 >
   <form [formGroup]="form">

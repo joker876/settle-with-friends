@@ -1,8 +1,16 @@
-<app-statistic-with-value text="Kurs wymiany" i18n-text="@@common.currency-rate">
-  1 {{ currencyCode() }}
-  =
-  <app-balance [balance]="value()!" [currency]="mainCurrency()" places="4-4" [class.disabled]="isValueLoading()" />
-</app-statistic-with-value>
+@if (value() === null && !isValueLoading()) {
+  <app-statistic i18n="@@common.currency-rate-not-available">Podaj kurs wymiany...</app-statistic>
+} @else {
+  <app-statistic-with-value text="Kurs wymiany" i18n-text="@@common.currency-rate">
+    1 {{ currencyCode() }}
+    =
+    @if (isValueLoading()) {
+      <ng-container i18n="@@common.loading...">Ładowanie...</ng-container>
+    } @else {
+      <app-balance [balance]="value()!" [currency]="mainCurrency()" places="4-4" [class.disabled]="isValueLoading()" />
+    }
+  </app-statistic-with-value>
+}
 <ard-icon-button (click)="openDialog()">
   <ard-icon-edit-line-2 class="icon" />
 </ard-icon-button>
@@ -29,12 +37,21 @@
         <ng-container i18n="@@common.currency-rate-for-date"
           >Kurs wymiany według NBP na dzień {{ selectedTransactionDate() | date: 'd MMM yyyy' }}:</ng-container
         >
-        1 {{ currencyCode() }}
-        =
-        @if (currencyRateFromApi(); as rate) {
-          <app-balance [balance]="rate" [currency]="mainCurrency()" places="4-4" [class.disabled]="isValueLoading()" />
+        @if (!isCurrencyRateFromApiLoading() && currencyRateFromApi() === null) {
+          &nbsp;<ng-container i18n="@@common.not-available">Niedostępne</ng-container>
         } @else {
-          <ng-container i18n="@@common.loading...">Ładowanie...</ng-container>
+          1 {{ currencyCode() }}
+          =
+          @if (isCurrencyRateFromApiLoading()) {
+            <ng-container i18n="@@common.loading...">Ładowanie...</ng-container>
+          } @else if (currencyRateFromApi(); as rate) {
+            <app-balance
+              [balance]="rate"
+              [currency]="mainCurrency()"
+              places="4-4"
+              [class.disabled]="isValueLoading()"
+            />
+          }
         }
       </small>
     </p>

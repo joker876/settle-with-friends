@@ -5,11 +5,14 @@ import { TypeormStore } from 'connect-typeorm';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import { DataSource } from 'typeorm';
+import { addTransactionalDataSource, initializeTransactionalContext } from 'typeorm-transactional';
 import { AppModule } from './app.module';
 import { startLoginProxy } from './proxy';
 import { SessionEntity } from './typeorm/entities/Session';
 
 void (async () => {
+  initializeTransactionalContext();
+
   const app = await NestFactory.create(AppModule);
 
   const nodeEnv = process.env.NODE_ENV || 'local';
@@ -24,6 +27,8 @@ void (async () => {
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
   const dataSource = app.get<DataSource>(getDataSourceToken());
+  addTransactionalDataSource(dataSource);
+
   const sessionRepo = dataSource.getRepository(SessionEntity);
 
   app.use(
@@ -45,7 +50,7 @@ void (async () => {
   );
   app.use(passport.initialize());
   app.use(passport.session());
-  await app.listen(Number(process.env.PORT) || 5280, process.env.APP_HOST ?? '127.0.0.1');
+  await app.listen(Number(process.env.PORT) || 8080, process.env.APP_HOST ?? '127.0.0.1');
   
   if (isLocal) {
     startLoginProxy(await app.getUrl());

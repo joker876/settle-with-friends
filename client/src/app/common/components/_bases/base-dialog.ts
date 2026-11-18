@@ -24,6 +24,10 @@ export abstract class _BaseFormDialogComponent<T extends Record<string, any>> im
       this.open.set(false);
     }
   }
+  onReject() {
+    this.open.set(false);
+    this.resetFormValue();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['open'] && changes['open'].currentValue === true) {

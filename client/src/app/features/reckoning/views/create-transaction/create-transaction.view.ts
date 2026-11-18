@@ -104,6 +104,9 @@ export class CreateTransactionView {
   readonly currencyRateFromApi = computed<number | null>(() =>
     this._currencyRatesService.getCurrencyRate(this.currencyCodeValue(), this.transactionDateValue()),
   );
+  readonly isCurrencyRateFromApiLoading = computed<boolean>(() =>
+    this._currencyRatesService.isCurrencyRateLoading(this.currencyCodeValue(), this.transactionDateValue()),
+  );
 
   constructor() {
     // set header and title

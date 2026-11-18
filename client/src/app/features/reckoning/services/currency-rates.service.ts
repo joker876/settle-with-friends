@@ -58,10 +58,16 @@ export class CurrencyRatesService {
   }
 
   private readonly _currencyRates = mapSignal<CurrencyCodeDate, number>();
+  private readonly _currencyRatesLoading = mapSignal<CurrencyCodeDate, boolean>();
 
   getCurrencyRate(currencyCode: CurrencyCode, date: Date): number | null {
     const key = this._generateKey(currencyCode, date);
     return this._currencyRates.get(key) ?? null;
+  }
+
+  isCurrencyRateLoading(currencyCode: CurrencyCode, date: Date): boolean {
+    const key = this._generateKey(currencyCode, date);
+    return this._currencyRatesLoading.get(key) ?? false;
   }
 
   private _generateKey(currencyCode: CurrencyCode, date: Date): CurrencyCodeDate {
@@ -101,15 +107,19 @@ export class CurrencyRatesService {
             const rate = res.rates[0].ask;
 
             this._currencyRates.setKey(key, rate);
+            this._currencyRatesLoading.setKey(key, false);
             for (const additionalKey of additionalKeys) {
               this._currencyRates.setKey(additionalKey, rate);
+              this._currencyRatesLoading.setKey(additionalKey, false);
             }
             resolve();
           },
           error: err => {
             this._currencyRates.delete(key);
+            this._currencyRatesLoading.setKey(key, false);
             for (const additionalKey of additionalKeys) {
               this._currencyRates.delete(additionalKey);
+              this._currencyRatesLoading.setKey(additionalKey, false);
             }
             // if the error is 404, it means that the rate for the given date is not available, so try with the previous date
             // to avoid infinite recursion, limit the number of retries to 7 (one week)

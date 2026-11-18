@@ -30,6 +30,7 @@
     "date-fns": "^4.1.0",
     "lodash": "^4.17.23",
     "match-sorter": "^8.1.0",
+    "more-rounding": "^4.2.2",
     "ngx-polish-number-to-words": "^1.2.1",
     "ngx-polish-validators": "^1.0.1",
     "ngx-timeago": "^3",

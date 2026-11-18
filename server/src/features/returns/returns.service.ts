@@ -2,6 +2,7 @@ import { BadRequestException, Inject, Injectable, NotFoundException, Unauthorize
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRole } from '@shared/enums/user-role';
 import { Repository } from 'typeorm';
+import { Transactional } from 'typeorm-transactional';
 import { Return } from '../../typeorm/entities';
 import { ReckoningAccessService } from '../reckonings/reckoning-access.service';
 import { CreateReturnRequestDto } from './dtos/create';
@@ -51,6 +52,7 @@ export class ReturnsService {
     return rtn;
   }
 
+  @Transactional()
   async createReturn(reckoningId: number, userId: number, returnData: CreateReturnRequestDto): Promise<Return> {
     const rtn = this.returnRepo.create({
       ...returnData,
@@ -66,6 +68,7 @@ export class ReturnsService {
     }))!;
   }
 
+  @Transactional()
   async updateReturn(
     reckoningId: number,
     returnId: number,

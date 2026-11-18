@@ -105,6 +105,9 @@ export class ReturnCreateEditDialogComponent {
   readonly currencyRateFromApi = computed<number | null>(() =>
     this._currencyRatesService.getCurrencyRate(this.currencyCodeValue(), this.returnDateValue()),
   );
+  readonly isCurrencyRateFromApiLoading = computed<boolean>(() =>
+    this._currencyRatesService.isCurrencyRateLoading(this.currencyCodeValue(), this.returnDateValue()),
+  );
 
   readonly userOptions = this._usersService.usersOptions;
 
