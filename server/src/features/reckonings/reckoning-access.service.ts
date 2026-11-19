@@ -27,7 +27,7 @@ export class ReckoningAccessService {
     if (!user) {
       throw new NotFoundException();
     }
-    return { role: user.reckoningUsers.find(ru => ru.reckoningId === reckoningId)?.role! };
+    return { role: user.reckoningUsers.find(ru => ru.reckoningId === reckoningId)!.role };
   }
 
   async isUserAuthorized(

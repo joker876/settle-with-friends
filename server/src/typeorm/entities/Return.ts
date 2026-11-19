@@ -72,6 +72,6 @@ export class Return implements IReturn {
   @JoinColumn({ name: 'updatedByUserId' })
   updatedBy: IUser;
 
-  @ManyToOne(() => Reckoning, reckoning => reckoning.transactions)
+  @ManyToOne(() => Reckoning, reckoning => reckoning.returns, { nullable: false, ...cascade })
   reckoning: IReckoning;
 }

@@ -14,6 +14,6 @@ export function userRoleToInt(role: UserRole): number {
     case UserRole.Member:
       return 1;
     default:
-      throw new Error(`Unknown user role: ${role}`);
+      throw new Error(`Unknown user role: ${role as any}`);
   }
 }
