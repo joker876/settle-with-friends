@@ -2,7 +2,8 @@
   <section>
     @let mainCurrency = reckoningService.reckoning.value()?.mainCurrency ?? ''; @let totalTransactions =
     detailedSummaryService.summary.value()?.totalFromTransactions; @let totalReturned =
-    detailedSummaryService.summary.value()?.totalFromReturns;
+    detailedSummaryService.summary.value()?.totalFromReturns; @let balance =
+    detailedSummaryService.summary.value()?.reckoningBalance;
     <ard-grid container columns="2 lg:4">
       <ard-grid size="1">
         <app-summary-card heading="Zapłacone" i18n-heading="@@summary.paid" withSubtext>
@@ -54,8 +55,7 @@
             <ard-icon-coins />
           </ng-container>
           <ng-container ngProjectAs="value">
-            @if (totalTransactions !== undefined && totalReturned !== undefined) { @let balance = -totalTransactions +
-            totalReturned;
+            @if (balance !== undefined) {
             <app-balance
               [balance]="balance"
               [currency]="mainCurrency"

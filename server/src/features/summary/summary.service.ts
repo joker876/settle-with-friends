@@ -215,6 +215,7 @@ export class SummaryService {
       totalFromTransactions: this.roundMoney(totalFromTransactions),
       numberOfReturns: returns.length,
       totalFromReturns: this.roundMoney(totalFromReturns),
+      reckoningBalance: this.roundMoney(-totalFromTransactions + totalFromReturns),
       numberOfUsers: userSummaries.size,
       personalSummaries,
     };

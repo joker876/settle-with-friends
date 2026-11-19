@@ -7,6 +7,7 @@ export class GetDetailedSummaryResponseDto implements IGetDetailedSummaryRespons
   totalFromTransactions: number;
   numberOfReturns: number;
   totalFromReturns: number;
+  reckoningBalance: number;
   numberOfUsers: number;
 
   personalSummaries: PersonalSummaryDto[];

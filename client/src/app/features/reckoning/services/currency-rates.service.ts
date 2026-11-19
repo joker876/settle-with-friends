@@ -4,6 +4,7 @@ import { mapSignal } from '@ardium-ui/devkit';
 import { createSelectableOptions } from '@common/utils/options';
 import { CurrencyCode } from '@shared/enums/currency-code';
 import { format } from 'date-fns';
+import { firstValueFrom } from 'rxjs';
 import { ReckoningService } from './reckoning.service';
 
 type CurrencyCodeDate = string; // e.g. 'EUR-2023-10-15'
@@ -28,6 +29,8 @@ const ALLOWED_CURRENCY_CODES = Object.values(CurrencyCode);
 export class CurrencyRatesService {
   private readonly _http = inject(HttpClient);
   private readonly _reckoningService = inject(ReckoningService);
+
+  private readonly _pendingRequests = new Map<CurrencyCodeDate, Promise<void>>();
 
   readonly mainCurrency = computed<CurrencyCode | null>(
     () => this._reckoningService.reckoning.value()?.mainCurrency ?? null,
@@ -74,64 +77,88 @@ export class CurrencyRatesService {
     return `${currencyCode}-${format(date, 'yyyy-MM-dd')}`;
   }
 
-  async fetchAndStoreCurrencyRate(currencyCode: CurrencyCode, date: Date, recursionIndex = 0): Promise<void> {
-    const key = this._generateKey(currencyCode, date);
+  async fetchAndStoreCurrencyRate(currencyCode: CurrencyCode, date: Date): Promise<void> {
+    const requestedDate = new Date(date.getTime());
+    const requestedKey = this._generateKey(currencyCode, requestedDate);
 
     if (currencyCode === this.mainCurrency()) {
-      this._currencyRates.setKey(key, 1);
+      this._currencyRates.setKey(requestedKey, 1);
       return;
     }
 
-    if (this._currencyRates.has(key)) {
-      return;
-    }
-    // NBP does not provide rates for weekends, so adjust the date to the last business day
-    let additionalKeys: string[] = [];
-    while (date.getDay() === 0 || date.getDay() === 6) {
-      date.setDate(date.getDate() - 1);
-
-      additionalKeys.push(this._generateKey(currencyCode, date));
-    }
-    // also check if we have the rate for the last business day already
-    if (additionalKeys.length > 0 && this._currencyRates.has(additionalKeys[additionalKeys.length - 1])) {
+    // rate is already in memory
+    if (this._currencyRates.has(requestedKey)) {
       return;
     }
 
-    return new Promise<void>(resolve => {
-      this._http
-        .get<NBPCurrencyRateResponse>(
-          `https://api.nbp.pl/api/exchangerates/rates/C/${currencyCode}/${format(date, 'yyyy-MM-dd')}/`,
-        )
-        .subscribe({
-          next: res => {
-            const rate = res.rates[0].ask;
+    // do not send two identical requests at the same time
+    const pendingRequest = this._pendingRequests.get(requestedKey);
+    if (pendingRequest) {
+      return pendingRequest;
+    }
 
-            this._currencyRates.setKey(key, rate);
-            this._currencyRatesLoading.setKey(key, false);
-            for (const additionalKey of additionalKeys) {
-              this._currencyRates.setKey(additionalKey, rate);
-              this._currencyRatesLoading.setKey(additionalKey, false);
-            }
-            resolve();
-          },
-          error: err => {
-            this._currencyRates.delete(key);
-            this._currencyRatesLoading.setKey(key, false);
-            for (const additionalKey of additionalKeys) {
-              this._currencyRates.delete(additionalKey);
-              this._currencyRatesLoading.setKey(additionalKey, false);
-            }
-            // if the error is 404, it means that the rate for the given date is not available, so try with the previous date
-            // to avoid infinite recursion, limit the number of retries to 7 (one week)
-            // ideally the app should never request any future dates, but this is just a safety measure
-            if (err.status === 404 && recursionIndex < 7) {
-              date.setDate(date.getDate() - 1);
-              this.fetchAndStoreCurrencyRate(currencyCode, date, recursionIndex + 1).then(() => resolve());
-            } else {
-              resolve();
-            }
-          },
-        });
-    });
+    this._currencyRatesLoading.setKey(requestedKey, true);
+
+    const request = (async () => {
+      const maxDaysBack = 7;
+      const checkedKeys: CurrencyCodeDate[] = [];
+
+      for (let daysBack = 0; daysBack <= maxDaysBack; daysBack++) {
+        const checkedDate = new Date(requestedDate.getTime());
+        checkedDate.setDate(checkedDate.getDate() - daysBack);
+
+        // automatically skip weekends
+        if (checkedDate.getDay() === 0 || checkedDate.getDay() === 6) {
+          continue;
+        }
+
+        const checkedKey = this._generateKey(currencyCode, checkedDate);
+        checkedKeys.push(checkedKey);
+
+        // check if the rate for the previous day is already in memory
+        const cachedRate = this._currencyRates.get(checkedKey);
+
+        if (cachedRate !== undefined) {
+          this._currencyRates.setKey(requestedKey, cachedRate);
+          return;
+        }
+
+        try {
+          const response = await firstValueFrom(
+            this._http.get<NBPCurrencyRateResponse>(
+              `https://api.nbp.pl/api/exchangerates/rates/C/${currencyCode}/${format(checkedDate, 'yyyy-MM-dd')}/`,
+            ),
+          );
+
+          const rate = response.rates[0]?.ask;
+          if (rate === undefined) {
+            return;
+          }
+
+          // store the rate under the checked dates...
+          checkedKeys.forEach(key => this._currencyRates.setKey(key, rate));
+          // ...and under the originally requested date
+          this._currencyRates.setKey(requestedKey, rate);
+
+          return;
+        } catch (error: unknown) {
+          const status = (error as { status?: number })?.status;
+
+          // 404 means that the rate for the given date is not available
+          if (status !== 404) {
+            return;
+          }
+        }
+      }
+    })();
+
+    this._pendingRequests.set(requestedKey, request);
+
+    try {
+      await request;
+    } finally {
+      this._pendingRequests.delete(requestedKey);
+      this._currencyRatesLoading.setKey(requestedKey, false);
+    }
   }
 }

@@ -6,6 +6,7 @@ export interface IGetDetailedSummaryResponse {
   totalFromTransactions: number;
   numberOfReturns: number;
   totalFromReturns: number;
+  reckoningBalance: number;
   numberOfUsers: number;
 
   personalSummaries: IPersonalSummary[];

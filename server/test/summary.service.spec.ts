@@ -119,6 +119,7 @@ describe('SummaryService', () => {
       totalFromTransactions: 0,
       numberOfReturns: 0,
       totalFromReturns: 0,
+      reckoningBalance: 0,
       numberOfUsers: 0,
       personalSummaries: [],
     });
@@ -143,6 +144,7 @@ describe('SummaryService', () => {
     const result = await service.getDetailed(10);
     const summaries = new Map(result.personalSummaries.map(s => [s.userId, s]));
     expect(result.totalFromTransactions).toBe(120);
+    expect(result.reckoningBalance).toBe(-120);
     expect(result.numberOfUsers).toBe(3);
     expect(summaries.get(1)).toMatchObject({
       totalFromPaidTransactions: 100,
@@ -210,6 +212,7 @@ describe('SummaryService', () => {
 
     expect(detailed.totalFromTransactions).toBe(100);
     expect(detailed.totalFromReturns).toBe(40);
+    expect(detailed.reckoningBalance).toBe(-60);
     expect(byId.get(1)).toMatchObject({ totalReturnsReceived: 40, numberOfReturnsReceived: 1 });
     expect(byId.get(2)).toMatchObject({ totalReturnsGiven: 40, numberOfReturnsGiven: 1 });
     expect(byId.get(1)!.totalFromPaidTransactions - byId.get(1)!.totalFromSplitParts
