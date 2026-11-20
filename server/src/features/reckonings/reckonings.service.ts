@@ -44,6 +44,23 @@ export class ReckoningsService {
       order: { updatedDate: 'DESC' },
     });
 
+    // get the max updatedDate for the reckoning and all its elements
+    // do it for each reckoning separately
+    const maxUpdatedDate = await this.reckoningRepo
+      .createQueryBuilder('reckoning')
+      .leftJoin('reckoning.transactions', 'transaction')
+      .leftJoin('reckoning.returns', 'return')
+      .where('reckoning.id IN (:...ids)', { ids: reckonings.map(r => r.id) })
+      .select('reckoning.id', 'id')
+      .addSelect(
+        'GREATEST(MAX(reckoning.updatedDate), MAX(transaction.updatedDate), MAX(return.updatedDate))',
+        'maxUpdatedDate',
+      )
+      .groupBy('reckoning.id')
+      .getRawMany<{ id: number; maxUpdatedDate: Date }>();
+
+    const maxUpdatedDateMap = new Map(maxUpdatedDate.map(v => [v.id, v.maxUpdatedDate]));
+
     const transactionData: Pick<GetAllReckoningsResponseDto[number], 'currentBalance' | 'numberOfTransactions'>[] =
       await Promise.all(
         reckonings.map(async r => {
@@ -67,9 +84,10 @@ export class ReckoningsService {
 
     return reckonings?.map((r, i) => ({
       ...r,
+      updatedDate: maxUpdatedDateMap.get(r.id) || r.updatedDate,
       numberOfUsers: r.reckoningUsers.length,
       ...transactionData[i],
-    }));
+    })).sort((a, b) => (b.updatedDate.getTime() || 0) - (a.updatedDate.getTime() || 0));
   }
 
   async getById(id: number): Promise<IReckoning | null> {

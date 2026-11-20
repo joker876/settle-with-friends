@@ -81,6 +81,10 @@ export class CurrencyRatesService {
     const requestedDate = new Date(date.getTime());
     const requestedKey = this._generateKey(currencyCode, requestedDate);
 
+    if (this.mainCurrency() !== CurrencyCode.PolishZloty) {
+      // NBP API only provides rates for PLN
+      return;
+    }
     if (currencyCode === this.mainCurrency()) {
       this._currencyRates.setKey(requestedKey, 1);
       return;
