@@ -1,8 +1,7 @@
-import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRole } from '@shared/enums/user-role';
 import { Repository } from 'typeorm';
-import { Transactional } from 'typeorm-transactional';
 import { Return } from '../../typeorm/entities';
 import { ReckoningAccessService } from '../reckonings/reckoning-access.service';
 import { CreateReturnRequestDto } from './dtos/create';
@@ -52,8 +51,14 @@ export class ReturnsService {
     return rtn;
   }
 
-  @Transactional()
   async createReturn(reckoningId: number, userId: number, returnData: CreateReturnRequestDto): Promise<Return> {
+    this._checkSenderAndReceiverAreDifferent(returnData.returnedByUserId, returnData.returnedToUserId);
+
+    await this._verifyUsersParticipateInReckoning(reckoningId, [
+      returnData.returnedByUserId,
+      returnData.returnedToUserId,
+    ]);
+
     const rtn = this.returnRepo.create({
       ...returnData,
       createdByUserId: userId,
@@ -68,26 +73,33 @@ export class ReturnsService {
     }))!;
   }
 
-  @Transactional()
   async updateReturn(
     reckoningId: number,
     returnId: number,
     userId: number,
     returnData: UpdateReturnRequestDto,
   ): Promise<Return> {
+    this._checkSenderAndReceiverAreDifferent(returnData.returnedByUserId, returnData.returnedToUserId);
+
     const rtn = await this.returnRepo.findOne({
       where: { id: returnId, reckoning: { id: reckoningId } },
     });
     if (!rtn) {
       throw new NotFoundException('Return not found');
     }
+
+    await this._verifyUsersParticipateInReckoning(reckoningId, [
+      returnData.returnedByUserId,
+      returnData.returnedToUserId,
+    ]);
+
     if (
       rtn.createdByUserId !== userId &&
       rtn.returnedByUserId !== userId &&
       rtn.returnedToUserId !== userId &&
       !(await this.accessService.isUserAuthorized(reckoningId, userId, UserRole.Admin))
     ) {
-      throw new BadRequestException('Unauthorized');
+      throw new ForbiddenException('Unauthorized');
     }
 
     Object.assign(rtn, returnData);
@@ -97,6 +109,18 @@ export class ReturnsService {
     return (await this.returnRepo.findOne({
       where: { id: savedRtn.id },
     }))!;
+  }
+
+  private _checkSenderAndReceiverAreDifferent(returnedByUserId: number, returnedToUserId: number) {
+    if (returnedByUserId === returnedToUserId) {
+      throw new BadRequestException('Sender and receiver cannot be the same user');
+    }
+  }
+  private async _verifyUsersParticipateInReckoning(reckoningId: number, userIds: number[]): Promise<void> {
+    const hasAccess = await this.accessService.verifyMultipleUsersAccess(userIds, reckoningId, true);
+    if (!hasAccess) {
+      throw new BadRequestException('One or more users do not participate in the reckoning');
+    }
   }
 
   async deleteReturn(reckoningId: number, returnId: number, userId: number): Promise<void> {
@@ -112,7 +136,7 @@ export class ReturnsService {
       rtn.returnedToUserId !== userId &&
       !(await this.accessService.isUserAuthorized(reckoningId, userId, UserRole.Admin))
     ) {
-      throw new UnauthorizedException('Unauthorized');
+      throw new ForbiddenException('Unauthorized');
     }
     await this.returnRepo.remove(rtn);
   }

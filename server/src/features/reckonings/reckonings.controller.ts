@@ -3,6 +3,7 @@ import { UserRole } from '@shared/enums/user-role';
 import { Request } from 'express';
 import { CreateReckoningRequestDto } from './dtos/create';
 import { UpdateReckoningRequestDto } from './dtos/update';
+import { NoArchived } from './no-archived.guard';
 import { ReckoningAccess } from './reckoning-access.guard';
 import { ReckoningAccessService } from './reckoning-access.service';
 import { ReckoningsService } from './reckonings.service';
@@ -29,6 +30,7 @@ export class ReckoningsController {
   }
 
   @Patch(':reckoningId')
+  @NoArchived()
   update(
     @Param('reckoningId', ParseIntPipe) reckoningId: number,
     @Req() req: Request,
@@ -52,8 +54,13 @@ export class ReckoningsController {
   }
 
   @Get(':reckoningId/role')
-  async getRole(@Param('reckoningId', ParseIntPipe) reckoningId: number, @Req() req: Request): Promise<{ role: UserRole }> {
-    return this.accessService.getUserRole(reckoningId, req.user?.id);
+  @ReckoningAccess()
+  async getRole(
+    @Param('reckoningId', ParseIntPipe) reckoningId: number,
+    @Req() req: Request,
+  ): Promise<{ role: UserRole }> {
+    const role = (await this.accessService.getUserRole(reckoningId, req.user?.id)).role;
+    return { role: role! };
   }
 
   @Patch(':reckoningId/archive')

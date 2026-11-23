@@ -9,7 +9,8 @@ export class InviteLinkController {
 
   @Get('data')
   async getTokenData(@Param('token') token: string): Promise<JoinFromInviteLinkResponseDto> {
-    return this.participantsService.getInviteLinkData(token);
+    const agentUserId = (this as any).req?.user?.id;
+    return this.participantsService.getInviteLinkData(token, agentUserId);
   }
 
   @Post('join')

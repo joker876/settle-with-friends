@@ -42,10 +42,17 @@ export class SummaryService {
     const transactionsIncludedInAsPayer = await this.transactionRepo.find({
       where: { reckoning: { id: reckoningId }, payers: { userId } },
       relations: ['payers'],
+      select: ['id'],
+    });
+
+    const transactionsIncludedInAsPayerWithAllPayers = await this.transactionRepo.find({
+      where: { id: In(transactionsIncludedInAsPayer.map(t => t.id)) },
+      relations: ['payers'],
+      select: ['id', 'amount', 'currencyRate', 'payers'],
     });
 
     let totalFromPaidTransactions = 0;
-    for (const transaction of transactionsIncludedInAsPayer) {
+    for (const transaction of transactionsIncludedInAsPayerWithAllPayers) {
       totalFromPaidTransactions += this.toBaseCurrency(
         this.getPayerAmount(transaction, userId),
         transaction.currencyRate,
@@ -106,6 +113,9 @@ export class SummaryService {
       totalReturnsGiven: this.roundMoney(totalReturnsGiven),
       numberOfReturnsReceived: returnsReceivedForUser.length,
       totalReturnsReceived: this.roundMoney(totalReturnsReceived),
+      balance: this.roundMoney(
+        totalFromPaidTransactions - totalFromSplitParts + totalReturnsGiven - totalReturnsReceived,
+      ),
     };
   }
 
@@ -120,11 +130,15 @@ export class SummaryService {
     const reckoningUsers = await this.reckoningUserRepo.find({
       where: { reckoning: { id: reckoningId } },
       relations: ['user'],
+      withDeleted: true,
     });
 
     const userIdToUserNameMap = new Map<number, string>();
     for (const reckoningUser of reckoningUsers) {
-      userIdToUserNameMap.set(reckoningUser.userId, reckoningUser.pseudonym ?? reckoningUser.user.displayName);
+      userIdToUserNameMap.set(
+        reckoningUser.userId,
+        reckoningUser.deletedAt ? '[DELETED]' : (reckoningUser.pseudonym ?? reckoningUser.user.displayName),
+      );
     }
 
     let totalFromTransactions = 0;
@@ -138,23 +152,27 @@ export class SummaryService {
     }
 
     const userSummaries = new Map<number, PersonalSummaryDto>();
+
+    for (const reckoningUser of reckoningUsers) {
+      const userId = reckoningUser.userId;
+      const summary: PersonalSummaryDto = {
+        numberOfPaidTransactions: 0,
+        totalFromPaidTransactions: 0,
+        numberOfSplitPartTransactions: 0,
+        totalFromSplitParts: 0,
+        numberOfReturnsGiven: 0,
+        totalReturnsGiven: 0,
+        numberOfReturnsReceived: 0,
+        totalReturnsReceived: 0,
+        balance: 0,
+        userId,
+        user: undefined as any,
+      };
+      userSummaries.set(userId, summary);
+    }
+
     const getUserSummary = (userId: number): PersonalSummaryDto => {
-      let summary = userSummaries.get(userId);
-      if (!summary) {
-        summary = {
-          numberOfPaidTransactions: 0,
-          totalFromPaidTransactions: 0,
-          numberOfSplitPartTransactions: 0,
-          totalFromSplitParts: 0,
-          numberOfReturnsGiven: 0,
-          totalReturnsGiven: 0,
-          numberOfReturnsReceived: 0,
-          totalReturnsReceived: 0,
-          userId,
-          user: undefined as any,
-        };
-        userSummaries.set(userId, summary);
-      }
+      const summary = userSummaries.get(userId)!;
       return summary;
     };
 
@@ -202,21 +220,34 @@ export class SummaryService {
       summary.totalFromSplitParts = this.roundMoney(summary.totalFromSplitParts);
       summary.totalReturnsGiven = this.roundMoney(summary.totalReturnsGiven);
       summary.totalReturnsReceived = this.roundMoney(summary.totalReturnsReceived);
+      summary.balance = this.roundMoney(
+        summary.totalFromPaidTransactions -
+          summary.totalFromSplitParts +
+          summary.totalReturnsGiven -
+          summary.totalReturnsReceived
+      );
     }
 
     personalSummaries.sort((a, b) => {
       const nameA = userIdToUserNameMap.get(a.userId) ?? '';
       const nameB = userIdToUserNameMap.get(b.userId) ?? '';
+      if (nameA === '[DELETED]' && nameB !== '[DELETED]') return 1;
+      if (nameA !== '[DELETED]' && nameB === '[DELETED]') return -1;
       return nameA.localeCompare(nameB);
     });
+
+    const outstandingAmount = personalSummaries.reduce(
+      (sum, summary) => sum + (summary.balance < 0 ? summary.balance : 0),
+      0,
+    );
 
     return {
       numberOfTransactions: transactions.length,
       totalFromTransactions: this.roundMoney(totalFromTransactions),
       numberOfReturns: returns.length,
       totalFromReturns: this.roundMoney(totalFromReturns),
-      reckoningBalance: this.roundMoney(-totalFromTransactions + totalFromReturns),
-      numberOfUsers: userSummaries.size,
+      reckoningBalance: outstandingAmount,
+      numberOfUsers: reckoningUsers.length,
       personalSummaries,
     };
   }

@@ -1,10 +1,11 @@
-import { ConflictException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GetAllReckoningsResponseDto, IReckoningTableData } from '@shared/contracts/reckonings/get-all';
 import { IReckoning } from '@shared/entities/reckoning';
 import { UserRole } from '@shared/enums/user-role';
 import { roundToPrecision } from 'more-rounding';
 import { In, IsNull, Not, Repository } from 'typeorm';
+import { Transactional } from 'typeorm-transactional';
 import { Reckoning, ReckoningUser, User } from '../../typeorm/entities';
 import { CreateReckoningRequestDto } from './dtos/create';
 import { UpdateReckoningRequestDto } from './dtos/update';
@@ -27,6 +28,7 @@ export class ReckoningsService {
     if (!user) return [];
 
     const reckoningIds = Array.from(new Set(user.reckoningUsers.map(v => v.reckoningId)));
+    if (reckoningIds.length === 0) return [];
 
     const reckonings = await this.reckoningRepo.find({
       where: { id: In(reckoningIds) },
@@ -43,6 +45,7 @@ export class ReckoningsService {
       },
       order: { updatedDate: 'DESC' },
     });
+    if (reckonings.length === 0) return [];
 
     // get the max updatedDate for the reckoning and all its elements
     // do it for each reckoning separately
@@ -53,7 +56,11 @@ export class ReckoningsService {
       .where('reckoning.id IN (:...ids)', { ids: reckonings.map(r => r.id) })
       .select('reckoning.id', 'id')
       .addSelect(
-        'GREATEST(MAX(reckoning.updatedDate), MAX(transaction.updatedDate), MAX(return.updatedDate))',
+        `GREATEST(
+          MAX(reckoning.updatedDate),
+          COALESCE(MAX(transaction.updatedDate), MAX(reckoning.updatedDate)),
+          COALESCE(MAX(return.updatedDate), MAX(reckoning.updatedDate))
+        )`,
         'maxUpdatedDate',
       )
       .groupBy('reckoning.id')
@@ -82,12 +89,14 @@ export class ReckoningsService {
         }),
       );
 
-    return reckonings?.map((r, i) => ({
-      ...r,
-      updatedDate: maxUpdatedDateMap.get(r.id) || r.updatedDate,
-      numberOfUsers: r.reckoningUsers.length,
-      ...transactionData[i],
-    })).sort((a, b) => (b.updatedDate.getTime() || 0) - (a.updatedDate.getTime() || 0));
+    return reckonings
+      ?.map((r, i) => ({
+        ...r,
+        updatedDate: maxUpdatedDateMap.get(r.id) || r.updatedDate,
+        numberOfUsers: r.reckoningUsers.length,
+        ...transactionData[i],
+      }))
+      .sort((a, b) => (b.updatedDate.getTime() || 0) - (a.updatedDate.getTime() || 0));
   }
 
   async getById(id: number): Promise<IReckoning | null> {
@@ -107,6 +116,7 @@ export class ReckoningsService {
     });
   }
 
+  @Transactional()
   async create(data: CreateReckoningRequestDto, userId: number): Promise<IReckoningTableData> {
     const reckoning = this.reckoningRepo.create(data);
     await this.reckoningRepo.save(reckoning);
@@ -128,8 +138,15 @@ export class ReckoningsService {
 
     const reckoning = await this.reckoningRepo.findOneBy({ id: reckoningId });
     if (!reckoning) {
-      throw new Error('Reckoning not found');
+      throw new NotFoundException('Reckoning not found');
     }
+    if ('mainCurrency' in data && data.mainCurrency !== reckoning.mainCurrency) {
+      throw new ConflictException('Main currency cannot be changed');
+    }
+
+    data.helperCurrencies = Array.from(new Set([...reckoning.helperCurrencies, ...data.helperCurrencies])).filter(
+      c => c !== reckoning.mainCurrency,
+    );
 
     Object.assign(reckoning, data);
     await this.reckoningRepo.save(reckoning);

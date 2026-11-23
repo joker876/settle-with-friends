@@ -220,7 +220,7 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
     const shouldBeRemaining =
       part.amount === null &&
       !this.parts.controls.some(control => control.controls.type.getRawValue() === AmountType.Remaining);
-    
+
     const typeControl = new FormControl<AmountType>(shouldBeRemaining ? AmountType.Remaining : AmountType.Amount, {
       nonNullable: true,
     });
@@ -329,7 +329,10 @@ export class SplitPartsAdderComponent implements ControlValueAccessor, ArdFormFi
       name: $localize`:@@create-transaction.split-parts.transaction-everyone:Po równo`,
       type: AmountType.Remaining,
       amount: null,
-      includees: this.users.value().map(v => v.id),
+      includees: this.users
+        .value()
+        .filter(v => !v.deletedAt)
+        .map(v => v.id),
     });
   }
   clickEditSplitPart(v: SplitPartFormValue) {

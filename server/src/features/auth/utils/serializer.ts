@@ -10,7 +10,10 @@ export class SessionSerializer extends PassportSerializer {
   }
 
   serializeUser(user: User, done: (err: Error | null, user: any) => void) {
-    done(null, user);
+    // save user with only the id in the session
+    done(null, {
+      id: user.id,
+    });
   }
 
   async deserializeUser(payload: any, done: (err: Error | null, user: any) => void) {

@@ -5,7 +5,7 @@ import {
 } from '@shared/contracts/transactions/update';
 import { ITransactionBasicData } from '@shared/entities/transaction';
 import { CurrencyCode } from '@shared/enums/currency-code';
-import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { TrimString } from '../../../utils/trim-string.transform';
 import { Nested, NestedArray } from '../../../utils/validation.decorators';
 
@@ -16,6 +16,7 @@ export class UpdateTransactionBasicDataDto implements ITransactionBasicData {
   name: string;
 
   @IsNumber()
+  @Min(0.01)
   @IsNotEmpty()
   amount: number;
 
@@ -26,6 +27,7 @@ export class UpdateTransactionBasicDataDto implements ITransactionBasicData {
   currencyCode: CurrencyCode;
 
   @IsNumber()
+  @Min(0.0001)
   @IsOptional()
   currencyRate: number | null;
 
@@ -48,6 +50,7 @@ export class UpdateTransactionRequestPayerDto implements IUpdateTransactionReque
   userId: number;
 
   @IsNumber()
+  @Min(0.01)
   @IsOptional()
   amount: number | null;
 }
@@ -56,13 +59,14 @@ export class UpdateTransactionRequestSplitPartDto implements IUpdateTransactionR
   @IsNumber()
   @IsNotEmpty()
   id: number;
-  
+
   @IsString()
   @IsNotEmpty()
   @TrimString()
   name: string;
 
   @IsNumber()
+  @Min(0.01)
   @IsOptional()
   amount: number | null;
 

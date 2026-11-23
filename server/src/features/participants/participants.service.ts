@@ -121,8 +121,9 @@ export class ParticipantsService {
       !(await this.reckoningAccessService.isUserAuthorized(
         reckoningId,
         agentUserId,
-        targetUserRole.role,
+        targetUserRole.role ?? null,
         agentUserRole.role,
+        false,
       ))
     ) {
       throw new ForbiddenException('Permission denied');
@@ -198,7 +199,7 @@ export class ParticipantsService {
     };
   }
 
-  async getInviteLinkData(inviteToken: string): Promise<JoinFromInviteLinkResponseDto> {
+  async getInviteLinkData(inviteToken: string, userId: number): Promise<JoinFromInviteLinkResponseDto> {
     const link = await this.inviteLinkRepo.findOne({
       where: { token: inviteToken },
       select: {
@@ -228,11 +229,15 @@ export class ParticipantsService {
     }
 
     return {
-      alreadyJoined: false,
+      alreadyJoined: reckoning.reckoningUsers.some(reckUser => reckUser.userId === userId && !reckUser.deletedAt),
       reckoning: {
         id: reckoning.id,
         name: reckoning.name,
-        users: reckoning.reckoningUsers.map(reckUser => reckUser.user),
+        users: reckoning.reckoningUsers.map(reckUser => ({
+          id: reckUser.userId,
+          displayName: reckUser.pseudonym ?? reckUser.user.displayName,
+          photo: reckUser.user.photo,
+        })),
         createdAt: reckoning.createdDate,
         updatedAt: reckoning.updatedDate,
       },
@@ -258,13 +263,23 @@ export class ParticipantsService {
 
     const reckoningId = link.reckoningId;
 
-    const alreadyJoined = await this.reckoningUserRepo.exists({ where: { reckoningId, userId, deletedAt: undefined } });
+    const reckoningIsArchived = await this.reckoningRepo.exist({
+      where: { id: reckoningId, archivedAt: Not(IsNull()) },
+    });
+    if (reckoningIsArchived) {
+      throw new ForbiddenException('Cannot join an archived reckoning');
+    }
+
+    const alreadyJoined = await this.reckoningUserRepo.exists({
+      where: { reckoningId, userId, deletedAt: undefined },
+    });
     if (alreadyJoined) {
       throw new ConflictException('Already joined the reckoning');
     }
 
     const deletedUser = await this.reckoningUserRepo.findOne({
       where: { reckoningId, userId, deletedAt: Not(IsNull()) },
+      withDeleted: true,
     });
 
     if (deletedUser) {

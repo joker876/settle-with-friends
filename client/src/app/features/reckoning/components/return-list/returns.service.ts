@@ -62,6 +62,7 @@ export class ReturnsService {
         .subscribe({
           next: rtn => {
             this._snackbarController.openSuccess($localize`:@@returns.updated-return:Zapisano zwrot`);
+            this._summaryService?.reload();
             resolve(rtn);
           },
           error: () => {
@@ -88,6 +89,7 @@ export class ReturnsService {
         .subscribe({
           next: () => {
             this._snackbarController.openSuccess($localize`:@@returns.deleted-return:Usunięto zwrot`);
+            this._summaryService?.reload();
             resolve(true);
           },
           error: () => {

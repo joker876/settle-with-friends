@@ -39,9 +39,13 @@ export class AuthService {
     if (!userData.displayName) {
       userData.displayName = (await this.findUser(id))!.displayName;
     }
-    if (userData.acceptsPhoto) {
-      await this.userRepository.update({ id }, { registeredAt: new Date(), displayName: userData.displayName });
-    }
-    await this.userRepository.update({ id }, { registeredAt: new Date(), displayName: userData.displayName, photo: undefined });
+    await this.userRepository.update(
+      { id },
+      {
+        registeredAt: new Date(),
+        displayName: userData.displayName,
+        ...(userData.acceptsPhoto ? {} : { photo: null }),
+      },
+    );
   }
 }

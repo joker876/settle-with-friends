@@ -1,9 +1,8 @@
 <div class="page-wrapper-g">
   <section>
-    @let mainCurrency = reckoningService.reckoning.value()?.mainCurrency ?? ''; @let totalTransactions =
-    detailedSummaryService.summary.value()?.totalFromTransactions; @let totalReturned =
-    detailedSummaryService.summary.value()?.totalFromReturns; @let balance =
-    detailedSummaryService.summary.value()?.reckoningBalance;
+    @let mainCurrency = reckoningService.reckoning.value()?.mainCurrency ?? ''; @let summary =
+    detailedSummaryService.summary.value(); @let totalTransactions = summary?.totalFromTransactions; @let totalReturned
+    = summary?.totalFromReturns; @let balance = summary?.reckoningBalance;
     <ard-grid container columns="2 lg:4">
       <ard-grid size="1">
         <app-summary-card heading="Zapłacone" i18n-heading="@@summary.paid" withSubtext>
@@ -135,12 +134,10 @@
         </div>
         <div class="grid-cell bc" (click)="userDetailsModalData.set(personSummary)">
           <ard-stack direction="row" justifyContent="space-between">
-            @let balance = personSummary.totalFromPaidTransactions - personSummary.totalFromSplitParts +
-            personSummary.totalReturnsGiven - personSummary.totalReturnsReceived;
             <app-balance
-              [balance]="balance"
+              [balance]="personSummary.balance"
               [currency]="mainCurrency"
-              [coloringType]="balance < 0 ? 'negative' : 'positive'"
+              [coloringType]="personSummary.balance < 0 ? 'negative' : personSummary.balance > 0 ? 'positive' : 'none'"
               explicitSign
             />
             <button>
@@ -214,12 +211,10 @@
       </app-statistic>
     </ard-stack>
     <app-statistic><ng-container i18n="@@common.balance">Bilans</ng-container>:</app-statistic>
-    @let balance = userDetails.totalFromPaidTransactions - userDetails.totalFromSplitParts +
-    userDetails.totalReturnsGiven - userDetails.totalReturnsReceived;
     <app-balance
-      [balance]="balance"
+      [balance]="userDetails.balance"
       [currency]="mainCurrency"
-      [coloringType]="balance < 0 ? 'negative' : 'positive'"
+      [coloringType]="userDetails.balance < 0 ? 'negative' : 'positive'"
       explicitSign
     />
   </div>

@@ -43,6 +43,7 @@ export class ParticipantsController {
   }
 
   @Delete(':userId/kick-or-leave')
+  @NoArchived()
   async kickOrLeave(
     @Param('reckoningId', ParseIntPipe) reckoningId: number,
     @Param('userId', ParseIntPipe) targetUserId: number,
@@ -53,6 +54,7 @@ export class ParticipantsController {
   }
 
   @Post('invite-link')
+  @NoArchived()
   async generateInviteLink(
     @Param('reckoningId', ParseIntPipe) reckoningId: number,
     @Req() req: Request,

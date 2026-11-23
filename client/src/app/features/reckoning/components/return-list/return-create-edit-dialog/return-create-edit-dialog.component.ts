@@ -102,7 +102,7 @@ export class ReturnCreateEditDialogComponent {
   readonly currencies = this._currencyRatesService.currencies;
   readonly mainCurrency = this._currencyRatesService.mainCurrency;
   readonly isCurrencyRateLoading = signal<boolean>(false);
-  readonly currencyRateFromApi = computed<number | null>(() =>
+  readonly currencyRateFromApi = computed(() =>
     this._currencyRatesService.getCurrencyRate(this.currencyCodeValue(), this.returnDateValue()),
   );
   readonly isCurrencyRateFromApiLoading = computed<boolean>(() =>
@@ -200,7 +200,7 @@ export class ReturnCreateEditDialogComponent {
       rtnControls.isCurrencyRateFromApi.enable();
       // only set the value if it wasn't already set or wasn't touched
       if (!currencyRateTouched || rtnControls.currencyRate.getRawValue() === null) {
-        const rate = untracked(() => this._currencyRatesService.getCurrencyRate(currencyCode, date));
+        const rate = untracked(() => this._currencyRatesService.getCurrencyRate(currencyCode, date))?.rate ?? null;
         rtnControls.currencyRate.setValue(rate, { emitEvent: false });
         rtnControls.isCurrencyRateFromApi.setValue(rate !== null, { emitEvent: false });
       }

@@ -7,11 +7,10 @@
       </app-text-btn>
     </p>
 
-    @let mainCurrency = reckoningService.reckoning.value()?.mainCurrency ?? ''; @let totalPaid =
-    basicSummaryService.summary.value()?.totalFromPaidTransactions; @let totalToPay =
-    basicSummaryService.summary.value()?.totalFromSplitParts; @let totalReturnsGiven =
-    basicSummaryService.summary.value()?.totalReturnsGiven; @let totalReturnsReceived =
-    basicSummaryService.summary.value()?.totalReturnsReceived;
+    @let mainCurrency = reckoningService.reckoning.value()?.mainCurrency ?? ''; @let summary =
+    basicSummaryService.summary.value(); @let totalPaid = summary?.totalFromPaidTransactions; @let totalToPay =
+    summary?.totalFromSplitParts; @let totalReturnsGiven = summary?.totalReturnsGiven; @let totalReturnsReceived =
+    summary?.totalReturnsReceived;
     <ard-grid container columns="2 lg:4">
       <ard-grid size="1">
         <app-summary-card
@@ -106,9 +105,7 @@
         </app-summary-card>
       </ard-grid>
       <ard-grid size="1">
-        @if (totalPaid !== undefined && totalToPay !== undefined && totalReturnsGiven !== undefined &&
-        totalReturnsReceived !== undefined) { @let balance = totalPaid - totalToPay + totalReturnsGiven -
-        totalReturnsReceived;
+        @if (summary?.balance !== undefined) {
         <app-summary-card
           heading="Bilans"
           i18n-heading="@@reckoning.summary.balance.heading"
@@ -120,16 +117,16 @@
           </ng-container>
           <ng-container ngProjectAs="value">
             <app-balance
-              [balance]="balance"
+              [balance]="summary?.balance"
               [currency]="mainCurrency"
-              [coloringType]="balance < 0 ? 'negative' : 'positive'"
+              [coloringType]="summary?.balance < 0 ? 'negative' : 'positive'"
               explicitSign
             />
           </ng-container>
           <ng-container ngProjectAs="subtext">
-            @if (balance < 0) {
+            @if (summary?.balance < 0) {
             <span i18n="@@reckoning.summary.balance.subtext-when-negative">Tyle musisz zwrócić</span>
-            } @else if (balance > 0) {
+            } @else if (summary?.balance > 0) {
             <span i18n="@@reckoning.summary.balance.subtext-when-positive">Tyle dostaniesz zwrotu</span>
             } @else {
             <span i18n="@@reckoning.summary.balance.subtext-when-zero">Jesteś na zero</span>

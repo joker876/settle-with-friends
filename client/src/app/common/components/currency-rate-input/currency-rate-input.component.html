@@ -24,7 +24,10 @@
   (reject)="onRejectDialog()"
 >
   <div class="dialog-content">
-    <ard-number-input [(value)]="tempValue" maxDecimalPlaces="4">
+    <ard-number-input
+      [(value)]="tempValue"
+      [maxDecimalPlaces]="currencyCode() === CurrencyCode.JapaneseYen || CurrencyCode.HungarianForint ? 6 : 4"
+    >
       <ng-template ard-prefix-tmp>
         <div class="text3">1 {{ currencyCode() }} =&nbsp;</div>
       </ng-template>
@@ -35,7 +38,8 @@
     <p>
       <small>
         <ng-container i18n="@@common.currency-rate-for-date"
-          >Kurs wymiany według NBP na dzień {{ selectedTransactionDate() | date: 'd MMM yyyy' }}:</ng-container
+          >Kurs wymiany według NBP na dzień
+          {{ currencyRateFromApi()?.sourceDate ?? selectedTransactionDate() | date: 'd MMM yyyy' }}:</ng-container
         >
         @if (!isCurrencyRateFromApiLoading() && currencyRateFromApi() === null) {
           &nbsp;<ng-container i18n="@@common.not-available">Niedostępne</ng-container>
@@ -44,9 +48,9 @@
           =
           @if (isCurrencyRateFromApiLoading()) {
             <ng-container i18n="@@common.loading...">Ładowanie...</ng-container>
-          } @else if (currencyRateFromApi(); as rate) {
+          } @else if (currencyRateFromApi() !== null) {
             <app-balance
-              [balance]="rate"
+              [balance]="currencyRateFromApi()!.rate"
               [currency]="mainCurrency()"
               places="4-4"
               [class.disabled]="isValueLoading()"

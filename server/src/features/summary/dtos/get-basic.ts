@@ -9,4 +9,5 @@ export class GetBasicSummaryResponseDto implements IGetBasicSummaryResponse {
   totalReturnsGiven: number;
   numberOfReturnsReceived: number;
   totalReturnsReceived: number;
+  balance: number;
 }

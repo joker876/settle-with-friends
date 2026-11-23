@@ -101,7 +101,7 @@ export class CreateTransactionView {
 
   readonly currencies = this._currencyRatesService.currencies;
   readonly isCurrencyRateLoading = signal<boolean>(false);
-  readonly currencyRateFromApi = computed<number | null>(() =>
+  readonly currencyRateFromApi = computed(() =>
     this._currencyRatesService.getCurrencyRate(this.currencyCodeValue(), this.transactionDateValue()),
   );
   readonly isCurrencyRateFromApiLoading = computed<boolean>(() =>
@@ -199,7 +199,7 @@ export class CreateTransactionView {
       transxControls.isCurrencyRateFromApi.enable();
       // only set the value if it wasn't already set or wasn't touched
       if (!currencyRateTouched || transxControls.currencyRate.getRawValue() === null) {
-        const rate = untracked(() => this._currencyRatesService.getCurrencyRate(currencyCode, date));
+        const rate = untracked(() => this._currencyRatesService.getCurrencyRate(currencyCode, date)?.rate ?? null);
         transxControls.currencyRate.setValue(rate, { emitEvent: false });
         transxControls.isCurrencyRateFromApi.setValue(rate !== null, { emitEvent: false });
       }

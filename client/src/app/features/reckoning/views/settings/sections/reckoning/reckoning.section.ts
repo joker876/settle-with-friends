@@ -2,13 +2,21 @@ import { Component, computed, effect, inject, signal, untracked } from '@angular
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ArdIconEditLine_2 } from '@ardium-ui/icons';
-import { ArdiumButtonModule, ArdiumFormFieldModule, ArdiumGridModule, ArdiumIconButtonModule, ArdiumInputModule, ArdiumSpinnerModule, ArdiumStackModule } from '@ardium-ui/ui';
+import {
+  ArdiumButtonModule,
+  ArdiumFormFieldModule,
+  ArdiumGridModule,
+  ArdiumIconButtonModule,
+  ArdiumInputModule,
+  ArdiumSpinnerModule,
+  ArdiumStackModule,
+} from '@ardium-ui/ui';
 import { SelectComponent } from '@common/components/select/select.component';
 import { CURRENCY_OPTIONS } from '@common/utils/currency-options';
 import { WrapInAbstractControl } from '@common/utils/form-types';
 import { RoleGuardComponent } from '@features/reckoning/components/role-guard/role-guard.component';
 import { ReckoningService } from '@features/reckoning/services/reckoning.service';
-import { IUpdateReckoningRequestDto } from '@shared/contracts/reckonings/update';
+import { ICreateReckoningRequestDto } from '@shared/contracts/reckonings/create';
 import { CurrencyCode } from '@shared/enums/currency-code';
 import { UserRole } from '@shared/enums/user-role';
 
@@ -26,8 +34,8 @@ import { UserRole } from '@shared/enums/user-role';
     ArdiumGridModule,
     SelectComponent,
     MatTooltip,
-    ArdiumSpinnerModule
-],
+    ArdiumSpinnerModule,
+  ],
   templateUrl: './reckoning.section.html',
   styleUrl: './reckoning.section.scss',
 })
@@ -39,7 +47,7 @@ export class ReckoningSection {
   readonly isEditingName = signal(false);
   readonly isEditingHelperCurrencies = signal(false);
 
-  public readonly form = new FormGroup<WrapInAbstractControl<IUpdateReckoningRequestDto>>({
+  public readonly form = new FormGroup<WrapInAbstractControl<ICreateReckoningRequestDto>>({
     name: new FormControl<string>('', { validators: [Validators.required], nonNullable: true }),
     mainCurrency: new FormControl<CurrencyCode>(CurrencyCode.PolishZloty, {
       validators: [Validators.required],
@@ -95,15 +103,16 @@ export class ReckoningSection {
 
     const formValue = this.form.getRawValue();
 
-    this.reckoningService.updateReckoning({
-      name: formValue.name,
-      mainCurrency: formValue.mainCurrency,
-      helperCurrencies: [...this.existingHelperCurrencies(), ...formValue.helperCurrencies],
-    }).then(success => {
-      if (success) {
-        this.isEditingName.set(false);
-        this.isEditingHelperCurrencies.set(false);
-      }
-    });
+    this.reckoningService
+      .updateReckoning({
+        name: formValue.name,
+        helperCurrencies: formValue.helperCurrencies,
+      })
+      .then(success => {
+        if (success) {
+          this.isEditingName.set(false);
+          this.isEditingHelperCurrencies.set(false);
+        }
+      });
   }
 }

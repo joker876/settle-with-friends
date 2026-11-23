@@ -7,4 +7,5 @@ export interface IGetBasicSummaryResponse {
   totalReturnsGiven: number;
   numberOfReturnsReceived: number;
   totalReturnsReceived: number;
+  balance: number;
 }

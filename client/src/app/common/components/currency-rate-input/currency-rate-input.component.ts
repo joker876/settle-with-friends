@@ -3,6 +3,8 @@ import { Component, forwardRef, input, signal } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ArdIconEditLine_2 } from '@ardium-ui/icons';
 import { ArdiumDialogModule, ArdiumIconButtonModule, ArdiumNumberInputModule } from '@ardium-ui/ui';
+import { CurrencyRateData } from '@features/reckoning/services/currency-rates.service';
+import { CurrencyCode } from '@shared/enums/currency-code';
 import { BalanceComponent } from '../balance/balance.component';
 import { StatisticWithValueComponent } from '../statistic-with-value/statistic-with-value.component';
 import { StatisticComponent } from '../statistic/statistic.component';
@@ -17,8 +19,8 @@ import { StatisticComponent } from '../statistic/statistic.component';
     ArdiumIconButtonModule,
     ArdiumNumberInputModule,
     DatePipe,
-    StatisticComponent
-],
+    StatisticComponent,
+  ],
   templateUrl: './currency-rate-input.component.html',
   styleUrl: './currency-rate-input.component.scss',
   providers: [
@@ -30,12 +32,13 @@ import { StatisticComponent } from '../statistic/statistic.component';
   ],
 })
 export class CurrencyRateInputComponent implements ControlValueAccessor {
+  readonly CurrencyCode = CurrencyCode;
   readonly currencyCode = input.required<string>();
   readonly mainCurrency = input.required<string>();
   readonly isValueLoading = input.required<boolean>();
 
   readonly selectedTransactionDate = input.required<Date>();
-  readonly currencyRateFromApi = input.required<number | null>();
+  readonly currencyRateFromApi = input.required<CurrencyRateData | null>();
   readonly isCurrencyRateFromApiLoading = input.required<boolean>();
   readonly isCurrencyRateFromApiControl = input.required<FormControl<boolean | null>>();
 
@@ -53,7 +56,7 @@ export class CurrencyRateInputComponent implements ControlValueAccessor {
     this._onChange(this.value());
     this._onTouched();
     this.isDialogOpen.set(false);
-    this.isCurrencyRateFromApiControl().setValue(this.currencyRateFromApi() === this.tempValue());
+    this.isCurrencyRateFromApiControl().setValue(this.currencyRateFromApi()?.rate === this.tempValue());
   }
   onRejectDialog(): void {
     this.isDialogOpen.set(false);

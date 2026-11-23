@@ -5,7 +5,18 @@ import {
 } from '@shared/contracts/transactions/create';
 import { ITransactionBasicData } from '@shared/entities/transaction';
 import { CurrencyCode } from '@shared/enums/currency-code';
-import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 import { TrimString } from '../../../utils/trim-string.transform';
 import { Nested, NestedArray } from '../../../utils/validation.decorators';
 
@@ -16,6 +27,7 @@ export class CreateTransactionBasicDataDto implements ITransactionBasicData {
   name: string;
 
   @IsNumber()
+  @Min(0.01)
   @IsNotEmpty()
   amount: number;
 
@@ -26,6 +38,7 @@ export class CreateTransactionBasicDataDto implements ITransactionBasicData {
   currencyCode: CurrencyCode;
 
   @IsNumber()
+  @Min(0.0001)
   @IsOptional()
   currencyRate: number | null;
 
@@ -44,6 +57,7 @@ export class CreateTransactionRequestPayerDto implements ICreateTransactionReque
   userId: number;
 
   @IsNumber()
+  @Min(0.01)
   @IsOptional()
   amount: number | null;
 }
@@ -55,10 +69,12 @@ export class CreateTransactionRequestSplitPartDto implements ICreateTransactionR
   name: string;
 
   @IsNumber()
+  @Min(0.01)
   @IsOptional()
   amount: number | null;
 
-  @IsNotEmpty({ each: true })
+  @IsArray()
+  @ArrayMinSize(1)
   @IsNumber({}, { each: true })
   includees: number[];
 }
@@ -68,11 +84,13 @@ export class CreateTransactionRequestDto implements ICreateTransactionRequestDto
   @Nested(() => CreateTransactionBasicDataDto)
   transaction: CreateTransactionBasicDataDto;
 
-  @IsNotEmpty()
+  @IsArray()
+  @ArrayMinSize(1)
   @NestedArray(() => CreateTransactionRequestPayerDto)
   payers: CreateTransactionRequestPayerDto[];
 
-  @IsNotEmpty()
+  @IsArray()
+  @ArrayMinSize(1)
   @NestedArray(() => CreateTransactionRequestSplitPartDto)
   splitParts: CreateTransactionRequestSplitPartDto[];
 }

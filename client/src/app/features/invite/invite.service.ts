@@ -36,7 +36,7 @@ export class InviteService {
     effect(() => {
       const data = this._inviteLinkData.value();
       if (data?.alreadyJoined) {
-        // this._router.navigateByUrl('/r/' + data.reckoning.id);
+        this._router.navigateByUrl('/r/' + data.reckoning.id);
       }
     });
   }

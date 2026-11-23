@@ -1,6 +1,6 @@
 import { IReturnBasicData } from '@shared/entities/return';
 import { CurrencyCode } from '@shared/enums/currency-code';
-import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { TrimString } from '../../../utils/trim-string.transform';
 
 export class UpdateReturnRequestDto implements IReturnBasicData {
@@ -18,6 +18,7 @@ export class UpdateReturnRequestDto implements IReturnBasicData {
   returnedToUserId: number;
 
   @IsNumber()
+  @Min(0.01)
   @IsNotEmpty()
   amount: number;
 
@@ -28,6 +29,7 @@ export class UpdateReturnRequestDto implements IReturnBasicData {
   currencyCode: CurrencyCode;
 
   @IsNumber()
+  @Min(0.0001)
   @IsOptional()
   currencyRate: number | null;
 

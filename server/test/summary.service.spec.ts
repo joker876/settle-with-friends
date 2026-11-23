@@ -88,7 +88,24 @@ describe('SummaryService', () => {
   ) => {
     transactionRepo.find.mockResolvedValue(transactions);
     returnRepo.find.mockResolvedValue(returns);
-    reckoningUserRepo.find.mockResolvedValue(participants);
+
+    const participantIds = new Set(participants.map(participant => participant.userId));
+    for (const transaction of transactions) {
+      transaction.payers.forEach(payer => participantIds.add(payer.userId));
+      transaction.splitParts.forEach(splitPart =>
+        splitPart.includees.forEach(includee => participantIds.add(includee.userId)),
+      );
+    }
+    returns.forEach(rtn => {
+      participantIds.add(rtn.returnedByUserId);
+      participantIds.add(rtn.returnedToUserId);
+    });
+
+    const inferredParticipants = Array.from(participantIds).map(userId =>
+      participants.find(participant => participant.userId === userId)
+      ?? participant(userId, `User ${userId}`),
+    );
+    reckoningUserRepo.find.mockResolvedValue(inferredParticipants);
   };
 
   /** Provide data for getBasic, including the query identifying relevant split parts. */
@@ -102,6 +119,7 @@ describe('SummaryService', () => {
       t.splitParts.some(p => p.includees.some(i => i.userId === userId)),
     );
     transactionRepo.find
+      .mockResolvedValueOnce(asPayer)
       .mockResolvedValueOnce(asPayer)
       .mockResolvedValueOnce(asIncludee);
     queryBuilder.getRawMany.mockResolvedValue(asIncludee.map(t => ({ id: t.id })));
@@ -134,6 +152,7 @@ describe('SummaryService', () => {
       totalReturnsGiven: 0,
       numberOfReturnsReceived: 0,
       totalReturnsReceived: 0,
+      balance: 0,
     });
   });
 
@@ -144,7 +163,7 @@ describe('SummaryService', () => {
     const result = await service.getDetailed(10);
     const summaries = new Map(result.personalSummaries.map(s => [s.userId, s]));
     expect(result.totalFromTransactions).toBe(120);
-    expect(result.reckoningBalance).toBe(-120);
+    expect(result.reckoningBalance).toBe(-70);
     expect(result.numberOfUsers).toBe(3);
     expect(summaries.get(1)).toMatchObject({
       totalFromPaidTransactions: 100,
@@ -212,7 +231,7 @@ describe('SummaryService', () => {
 
     expect(detailed.totalFromTransactions).toBe(100);
     expect(detailed.totalFromReturns).toBe(40);
-    expect(detailed.reckoningBalance).toBe(-60);
+    expect(detailed.reckoningBalance).toBe(-10);
     expect(byId.get(1)).toMatchObject({ totalReturnsReceived: 40, numberOfReturnsReceived: 1 });
     expect(byId.get(2)).toMatchObject({ totalReturnsGiven: 40, numberOfReturnsGiven: 1 });
     expect(byId.get(1)!.totalFromPaidTransactions - byId.get(1)!.totalFromSplitParts
@@ -255,6 +274,7 @@ describe('SummaryService', () => {
         totalReturnsGiven: personal.totalReturnsGiven,
         numberOfReturnsReceived: personal.numberOfReturnsReceived,
         totalReturnsReceived: personal.totalReturnsReceived,
+        balance: personal.balance,
       });
     }
   });
@@ -274,7 +294,7 @@ describe('SummaryService', () => {
     expect(basic.numberOfPaidTransactions).toBe(1);
     expect(basic.numberOfSplitPartTransactions).toBe(0);
     expect(basic.totalFromSplitParts).toBe(0);
-    expect(transactionRepo.find).toHaveBeenCalledTimes(1);
+    expect(transactionRepo.find).toHaveBeenCalledTimes(2);
     expect(queryBuilder.distinct).toHaveBeenCalledWith(true);
   });
 });

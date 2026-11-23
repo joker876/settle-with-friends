@@ -23,14 +23,17 @@ type NBPCurrencyRateResponse = {
   ];
 };
 
+export interface CurrencyRateData {
+  rate: number;
+  sourceDate: Date;
+}
+
 const ALLOWED_CURRENCY_CODES = Object.values(CurrencyCode);
 
 @Injectable({ providedIn: 'root' })
 export class CurrencyRatesService {
   private readonly _http = inject(HttpClient);
   private readonly _reckoningService = inject(ReckoningService);
-
-  private readonly _pendingRequests = new Map<CurrencyCodeDate, Promise<void>>();
 
   readonly mainCurrency = computed<CurrencyCode | null>(
     () => this._reckoningService.reckoning.value()?.mainCurrency ?? null,
@@ -55,15 +58,21 @@ export class CurrencyRatesService {
       currencies.shift(); // remove main currency
 
       for (const currency of currencies) {
-        untracked(() => this.fetchAndStoreCurrencyRate(currency.value, new Date()));
+        for (const daysBack of [0, 1, 2, 3, 4, 5, 6, 7]) {
+          const date = new Date();
+          date.setDate(date.getDate() - daysBack);
+          untracked(() => this.fetchAndStoreCurrencyRate(currency.value, date));
+        }
       }
     });
   }
 
-  private readonly _currencyRates = mapSignal<CurrencyCodeDate, number>();
+  private readonly _currencyRates = mapSignal<CurrencyCodeDate, CurrencyRateData>();
   private readonly _currencyRatesLoading = mapSignal<CurrencyCodeDate, boolean>();
 
-  getCurrencyRate(currencyCode: CurrencyCode, date: Date): number | null {
+  private readonly _pendingRequests = new Map<CurrencyCodeDate, Promise<void>>();
+
+  getCurrencyRate(currencyCode: CurrencyCode, date: Date) {
     const key = this._generateKey(currencyCode, date);
     return this._currencyRates.get(key) ?? null;
   }
@@ -85,8 +94,10 @@ export class CurrencyRatesService {
       // NBP API only provides rates for PLN
       return;
     }
+
+    // rate for main currency is always 1
     if (currencyCode === this.mainCurrency()) {
-      this._currencyRates.setKey(requestedKey, 1);
+      this._currencyRates.setKey(requestedKey, { rate: 1, sourceDate: requestedDate });
       return;
     }
 
@@ -134,15 +145,18 @@ export class CurrencyRatesService {
             ),
           );
 
-          const rate = response.rates[0]?.ask;
-          if (rate === undefined) {
-            return;
-          }
+          const ask = response.rates[0]?.ask;
+          if (ask === undefined) return;
+
+          const multiplier =
+            currencyCode === CurrencyCode.HungarianForint || currencyCode === CurrencyCode.JapaneseYen ? 100 : 1;
+
+          const rate = ask / multiplier;
 
           // store the rate under the checked dates...
-          checkedKeys.forEach(key => this._currencyRates.setKey(key, rate));
+          checkedKeys.forEach(key => this._currencyRates.setKey(key, { rate, sourceDate: checkedDate }));
           // ...and under the originally requested date
-          this._currencyRates.setKey(requestedKey, rate);
+          this._currencyRates.setKey(requestedKey, { rate, sourceDate: checkedDate });
 
           return;
         } catch (error: unknown) {
