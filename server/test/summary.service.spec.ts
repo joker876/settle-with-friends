@@ -16,31 +16,34 @@ const transaction = (
   payers: Array<[number, number | null]>,
   splitParts: ReturnType<typeof part>[],
   currencyRate: number | null = null,
-): TransactionFixture => ({
-  id,
-  amount,
-  currencyRate,
-  payers: payers.map(([userId, payerAmount]) => ({ userId, amount: payerAmount })),
-  splitParts,
-} as unknown as TransactionFixture);
+): TransactionFixture =>
+  ({
+    id,
+    amount,
+    currencyRate,
+    payers: payers.map(([userId, payerAmount]) => ({ userId, amount: payerAmount })),
+    splitParts,
+  }) as unknown as TransactionFixture;
 
 const moneyReturn = (
   amount: number,
   returnedByUserId: number,
   returnedToUserId: number,
   currencyRate: number | null = null,
-): ReturnFixture => ({
-  amount,
-  returnedByUserId,
-  returnedToUserId,
-  currencyRate,
-} as ReturnFixture);
+): ReturnFixture =>
+  ({
+    amount,
+    returnedByUserId,
+    returnedToUserId,
+    currencyRate,
+  }) as ReturnFixture;
 
-const participant = (userId: number, displayName: string, pseudonym: string | null = null) => ({
-  userId,
-  pseudonym,
-  user: { displayName },
-} as ReckoningUser);
+const participant = (userId: number, displayName: string, pseudonym: string | null = null) =>
+  ({
+    userId,
+    pseudonym,
+    user: { displayName },
+  }) as ReckoningUser;
 
 describe('SummaryService', () => {
   let service: SummaryService;
@@ -101,23 +104,17 @@ describe('SummaryService', () => {
       participantIds.add(rtn.returnedToUserId);
     });
 
-    const inferredParticipants = Array.from(participantIds).map(userId =>
-      participants.find(participant => participant.userId === userId)
-      ?? participant(userId, `User ${userId}`),
+    const inferredParticipants = Array.from(participantIds).map(
+      userId =>
+        participants.find(participant => participant.userId === userId) ?? participant(userId, `User ${userId}`),
     );
     reckoningUserRepo.find.mockResolvedValue(inferredParticipants);
   };
 
   /** Provide data for getBasic, including the query identifying relevant split parts. */
-  const mockBasic = (
-    userId: number,
-    transactions: TransactionFixture[],
-    returns: ReturnFixture[] = [],
-  ) => {
+  const mockBasic = (userId: number, transactions: TransactionFixture[], returns: ReturnFixture[] = []) => {
     const asPayer = transactions.filter(t => t.payers.some(p => p.userId === userId));
-    const asIncludee = transactions.filter(t =>
-      t.splitParts.some(p => p.includees.some(i => i.userId === userId)),
-    );
+    const asIncludee = transactions.filter(t => t.splitParts.some(p => p.includees.some(i => i.userId === userId)));
     transactionRepo.find
       .mockResolvedValueOnce(asPayer)
       .mockResolvedValueOnce(asPayer)
@@ -157,7 +154,15 @@ describe('SummaryService', () => {
   });
 
   it('splits multiple parts between different groups and counts each transaction once per participant', async () => {
-    const t = transaction(1, 120, [[1, 100], [2, 20]], [part(90, 1, 2, 3), part(30, 2, 3)]);
+    const t = transaction(
+      1,
+      120,
+      [
+        [1, 100],
+        [2, 20],
+      ],
+      [part(90, 1, 2, 3), part(30, 2, 3)],
+    );
     mockDetailed([t], [], [participant(1, 'Anna'), participant(2, 'Bartek'), participant(3, 'Celina')]);
 
     const result = await service.getDetailed(10);
@@ -196,7 +201,15 @@ describe('SummaryService', () => {
   });
 
   it('calculates the remaining amount for a payer and a split part represented by null', async () => {
-    const t = transaction(1, 100, [[1, 25], [2, null]], [part(40, 1), part(null, 2, 3)]);
+    const t = transaction(
+      1,
+      100,
+      [
+        [1, 25],
+        [2, null],
+      ],
+      [part(40, 1), part(null, 2, 3)],
+    );
     mockDetailed([t]);
     const detailed = await service.getDetailed(10);
     const byId = new Map(detailed.personalSummaries.map(s => [s.userId, s]));
@@ -234,10 +247,18 @@ describe('SummaryService', () => {
     expect(detailed.reckoningBalance).toBe(-10);
     expect(byId.get(1)).toMatchObject({ totalReturnsReceived: 40, numberOfReturnsReceived: 1 });
     expect(byId.get(2)).toMatchObject({ totalReturnsGiven: 40, numberOfReturnsGiven: 1 });
-    expect(byId.get(1)!.totalFromPaidTransactions - byId.get(1)!.totalFromSplitParts
-      + byId.get(1)!.totalReturnsGiven - byId.get(1)!.totalReturnsReceived).toBe(10);
-    expect(byId.get(2)!.totalFromPaidTransactions - byId.get(2)!.totalFromSplitParts
-      + byId.get(2)!.totalReturnsGiven - byId.get(2)!.totalReturnsReceived).toBe(-10);
+    expect(
+      byId.get(1)!.totalFromPaidTransactions -
+        byId.get(1)!.totalFromSplitParts +
+        byId.get(1)!.totalReturnsGiven -
+        byId.get(1)!.totalReturnsReceived,
+    ).toBe(10);
+    expect(
+      byId.get(2)!.totalFromPaidTransactions -
+        byId.get(2)!.totalFromSplitParts +
+        byId.get(2)!.totalReturnsGiven -
+        byId.get(2)!.totalReturnsReceived,
+    ).toBe(-10);
 
     mockBasic(2, [t], [r]);
     expect(await service.getBasic(10, 2)).toMatchObject({
@@ -250,8 +271,25 @@ describe('SummaryService', () => {
 
   it('returns the same financial aggregates from basic and detailed summaries', async () => {
     const transactions = [
-      transaction(1, 120, [[1, 100], [2, 20]], [part(90, 1, 2, 3), part(30, 2, 3)]),
-      transaction(2, 30, [[3, 10], [1, null]], [part(10, 1, 2, 3), part(20, 1, 3)], 1.5),
+      transaction(
+        1,
+        120,
+        [
+          [1, 100],
+          [2, 20],
+        ],
+        [part(90, 1, 2, 3), part(30, 2, 3)],
+      ),
+      transaction(
+        2,
+        30,
+        [
+          [3, 10],
+          [1, null],
+        ],
+        [part(10, 1, 2, 3), part(20, 1, 3)],
+        1.5,
+      ),
     ];
     const returns = [moneyReturn(10, 2, 1), moneyReturn(7, 1, 3, 2)];
     mockDetailed(transactions, returns);
@@ -288,10 +326,14 @@ describe('SummaryService', () => {
 
   it('does not query split-part transactions when a user has no assigned part', async () => {
     const t = transaction(1, 10, [[1, 10]], [part(10, 2)]);
-    transactionRepo.find.mockResolvedValueOnce([t]);
+    transactionRepo.find.mockResolvedValueOnce([{ id: t.id }]).mockResolvedValueOnce([t]);
+
     queryBuilder.getRawMany.mockResolvedValue([]);
+
     const basic = await service.getBasic(10, 1);
+
     expect(basic.numberOfPaidTransactions).toBe(1);
+    expect(basic.totalFromPaidTransactions).toBe(10);
     expect(basic.numberOfSplitPartTransactions).toBe(0);
     expect(basic.totalFromSplitParts).toBe(0);
     expect(transactionRepo.find).toHaveBeenCalledTimes(2);
